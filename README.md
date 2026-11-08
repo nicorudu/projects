@@ -1,17 +1,9 @@
-﻿# Projects
+﻿# projects
 
-A monorepo of hardware and software builds by Nico.
+Nico's hardware and software builds.
 
-## agent-controller
+## Projects
 
-A physical AI agent controller (inspired by SlashVibe). Companion app that bridges Claude Code to a handheld ESP32-S3 device over WebSocket.
-
-### Status
-- Companion app: working (v0)
-- Hardware: parts on order
-- Firmware: not started
-
-### Files
-- `main.py` — Python companion app (WebSocket server + Claude Code subprocess)
-- `docs/agent-controller-v0-spec.md` — hardware and interaction spec
-- `docs/agent-controller-v0-blueprint.md` — locked parts list, pin map, firmware and software architecture
+| Project | Status | Description |
+|---|---|---|
+| [agent-controller](./agent-controller) | v0 companion app working, hardware on order | Physical AI agent controller for Claude Code and other agents |

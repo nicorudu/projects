@@ -7,7 +7,7 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** M0 and M1, pushed on branch `agent-controller-m0-m1`, with a PR open to `main` (number in the step log). 45 tests pass.
+- **Done:** M0 and M1, pushed on branch `agent-controller-m0-m1`, with **PR #3** open to `main`. 45 tests pass.
   - M1 was **verified live**: real Claude Code 2.1.322 in the cloud workspace → our `PermissionRequest` hook → fake device Approve → the command ran.
 - **Waiting on Nico:**
   1. Merge the PR.
@@ -116,6 +116,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Opened PR #3 (M0 + M1) to `main`.
 - 2026-11-11 — M1 done:
   - Hook server, Claude Code plug-in (status + 4-option approvals, timeout and hang-up fallbacks), `install-hooks` / `uninstall-hooks` / `doctor`, SessionStart report script, macOS focus.
   - `main.py` ported to `managed.py` and removed.

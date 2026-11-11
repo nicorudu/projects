@@ -27,7 +27,7 @@ Last updated: 2026-11-11 · by Claude (cloud session)
        - **Nico must re-run `python -m companion install-hooks` once on the Mac Mini.** It replaces the old http hooks; there are now 10 hooks, because `PostToolUseFailure` was added.
   - Also fixed on the Mac Mini: a test race in `test_approve` (see step log).
 - **Waiting on Nico:**
-  1. Merge **PR #4** (Mac Mini test results), then the hook-fixes PR (number in the step log; it builds on PR #4).
+  1. Merge **PR #4** (Mac Mini test results), then **PR #5** (hook fixes; it builds on PR #4).
   2. On the Mac Mini: `git pull`, then `python -m companion install-hooks` again, then the quick recheck in §6 ("Recheck after hook fixes").
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
@@ -129,7 +129,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   6. On B's Home screen, select the session and press `s`. **C's terminal tab should come to the front.** macOS may ask once to let Terminal/Python control Terminal or iTerm; allow it.
   7. Quit A (Ctrl-C) and ask Claude in C to run another command. **Report back:** does Claude Code show any "hook error" lines, and does its normal permission prompt still appear?
   8. Report anything that looked wrong. `python -m companion uninstall-hooks` removes everything if needed.
-- **Recheck after hook fixes (about 5 minutes; after merging the hook-fixes PR).**
+- **Recheck after hook fixes (about 5 minutes; after merging PR #5).**
   1. `cd ~/projects && git pull`, then `cd agent-controller/software/companion-app && source .venv/bin/activate && python -m pytest -q`. Expect 54 passed.
   2. `python -m companion install-hooks`, then `python -m companion doctor`. Expect 10 hooks.
   3. **Restart** the Claude Code session in window C, then start A (`python -m companion`) and B (fake device). C must be in `manual mode` (Shift+Tab).
@@ -144,6 +144,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Opened PR #5 (hook fixes).
 - 2026-11-11 — Hook fixes (cloud session, branch `agent-controller-hook-fixes`, built on PR #4):
   - All hooks are now silent command hooks (`companion.hooks.report`): async for status, `--wait` for `PermissionRequest`. `PostToolUseFailure` added (10 hooks).
   - Stale questions clear when the session moves on.

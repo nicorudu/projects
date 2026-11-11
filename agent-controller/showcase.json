@@ -3,7 +3,7 @@
   "title": "AI Agent Controller",
   "tagline": "A desk dock and detachable controller for running AI coding agents: glance, flick, approve, speak.",
   "status": "build",
-  "status_text": "Designing: parts arriving, rev 2 locked",
+  "status_text": "Building: approvals work from the fake device; hardware arriving",
   "updated": "2026-11-11",
   "tags": "ESP32-S3, Python, Whisper, Claude Code, CadQuery, 3D printing",
   "hero": "media/web/rev2-01-docked-open.webp",
@@ -12,13 +12,31 @@
   "timeline": [
     {
       "date": "2026-11-11",
+      "title": "Approving Claude Code from the device",
+      "summary": "The companion app now follows every Claude Code session through its hooks. A real permission request popped up on the fake device, and one key press approved it.",
+      "images": []
+    },
+    {
+      "date": "2026-11-11",
       "title": "Rev 2: dock + detachable controller",
       "summary": "Rigid controller bar that charges on the dock, USB + Wi-Fi data paths, voice pipeline and platform plug-in plan.",
       "images": [
-        { "src": "media/web/rev2-01-docked-open.webp", "alt": "Docked with the screen open" },
-        { "src": "media/web/rev2-02-controller-off-dock.webp", "alt": "Controller lifted off the dock, showing the charging contacts" },
-        { "src": "media/web/rev2-04-exploded-dock.webp", "alt": "Exploded view of the dock with every part labeled" },
-        { "src": "media/web/rev2-05-exploded-controller.webp", "alt": "Exploded view of the controller bar with every part labeled" }
+        {
+          "src": "media/web/rev2-01-docked-open.webp",
+          "alt": "Docked with the screen open"
+        },
+        {
+          "src": "media/web/rev2-02-controller-off-dock.webp",
+          "alt": "Controller lifted off the dock, showing the charging contacts"
+        },
+        {
+          "src": "media/web/rev2-04-exploded-dock.webp",
+          "alt": "Exploded view of the dock with every part labeled"
+        },
+        {
+          "src": "media/web/rev2-05-exploded-controller.webp",
+          "alt": "Exploded view of the controller bar with every part labeled"
+        }
       ]
     },
     {
@@ -26,7 +44,10 @@
       "title": "Rev 1: parametric clamshell",
       "summary": "First printed-shell design with automatic fit checks. The checks showed the joystick was too tall, which led to rev 2.",
       "images": [
-        { "src": "media/web/rev1-01-clamshell-open.webp", "alt": "Rev 1 clamshell concept, open" }
+        {
+          "src": "media/web/rev1-01-clamshell-open.webp",
+          "alt": "Rev 1 clamshell concept, open"
+        }
       ]
     },
     {

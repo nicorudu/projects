@@ -4,6 +4,11 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-11 | Approval screen has 4 options: Approve / Approve for session / Reject / Ask in terminal | Claude Code's terminal waits while our hook is open, so there must be a way to hand the question back | 3 options |
+| 2026-11-11 | Approvals time out after 120 s to Claude Code's own prompt | A forgotten approval must never stall a session | — |
+| 2026-11-11 | "Approve for session" applies Claude Code's suggested rules with `destination: "session"` | Same convenience as the terminal's option, without writing rules into settings files | — |
+| 2026-11-11 | `SessionStart` uses an async command hook (`companion.hooks.report`); all other events use HTTP hooks | Claude Code only allows command hooks on `SessionStart`; the script also captures the terminal tab for focus | All HTTP |
+| 2026-11-11 | Managed sessions no longer use `--dangerously-skip-permissions` | Approvals now go through the device; unanswered requests in `-p` mode are denied by Claude Code | v0 `main.py` |
 | 2026-11-11 | Firmware built with PlatformIO, not the Arduino IDE | Two boards plus a desktop UI simulator in one project, pinned library versions, buildable from the command line | Arduino IDE |
 | 2026-11-11 | Dock screens are fixed LVGL templates filled by `view` messages from the Mac | Keeps firmware small; all logic stays in the companion app | — |
 | 2026-11-11 | Claude Code integration through HTTP hooks (`PermissionRequest` for approvals) | No terminal wrapper; safe fallback to the normal prompt when the device is off | PTY wrapper / `--dangerously-skip-permissions` |

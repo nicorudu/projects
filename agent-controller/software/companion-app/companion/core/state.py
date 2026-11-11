@@ -64,6 +64,7 @@ class Approval:
     suggestions: list
     future: asyncio.Future
     created: float = field(default_factory=time.time)
+    fired_ts: float = 0.0  # when Claude Code fired the hook (its `_ts`), for ordering against other events
 
 
 @dataclass

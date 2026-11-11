@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-11 | All Claude Code hooks are command hooks running `companion.hooks.report` (async for status, blocking for approvals) | Claude Code's `http` hooks print "hook error" lines whenever the app is off; the script stays silent | HTTP hooks |
+| 2026-11-11 | Device and terminal both answer approvals; the first answer wins, and the device clears when the session moves on | In interactive mode Claude Code shows its own menu while our hook waits (Mac Mini test) | Device-only answer |
+| 2026-11-11 | "Approve for session" applies only `addRules` / `addDirectories` suggestions | Applying a `setMode` suggestion switched Claude Code to accept-edits (Mac Mini test) | All suggestions |
 | 2026-11-11 | Approval screen has 4 options: Approve / Approve for session / Reject / Ask in terminal | Claude Code's terminal waits while our hook is open, so there must be a way to hand the question back | 3 options |
 | 2026-11-11 | Approvals time out after 120 s to Claude Code's own prompt | A forgotten approval must never stall a session | — |
 | 2026-11-11 | "Approve for session" applies Claude Code's suggested rules with `destination: "session"` | Same convenience as the terminal's option, without writing rules into settings files | — |

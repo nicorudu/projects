@@ -1,10 +1,18 @@
-"""Tiny SessionStart command hook: forwards the event plus which terminal tab it's in.
+"""The command every Claude Code hook runs. Forwards the hook event to the companion app.
 
-Claude Code runs this when a session starts (SessionStart only supports command hooks).
-It adds `_term` (terminal app, TTY, app bundle id) so "Send" on the device can bring that
-exact tab to the front. It never fails loudly and never blocks Claude Code: any error is ignored.
+    python -m companion.hooks.report [--wait] [--url http://127.0.0.1:8766/hooks/claude]
 
-    python -m companion.hooks.report --url http://127.0.0.1:8766/hooks/claude
+Why a command and not Claude Code's built-in `http` hook type: if the companion app
+isn't running, an http hook prints "hook error: ECONNREFUSED" in Claude Code on every
+event (seen on the Mac Mini, 2026-11-11). This script stays completely silent instead.
+
+- Status events are installed as **async** hooks: Claude Code never waits for them.
+  Each one carries `_ts` (when the hook fired) so the app can put late arrivals in order.
+- `--wait` is for PermissionRequest: it waits for the app's answer and prints it for
+  Claude Code. App not running, or anything else wrong → prints nothing → no decision →
+  Claude Code shows its normal prompt.
+- SessionStart also carries `_term` (terminal app, TTY, app bundle id) so "Send" on the
+  device can bring that exact tab to the front.
 """
 
 from __future__ import annotations
@@ -14,9 +22,12 @@ import os
 import re
 import subprocess
 import sys
+import time
 import urllib.request
 
 DEFAULT_URL = "http://127.0.0.1:8766/hooks/claude"
+WAIT_TIMEOUT_S = 590  # just under the 600 s hook timeout written by install-hooks
+SEND_TIMEOUT_S = 2
 
 
 def _tty_of_ancestors(max_levels: int = 5) -> str:
@@ -52,18 +63,29 @@ def terminal_info() -> dict:
     }.items() if v}
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, stdin=None, stdout=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    stdin = stdin or sys.stdin
+    stdout = stdout or sys.stdout
     url = argv[argv.index("--url") + 1] if "--url" in argv else DEFAULT_URL
+    wait = "--wait" in argv
     try:
-        payload = json.loads(sys.stdin.read() or "{}")
-        payload["_term"] = terminal_info()
+        payload = json.loads(stdin.read() or "{}")
+        payload["_ts"] = time.time()
+        if payload.get("hook_event_name") == "SessionStart":
+            payload["_term"] = terminal_info()
         req = urllib.request.Request(url, data=json.dumps(payload).encode(),
                                      headers={"Content-Type": "application/json"}, method="POST")
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # localhost: never via a proxy
-        opener.open(req, timeout=1.5).read()
+        with opener.open(req, timeout=WAIT_TIMEOUT_S if wait else SEND_TIMEOUT_S) as r:
+            body = r.read()
+        if wait:
+            answer = json.loads(body or b"{}")
+            if isinstance(answer, dict) and answer:
+                stdout.write(json.dumps(answer))
+                stdout.flush()
     except Exception:
-        pass  # companion app not running, or anything else: stay silent
+        pass  # companion app not running, or anything else: stay silent, no decision
     return 0
 
 

@@ -4,6 +4,15 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-11 — M1: Claude Code approvals from the device
+- **First live approval.** A real Claude Code session asked for permission to run a Bash command. The fake device showed the Approval screen, one press of Approve let it run, and the command wrote its file.
+- Claude Code status flows in through its hooks: working (with the current tool), waiting, done, error. The app sends them to a local hook server on `127.0.0.1:8766`.
+- Approvals use the `PermissionRequest` hook. The options are Approve / Approve for session / Reject / Ask in terminal. If the device is off, you don't answer within 120 s, or Claude Code hangs up, it falls back to the normal terminal prompt.
+- `python -m companion install-hooks` / `uninstall-hooks` edit `~/.claude/settings.json`. They back the file up first and never touch your other hooks. `doctor` checks the setup.
+- Send on Home/Detail brings that session's terminal tab to the front (macOS: Terminal and iTerm2 by tab, other apps by name). Not tested on the Mac yet.
+- The v0 `main.py` became `platforms/claude_code/managed.py`, and it no longer skips permissions.
+- 45 automated tests, including every approval path end to end.
+
 ## 2026-11-11 — M0: companion app restructure + fake device
 - The companion app is now a proper package (`software/companion-app/companion/`). It has protocol v1, a Wi-Fi WebSocket transport, the state store, the key map for every screen, and a view builder that sends the dock only what changed.
 - USB packet framing (COBS) is written and tested now, so Path B only needs the serial port code when the dock arrives.

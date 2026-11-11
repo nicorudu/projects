@@ -7,9 +7,17 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** M0 (pushed). `software/companion-app/companion/` package and `tools/fake_device.py`; 28 tests pass.
-- **Current step:** M1. Hook server on `127.0.0.1:8766`, Claude Code plug-in (`platforms/claude_code/attached.py`), approvals from the fake device, `install-hooks` / `uninstall-hooks`, and porting `main.py` to `platforms/claude_code/managed.py`.
-- **Branch:** `agent-controller-m0-m1` (from `main` at `0fce74a`, after PR #2 merged). No PR yet; open it after M1.
+- **Done:** M0 and M1, pushed on branch `agent-controller-m0-m1`, with a PR open to `main` (number in the step log). 45 tests pass.
+  - M1 was **verified live**: real Claude Code 2.1.322 in the cloud workspace → our `PermissionRequest` hook → fake device Approve → the command ran.
+- **Waiting on Nico:**
+  1. Merge the PR.
+  2. Do the Mac Mini test in §6. The steps that need a real Mac are terminal-tab focus, macOS permission prompts, and how Claude Code behaves when the app is off.
+- **Next step (M2): voice on the Mac mic.**
+  - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
+  - Claude cleanup with modes prompt / message / email.
+  - Personal dictionary at `~/.agent-controller/dictionary.yaml`; API keys in the keychain.
+  - Delivery: paste into the focused terminal tab, or start a managed session.
+  - The Mac mic stands in for the controller mics until hardware.
 - **M1 design notes (from the hooks docs, rechecked 2026-11-11):**
   - `SessionStart` accepts only command hooks. We use an async command hook that runs `python -m companion.hooks.report`, which posts the event plus the terminal app and TTY.
   - All other events are `http` hooks to `/hooks/claude`. Status hooks get a 2 s timeout. `PermissionRequest` gets 600 s; the app itself answers within `approval_timeout_s` (120 s), or with no decision.
@@ -17,15 +25,29 @@ Last updated: 2026-11-11 · by Claude (cloud session)
   - "Approve for session" = `allow` + `updatedPermissions` = the request's `permission_suggestions` with `destination` changed to `"session"`.
   - Hook server checks: loopback only, `Host` must be localhost/127.0.0.1, and the body must be JSON (blocks browser cross-site posts).
   - To check on the Mac Mini: whether a refused connection (app not running) prints a "hook error" line in Claude Code. If it does, the fix is to run `uninstall-hooks` when not using the device, or switch status hooks to async command hooks.
-- **When Nico needs to switch to the Mac Mini:** once M1 is pushed. Run `install-hooks`, then approve a real Claude Code edit from the fake device. Exact steps go in §6 when ready.
+- **Code map (M0 + M1):**
+  - `software/companion-app/companion/`
+    - `core/app.py`: state reducers, inputs, render loop, heartbeat watchdog.
+    - `core/state.py`, `core/intents.py`.
+    - `view/builder.py`: view / patch / LED.
+    - `protocol/`: messages and COBS framing.
+    - `transports/websocket.py`.
+    - `devices/link.py`.
+    - `platforms/claude_code/attached.py`: hooks → status and approvals.
+    - `platforms/claude_code/managed.py`: `claude -p` stream.
+    - `hooks/server.py`, `hooks/install.py`, `hooks/report.py`.
+    - `osx/focus.py`.
+    - `__main__.py`: `run` / `install-hooks` / `uninstall-hooks` / `doctor`.
+  - `tools/fake_device.py`.
+  - Tests in `software/companion-app/tests/`.
 
 ## 2. Milestones
 
 | # | What | Hardware? | State |
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
-| M1 | Claude Code HTTP hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **in progress** |
-| M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | planned |
+| M1 | Claude Code HTTP hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini check pending |
+| M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
 | M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
 | M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
 | M5 | Controller firmware: keys, stick, mics, battery, ESP-NOW | Yes | waits for parts |
@@ -68,7 +90,24 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - **Order:** C1 XIAO ESP32S3 ×2, C2 Adafruit #5628 ×2, D7 magnets, S4 header strip, C9 resistor kit (needs 100 kΩ). Confirm C7 TP4056 was ordered.
 - **Arrivals:** AliExpress 5–10 days from ~2026-11-09; speaker ETA ~2026-11-20. On arrival, measure the stick, display and pogo connector with calipers so the print CAD can be finalized.
 - **Repo is private.** Make it public when you want the website to link to it and load its images.
-- **Mac Mini switch:** not yet. The instructions will appear here when M1 is ready.
+- **Mac Mini test (M1), about 15 minutes.** Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
+  1. **Get the code** (after merging the PR):
+     - If the repo isn't on the Mac yet: `gh repo clone nicorudu/projects ~/projects` (run `gh auth login` first if needed).
+     - Otherwise: `cd ~/projects && git checkout main && git pull`.
+  2. **Set up:**
+     - `cd ~/projects/agent-controller/software/companion-app`
+     - `python3 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
+     - `python -m pytest -q` → expect 45 passed.
+     - Python must be 3.11+; if not, `brew install python@3.12`.
+  3. **Install the hooks:** `python -m companion install-hooks` (it prints where the backup went), then `python -m companion doctor`.
+  4. **Three terminal windows:**
+     - A: `python -m companion`
+     - B: `python ../../tools/fake_device.py`
+     - C: start `claude` in any project folder.
+  5. In C, ask Claude to run something that needs permission, e.g. "run `ls -la ~` with Bash". **B shows the Approval screen.** Press Enter to approve and check that C continues. Then try: `c` (reject), ↓ + Enter (approve for session), ↑ + Enter (ask in terminal).
+  6. On B's Home screen, select the session and press `s`. **C's terminal tab should come to the front.** macOS may ask once to let Terminal/Python control Terminal or iTerm; allow it.
+  7. Quit A (Ctrl-C) and ask Claude in C to run another command. **Report back:** does Claude Code show any "hook error" lines, and does its normal permission prompt still appear?
+  8. Report anything that looked wrong. `python -m companion uninstall-hooks` removes everything if needed.
 
 ## 7. Open questions
 - Which transport becomes the default (decided by the M6 shoot-out).
@@ -77,6 +116,11 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — M1 done:
+  - Hook server, Claude Code plug-in (status + 4-option approvals, timeout and hang-up fallbacks), `install-hooks` / `uninstall-hooks` / `doctor`, SessionStart report script, macOS focus.
+  - `main.py` ported to `managed.py` and removed.
+  - 45 tests. Verified live against real Claude Code 2.1.322.
+  - Docs updated: architecture §3/§6/§8, decisions, build log, README.
 - 2026-11-11 — M0 done: companion package, protocol v1 + COBS framing, WebSocket transport, state/intents/view builder, fake device, 28 tests. Added `agent-controller/.gitignore`.
 - 2026-11-11 — Created this handoff file. Started M0 on branch `agent-controller-m0-m1`.
 - 2026-11-11 — PR #2 merged: software architecture.

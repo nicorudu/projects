@@ -10,8 +10,8 @@ A desk dock with a 4" screen plus a detachable controller with keys, a thumbstic
 |---|---|
 | Design | Rev 2 (dock + detachable controller) locked as a concept. Print CAD waits for caliper measurements. |
 | Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv). |
-| Companion app | v0 working: a Claude Code task goes in, tool and done events come out |
-| Software architecture | Written ([architecture](docs/architecture.md)); milestones M0–M3 need no hardware |
+| Companion app | M0 + M1 done: live Claude Code status, and approvals answered from the fake device (tested against real Claude Code) |
+| Software architecture | Written ([architecture](docs/architecture.md)); next is M2 voice on the Mac mic |
 | Firmware | Not started |
 | Voice pipeline, platform plug-ins | Planned ([blueprint](docs/agent-controller-v0-blueprint.md) §6–7) |
 

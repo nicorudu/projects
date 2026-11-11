@@ -72,7 +72,7 @@ agent-controller/
     ├── fake_device.py              terminal stand-in for dock + controller (keyboard = keys/stick)
     └── latency/                    timing harness for the USB vs Wi-Fi comparison
 ```
-`software/companion-app/main.py` (the working v0) becomes the starting point for `platforms/claude_code/managed.py` and then retires.
+The original v0 `main.py` was ported to `platforms/claude_code/managed.py` in M1 and removed (it's in git history).
 
 ## 4. Companion app internals
 
@@ -129,7 +129,7 @@ The full message list lives in `firmware/lib/protocol/messages.h` and `companion
 |---|---|---|---|---|---|---|---|
 | **Home** | Every session: status, name, last activity; usage header | Switch filter (all / waiting / done) | Move selection | Open detail | — | Record a prompt for the selected session | Bring the selected session's window to the front |
 | **Detail** | Last output, current tool, step | Previous / next session | Scroll | Back to Home | Back to Home | Record a prompt for this session | Bring window to front |
-| **Approval** (pops up when an agent asks) | Tool, command or file, options (Reject / Approve / Approve for session) | Change option | Change option | Confirm option | Reject | — | Confirm option |
+| **Approval** (pops up when an agent asks) | Tool, command or file, options (Approve / Approve for session / Reject / Ask in terminal) | Change option | Change option | Confirm option | Reject | — | Confirm option |
 | **Voice review** | Live transcript, then cleaned text and its destination | Change destination | Scroll text | — | Discard draft | Hold again to edit by voice | Deliver it |
 | **Toast** (overlay) | "Sent", "Approved", "Disconnected" | — | — | — | — | — | — |
 
@@ -181,11 +181,11 @@ Two kinds of session:
 
 | | **Attached** (your normal terminal sessions) | **Managed** (started by the companion app) |
 |---|---|---|
-| How | Claude Code **HTTP hooks** point at `http://127.0.0.1:8766/hooks/claude` | Companion app runs `claude` with stream-JSON in and out (today's `main.py`, extended) |
-| Status | `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Notification` (`permission_prompt`, `idle_prompt`), `Stop`, `SessionEnd` | From the stream |
-| Approvals | **`PermissionRequest` hook:** the companion app holds the HTTP request open, shows the Approval screen and replies `{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}` (or `deny` with a `message`) when you press. If the device is disconnected or you take too long, it replies with **no decision**, and Claude Code shows its normal terminal prompt. | Same hooks |
+| How | Claude Code **HTTP hooks** point at `http://127.0.0.1:8766/hooks/claude` | Companion app runs `claude` with stream-JSON in and out (`managed.py`, ported from the v0 `main.py`; permissions are not skipped) |
+| Status | HTTP hooks: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Notification` (`permission_prompt`, `agent_needs_input`, …), `Stop`, `StopFailure`, `SessionEnd`. `SessionStart` only accepts command hooks, so it uses the report script below | From the stream |
+| Approvals | **`PermissionRequest` hook:** the companion app holds the HTTP request open, shows the Approval screen and replies `{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}` (or `deny` with a `message`) when you press. If the device is disconnected, you pick **Ask in terminal**, or nobody presses anything within `approval_timeout_s` (120 s), it replies with **no decision**, and Claude Code shows its normal terminal prompt. The terminal waits while the hook is open, which is why that option exists. **Approve for session** returns `updatedPermissions` = the request's `permission_suggestions` with `destination: "session"`, so nothing is written to settings files. | Same hooks |
 | Voice prompts | Focus that session's terminal tab, paste, press Enter (OS layer) | Write to the session's input stream |
-| Focus | A one-line `SessionStart` **command** hook reports the session's terminal app (`TERM_PROGRAM`) and tab (TTY); the OS layer brings that exact tab forward | — |
+| Focus | An async `SessionStart` **command** hook (`python -m companion.hooks.report`) reports the session's terminal app (`TERM_PROGRAM`, macOS bundle id) and tab (TTY); the OS layer brings that exact tab forward (Terminal and iTerm2 by TTY, other apps by bundle id) | — |
 
 Hooks are installed into `~/.claude/settings.json` by `python -m companion install-hooks`, which backs up the file first and is undone by `uninstall-hooks`.
 

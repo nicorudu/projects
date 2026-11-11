@@ -22,7 +22,7 @@ Last updated: 2026-11-11 · by Claude (Mac Mini session)
     2. **Terminal menu and hook run at the same time.** In interactive mode Claude Code shows its own menu while our hook is open; the first answer wins. Answering in C leaves a stale Approval screen on B until the 2-minute timeout.
     3. **Hook errors with the app off.** Everything still works, but C prints `hook error: connect ECONNREFUSED 127.0.0.1:8766` for UserPromptSubmit, PreToolUse, PostToolUse and Stop.
   - Also fixed on the Mac Mini: a test race in `test_approve` (see step log).
-- **Waiting on Nico:** merge the PR for branch `agent-controller-mac-mini-test`.
+- **Waiting on Nico:** merge **PR #4** (branch `agent-controller-mac-mini-test`).
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
   - Claude cleanup with modes prompt / message / email.
@@ -128,6 +128,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Opened PR #4 (Mac Mini test results + test-race fix) to `main`.
 - 2026-11-11 — Mac Mini test (§6) done:
   - Setup: Python 3.14.7. `test_approve` failed on every run on the M4 (Python 3.14 and 3.12 alike): the device's `view` and `led` are separate frames, and the test checked the LED as soon as the Approval view arrived. Fixed the test to wait for both. 45/45 pass, 5 runs in a row.
   - Nico ran `install-hooks` (9 hooks; auto mode blocks Claude from editing its own settings) and steps 4–8.

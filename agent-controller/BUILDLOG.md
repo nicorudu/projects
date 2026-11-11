@@ -10,6 +10,7 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 - **"Approve for session" never changes Claude Code's mode.** It only adds the permission rule, for this session only.
 - Status updates run in the background, so Claude Code never waits for the companion app. Late arrivals are put back in order.
 - 54 automated tests.
+- **Rechecked on the Mac Mini:** all three fixes work there.
 
 ## 2026-11-11 — M1 tested on the Mac Mini
 - Ran the full Mac Mini test with a real Claude Code session, the companion app and the fake device in three Terminal windows.

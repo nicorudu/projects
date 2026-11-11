@@ -26,9 +26,12 @@ Last updated: 2026-11-11 · by Claude (cloud session)
        - Verified in the cloud: with the app off, every hook exits 0 with empty stderr, and there are 0 error lines.
        - **Nico must re-run `python -m companion install-hooks` once on the Mac Mini.** It replaces the old http hooks; there are now 10 hooks, because `PostToolUseFailure` was added.
   - Also fixed on the Mac Mini: a test race in `test_approve` (see step log).
-- **Waiting on Nico:**
-  1. Merge **PR #4** (Mac Mini test results), then **PR #5** (hook fixes; it builds on PR #4).
-  2. On the Mac Mini: `git pull`, then `python -m companion install-hooks` again, then the quick recheck in §6 ("Recheck after hook fixes").
+- **M1 is fully done.** PRs #4 and #5 are merged, and the hook fixes were rechecked on the Mac Mini on 2026-11-11:
+  - 54 tests pass and 10 hooks are installed.
+  - Answering in the terminal clears the device ("Answered in the terminal").
+  - Approve for session keeps `manual mode on`.
+  - With the app off: the normal menu appears and there are **no hook error lines**.
+- **Mac Mini state:** the repo is on `main`, the hooks are installed (10, command type), and the venv is at `software/companion-app/.venv`. Test files `~/agent-controller-test-*.txt` can be deleted.
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
   - Claude cleanup with modes prompt / message / email.
@@ -64,7 +67,7 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 | # | What | Hardware? | State |
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
-| M1 | Claude Code hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested; 3 fixes done (hook-fixes PR), Mac recheck pending |
+| M1 | Claude Code hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested and fixes rechecked |
 | M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
 | M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
 | M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
@@ -144,6 +147,11 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Mac Mini recheck after PR #5 (all passed):
+  - After `git checkout main && git pull` (the Mac had been left on the test branch): 54 tests pass; `install-hooks` installed 10 hooks.
+  - Answer-in-terminal cleared B (`pr-1 -> None`, "Answered in the terminal").
+  - Approve for session kept `manual mode on`.
+  - App off: the normal menu, no hook errors.
 - 2026-11-11 — Opened PR #5 (hook fixes).
 - 2026-11-11 — Hook fixes (cloud session, branch `agent-controller-hook-fixes`, built on PR #4):
   - All hooks are now silent command hooks (`companion.hooks.report`): async for status, `--wait` for `PermissionRequest`. `PostToolUseFailure` added (10 hooks).

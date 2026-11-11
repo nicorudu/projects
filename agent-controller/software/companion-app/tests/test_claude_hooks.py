@@ -205,15 +205,109 @@ async def test_session_start_report_script_adds_terminal_info(stack, monkeypatch
     app, ws_url, hook_url = await stack()
     payload = {"session_id": SID, "cwd": "/Users/nico/projects/alpha", "hook_event_name": "SessionStart",
                "source": "startup"}
-    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
     monkeypatch.setenv("TERM_PROGRAM", "Apple_Terminal")
     monkeypatch.setenv("__CFBundleIdentifier", "com.apple.Terminal")
-    assert await asyncio.to_thread(report.main, ["--url", hook_url]) == 0
+    assert await asyncio.to_thread(report.main, ["--url", hook_url], io.StringIO(json.dumps(payload))) == 0
     s = app.state.sessions[SID]
     assert s.term["term_program"] == "Apple_Terminal" and s.term["bundle_id"] == "com.apple.Terminal"
     assert s.status.value == "idle"
 
 
-def test_report_script_is_silent_when_app_is_down(monkeypatch):
-    monkeypatch.setattr(sys, "stdin", io.StringIO('{"session_id":"x"}'))
-    assert report.main(["--url", "http://127.0.0.1:9/hooks/claude"]) == 0
+async def test_report_wait_prints_the_decision(stack):
+    app, ws_url, hook_url = await stack()
+    dev = await device(ws_url)
+    out = io.StringIO()
+    run = asyncio.create_task(asyncio.to_thread(report.main, ["--url", hook_url, "--wait"],
+                                                io.StringIO(json.dumps(perm_request())), out))
+    await dev.wait_for(lambda d: d.view["screen"] == "approval")
+    await dev.send_input("click")
+    assert await asyncio.wait_for(run, 5) == 0
+    assert json.loads(out.getvalue())["hookSpecificOutput"]["decision"] == {"behavior": "allow"}
+    await dev.close()
+
+
+@pytest.mark.parametrize("args", [["--wait"], []])
+def test_report_script_is_silent_when_app_is_down(args):
+    out = io.StringIO()
+    assert report.main(["--url", "http://127.0.0.1:9/hooks/claude", *args], io.StringIO(json.dumps(perm_request())),
+                       out) == 0
+    assert out.getvalue() == ""  # no output = no decision = Claude Code's normal prompt, and no error line
+
+
+# ---- fixes from the Mac Mini test (2026-11-11) -------------------------------------------
+async def test_approve_for_session_never_changes_the_mode(stack):
+    app, ws_url, hook_url = await stack()
+    dev = await device(ws_url)
+    suggestions = [{"type": "setMode", "mode": "acceptEdits", "destination": "session"},
+                   {"type": "addDirectories", "directories": ["/Users/nico"], "destination": "localSettings"},
+                   {"type": "addRules", "rules": [{"toolName": "Bash", "ruleContent": "touch:*"}],
+                    "behavior": "allow", "destination": "localSettings"}]
+    pending = asyncio.create_task(post(hook_url, {**perm_request(), "permission_suggestions": suggestions}))
+    await dev.wait_for(lambda d: d.view["screen"] == "approval")
+    await dev.send_input("down")
+    await dev.send_input("click")
+    d = (await asyncio.wait_for(pending, 3))["hookSpecificOutput"]["decision"]
+    assert [u["type"] for u in d["updatedPermissions"]] == ["addDirectories", "addRules"]
+    assert all(u["destination"] == "session" for u in d["updatedPermissions"])
+    await dev.close()
+
+
+async def test_approve_for_session_with_only_a_mode_suggestion_is_plain_allow(stack):
+    from companion.core.state import Choice
+    from companion.platforms.claude_code.attached import decision_output
+    out = decision_output(Choice.APPROVE_SESSION, [{"type": "setMode", "mode": "acceptEdits"}])
+    assert out["hookSpecificOutput"]["decision"] == {"behavior": "allow"}
+
+
+async def _pending_approval(stack, ts=100.0):
+    app, ws_url, hook_url = await stack()
+    dev = await device(ws_url)
+    pending = asyncio.create_task(post(hook_url, {**perm_request(), "_ts": ts}))
+    await dev.wait_for(lambda d: d.view["screen"] == "approval")
+    return app, dev, hook_url, pending
+
+
+async def test_answering_in_the_terminal_clears_the_device(stack):
+    app, dev, hook_url, pending = await _pending_approval(stack)
+    req = perm_request()
+    # you pressed Yes in Claude Code's own menu: the tool ran
+    await post(hook_url, {**req, "hook_event_name": "PostToolUse", "tool_use_id": "t1", "tool_response": {},
+                          "_ts": 101.0})
+    assert await asyncio.wait_for(pending, 3) == {}  # our late answer is "no decision"
+    await dev.wait_for(lambda d: d.view["screen"] == "home" and "Answered in the terminal" in d.toasts)
+    await dev.close()
+
+
+async def test_turn_ending_clears_the_device(stack):
+    app, dev, hook_url, pending = await _pending_approval(stack)
+    # you pressed No in Claude Code's menu and Claude finished its reply
+    await post(hook_url, {"session_id": SID, "cwd": "/x", "hook_event_name": "Stop", "_ts": 102.0})
+    assert await asyncio.wait_for(pending, 3) == {}
+    await dev.wait_for(lambda d: d.view["screen"] == "home")
+    await dev.close()
+
+
+async def test_late_events_from_before_the_question_dont_clear_it(stack):
+    app, dev, hook_url, pending = await _pending_approval(stack, ts=100.0)
+    req = perm_request()
+    # async hooks can arrive out of order: these fired before the PermissionRequest
+    await post(hook_url, {**req, "hook_event_name": "PreToolUse", "tool_use_id": "t1", "_ts": 99.0})
+    await post(hook_url, {"session_id": SID, "hook_event_name": "UserPromptSubmit", "prompt": "x", "_ts": 98.0})
+    await asyncio.sleep(0.1)
+    assert dev.view["screen"] == "approval" and not pending.done()
+    # a different tool finishing doesn't count either (Claude can run tools in parallel)
+    await post(hook_url, {**req, "hook_event_name": "PostToolUse", "tool_input": {"command": "ls"}, "_ts": 103.0})
+    await asyncio.sleep(0.1)
+    assert dev.view["screen"] == "approval"
+    await dev.send_input("click")
+    assert (await asyncio.wait_for(pending, 3))["hookSpecificOutput"]["decision"]["behavior"] == "allow"
+    await dev.close()
+
+
+async def test_late_status_event_does_not_overwrite_newer_status(stack):
+    app, ws_url, hook_url = await stack()
+    base = {"session_id": SID, "cwd": "/Users/nico/projects/alpha"}
+    await post(hook_url, {**base, "hook_event_name": "Stop", "last_assistant_message": "done", "_ts": 200.0})
+    await post(hook_url, {**base, "hook_event_name": "PreToolUse", "tool_name": "Bash",
+                          "tool_input": {"command": "ls"}, "_ts": 199.0})  # arrived late
+    assert app.state.sessions[SID].status.value == "done"

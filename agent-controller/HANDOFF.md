@@ -2,7 +2,7 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-11 · by Claude (Mac Mini session)
+Last updated: 2026-11-11 · by Claude (cloud session)
 
 ---
 
@@ -17,12 +17,18 @@ Last updated: 2026-11-11 · by Claude (Mac Mini session)
     - Ask in terminal (↑ Enter): B said "Answer in the terminal", C's menu answered normally, the row went to done.
     - Send (`s`): C became the active window, with no macOS permission prompt.
     - A curl straight to the hook server.
-  - **Three issues — the cloud session is fixing these; don't fix them in other sessions:**
-    1. **Approve for session changes the permission mode.** C switched to "accept edits on": we apply *all* `permission_suggestions`, and they included a `setMode` change.
-    2. **Terminal menu and hook run at the same time.** In interactive mode Claude Code shows its own menu while our hook is open; the first answer wins. Answering in C leaves a stale Approval screen on B until the 2-minute timeout.
-    3. **Hook errors with the app off.** Everything still works, but C prints `hook error: connect ECONNREFUSED 127.0.0.1:8766` for UserPromptSubmit, PreToolUse, PostToolUse and Stop.
+  - **Three issues found — fixed by the cloud session on branch `agent-controller-hook-fixes` (54 tests, verified live in the cloud against real Claude Code):**
+    1. **Approve for session changed the permission mode.** C switched to "accept edits on" because we applied *all* `permission_suggestions`, and they included a `setMode` change. **Fix:** only `addRules` and `addDirectories` suggestions are applied, always with `destination: "session"`. If nothing is left, it's a plain allow.
+    2. **Terminal menu and hook run at the same time.** In interactive mode, Claude Code shows its own menu while our hook is open, and the first answer wins. Answering in C left a stale Approval screen on B until the 2-minute timeout. **Fix:** the question is cleared ("Answered in the terminal") as soon as that session moves past it: the same tool finishes (`PostToolUse` / `PostToolUseFailure` with the same tool and input), or the turn ends (`Stop`, `StopFailure`, `UserPromptSubmit`, `SessionEnd`). Events that fired *before* the question don't count (`_ts` comparison), and a different tool finishing doesn't count either, because tools can run in parallel.
+    3. **Hook errors with the app off.** C printed `hook error: connect ECONNREFUSED 127.0.0.1:8766` on every event. **Fix:** no more `http` hooks. Every hook runs `python -m companion.hooks.report`, which is always silent.
+       - Status events are `async` command hooks, so Claude Code never waits for them. They carry `_ts`, so out-of-order arrivals are ignored.
+       - `PermissionRequest` is a blocking command hook with `--wait`. It prints the decision, or nothing (= normal prompt).
+       - Verified in the cloud: with the app off, every hook exits 0 with empty stderr, and there are 0 error lines.
+       - **Nico must re-run `python -m companion install-hooks` once on the Mac Mini.** It replaces the old http hooks; there are now 10 hooks, because `PostToolUseFailure` was added.
   - Also fixed on the Mac Mini: a test race in `test_approve` (see step log).
-- **Waiting on Nico:** merge **PR #4** (branch `agent-controller-mac-mini-test`).
+- **Waiting on Nico:**
+  1. Merge **PR #4** (Mac Mini test results), then **PR #5** (hook fixes; it builds on PR #4).
+  2. On the Mac Mini: `git pull`, then `python -m companion install-hooks` again, then the quick recheck in §6 ("Recheck after hook fixes").
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
   - Claude cleanup with modes prompt / message / email.
@@ -31,12 +37,12 @@ Last updated: 2026-11-11 · by Claude (Mac Mini session)
   - The Mac mic stands in for the controller mics until hardware.
 - **M1 design notes (from the hooks docs, rechecked 2026-11-11):**
   - `SessionStart` accepts only command hooks. We use an async command hook that runs `python -m companion.hooks.report`, which posts the event plus the terminal app and TTY.
-  - All other events are `http` hooks to `/hooks/claude`. Status hooks get a 2 s timeout. `PermissionRequest` gets 600 s; the app itself answers within `approval_timeout_s` (120 s), or with no decision.
+  - ~~All other events are `http` hooks.~~ **Since the hook fixes:** every event uses the same command hook (`companion.hooks.report`). Status events are async; `PermissionRequest` waits (`--wait`, 600 s hook timeout). The app answers within `approval_timeout_s` (120 s), or gives no decision.
   - The Approval screen has 4 options: Approve / Approve for session / Reject / Ask in terminal (= no decision → normal prompt).
   - ~~While a `PermissionRequest` hook is open, the terminal waits.~~ **Wrong (Mac Mini test):** in interactive mode the terminal shows its own menu at the same time, and the first answer wins (issue 2 above).
-  - "Approve for session" = `allow` + `updatedPermissions` = the request's `permission_suggestions` with `destination` changed to `"session"`. Passing *all* suggestions also applies `setMode` ones (issue 1 above).
+  - "Approve for session" = `allow` + `updatedPermissions` = the request's `addRules` / `addDirectories` suggestions with `destination: "session"` (never `setMode`; issue 1 above).
   - Hook server checks: loopback only, `Host` must be localhost/127.0.0.1, and the body must be JSON (blocks browser cross-site posts).
-  - A refused connection (app not running) **does** print a "hook error" line in Claude Code (checked on the Mac Mini; issue 3 above). Fix options noted before the test: run `uninstall-hooks` when not using the device, or switch status hooks to async command hooks.
+  - A refused connection on an `http` hook **does** print a "hook error" line in Claude Code (checked on the Mac Mini). That's why every hook is now a command hook that stays silent (issue 3 above).
 - **Code map (M0 + M1):**
   - `software/companion-app/companion/`
     - `core/app.py`: state reducers, inputs, render loop, heartbeat watchdog.
@@ -58,7 +64,7 @@ Last updated: 2026-11-11 · by Claude (Mac Mini session)
 | # | What | Hardware? | State |
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
-| M1 | Claude Code HTTP hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested; 3 fixes in progress (cloud session) |
+| M1 | Claude Code hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested; 3 fixes done (hook-fixes PR), Mac recheck pending |
 | M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
 | M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
 | M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
@@ -88,7 +94,10 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   - `hello` → `welcome` handshake; heartbeat every 500 ms, link down after 2 s.
   - The dock is driven by `view` / `patch` messages.
 - **Claude Code hooks** (checked against code.claude.com/docs/en/hooks on 2026-11-11):
-  - The `http` hook type POSTs the event JSON to a URL. The default timeout is 600 s, and a failure is non-blocking.
+  - The `http` hook type POSTs the event JSON to a URL. The default timeout is 600 s, and a failure is non-blocking, **but it prints a "hook error" line**, so we don't use it.
+  - Command hooks get the event JSON on stdin; `"async": true` (command hooks only) runs them in the background. A `PermissionRequest` command hook answers by printing the decision JSON on stdout; empty stdout means no decision.
+  - In an **interactive** session, Claude Code shows its own permission menu *while* the `PermissionRequest` hook runs, and the first answer wins. In `-p` mode there's no menu, and no decision means the call is denied.
+  - `permission_suggestions` can include `setMode` (for example, switch to `acceptEdits`), `addDirectories` and `addRules` entries.
   - `PermissionRequest` input: `tool_name`, `tool_input`, `permission_suggestions`. Reply `{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}`, or `"deny"` plus `message`. Returning no decision falls back to the normal terminal prompt.
   - `Notification` has `notification_type` (`permission_prompt`, `idle_prompt`, …).
   - Common fields: `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `permission_mode`.
@@ -109,7 +118,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   2. **Set up:**
      - `cd ~/projects/agent-controller/software/companion-app`
      - `python3 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
-     - `python -m pytest -q` → expect 45 passed.
+     - `python -m pytest -q` → expect all tests to pass (54 after the hook fixes).
      - Python must be 3.11+; if not, `brew install python@3.12`.
   3. **Install the hooks:** `python -m companion install-hooks` (it prints where the backup went), then `python -m companion doctor`.
   4. **Three terminal windows:**
@@ -120,6 +129,13 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   6. On B's Home screen, select the session and press `s`. **C's terminal tab should come to the front.** macOS may ask once to let Terminal/Python control Terminal or iTerm; allow it.
   7. Quit A (Ctrl-C) and ask Claude in C to run another command. **Report back:** does Claude Code show any "hook error" lines, and does its normal permission prompt still appear?
   8. Report anything that looked wrong. `python -m companion uninstall-hooks` removes everything if needed.
+- **Recheck after hook fixes (about 5 minutes; after merging PR #5).**
+  1. `cd ~/projects && git pull`, then `cd agent-controller/software/companion-app && source .venv/bin/activate && python -m pytest -q`. Expect 54 passed.
+  2. `python -m companion install-hooks`, then `python -m companion doctor`. Expect 10 hooks.
+  3. **Restart** the Claude Code session in window C, then start A (`python -m companion`) and B (fake device). C must be in `manual mode` (Shift+Tab).
+  4. **Answer in C:** ask C to `touch ~/agent-controller-test-9.txt`, then answer in **C's** menu. B should drop the question within a second and show "Answered in the terminal".
+  5. **Approve for session from B** (↓ Enter) on `touch ~/agent-controller-test-10.txt`. C's bottom line must still say `manual mode on`.
+  6. **App off:** Ctrl-C in A, then ask C to `touch ~/agent-controller-test-11.txt`. There should be **no** "hook error" lines, and C's normal menu appears.
 
 ## 7. Open questions
 - Which transport becomes the default (decided by the M6 shoot-out).
@@ -128,6 +144,14 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Opened PR #5 (hook fixes).
+- 2026-11-11 — Hook fixes (cloud session, branch `agent-controller-hook-fixes`, built on PR #4):
+  - All hooks are now silent command hooks (`companion.hooks.report`): async for status, `--wait` for `PermissionRequest`. `PostToolUseFailure` added (10 hooks).
+  - Stale questions clear when the session moves on.
+  - Approve-for-session only applies `addRules` / `addDirectories`.
+  - Out-of-order async events are ignored via `_ts`.
+  - 54 tests.
+  - Live in the cloud with real Claude Code 2.1.322: approve from the fake device works; app off gives 0 hook errors (every hook exit 0, empty stderr).
 - 2026-11-11 — Opened PR #4 (Mac Mini test results + test-race fix) to `main`.
 - 2026-11-11 — Mac Mini test (§6) done:
   - Setup: Python 3.14.7. `test_approve` failed on every run on the M4 (Python 3.14 and 3.12 alike): the device's `view` and `led` are separate frames, and the test checked the LED as soon as the Approval view arrived. Fixed the test to wait for both. 45/45 pass, 5 runs in a row.

@@ -25,6 +25,10 @@ log = logging.getLogger(__name__)
 
 NAME = "claude_code"
 REJECT_MESSAGE = "Rejected from the agent controller."
+SESSION_SUGGESTION_TYPES = {"addRules", "addDirectories"}
+# Events that mean any question still showing for this session was answered in the terminal.
+TURN_OVER = {"Stop", "StopFailure", "UserPromptSubmit", "SessionEnd"}
+TOOL_DONE = {"PostToolUse", "PostToolUseFailure"}
 
 
 def summarize(tool_name: str, tool_input: dict) -> str:
@@ -53,10 +57,13 @@ def decision_output(choice: Choice | None, suggestions: list | None) -> dict:
         decision = {"behavior": "deny", "message": REJECT_MESSAGE}
     else:
         decision = {"behavior": "allow"}
-        if choice == Choice.APPROVE_SESSION and suggestions:
-            # Same rules Claude Code would offer, but only for this session (never written to a file).
-            decision["updatedPermissions"] = [{**s, "destination": "session"} for s in suggestions
-                                              if isinstance(s, dict)]
+        if choice == Choice.APPROVE_SESSION:
+            # Claude Code's own suggested rules, but only for this session (never written to a file),
+            # and never a mode change (a "setMode" suggestion switched the Mac Mini to accept-edits).
+            updates = [{**s, "destination": "session"} for s in suggestions or []
+                       if isinstance(s, dict) and s.get("type") in SESSION_SUGGESTION_TYPES]
+            if updates:
+                decision["updatedPermissions"] = updates
     return {"hookSpecificOutput": {"hookEventName": "PermissionRequest", "decision": decision}}
 
 
@@ -67,6 +74,19 @@ class ClaudeCode:
     def __init__(self):
         self.app = None
         self._ids = itertools.count(1)
+        self._last_ts: dict[str, float] = {}  # newest status event applied, per session
+
+    def _clear_answered(self, ev: str, p: dict, ts: float) -> None:
+        """Claude Code shows its own menu while our hook waits; if you answer there, nothing
+        tells us. So when the session moves past the question, take it off the device."""
+        sid = p["session_id"]
+        for a in [a for a in self.app.state.approvals if a.session_id == sid]:
+            if ts and a.fired_ts and ts <= a.fired_ts:
+                continue  # this event happened before the question (async hooks can arrive late)
+            same_tool = (p.get("tool_name") == a.tool_name and (p.get("tool_input") or {}) == a.tool_input)
+            if ev in TURN_OVER or (ev in TOOL_DONE and same_tool):
+                self.app.withdraw_approval(a)
+                self.app.toast("Answered in the terminal")
 
     async def start(self, app) -> None:
         self.app = app
@@ -83,6 +103,13 @@ class ClaudeCode:
         if ev == "PermissionRequest":
             return await self._permission(p)
 
+        ts = p.get("_ts") or 0.0
+        self._clear_answered(ev, p, ts)
+        if ts and ev != "SessionEnd":
+            if ts < self._last_ts.get(sid, 0.0):
+                return {}  # an older event that arrived late: don't let it overwrite newer status
+            self._last_ts[sid] = ts
+
         if ev == "SessionStart":
             new = sid not in app.state.sessions
             app.upsert_session(NAME, sid, cwd, status=Status.IDLE if new else None, term=p.get("_term") or None)
@@ -93,7 +120,7 @@ class ClaudeCode:
             tool = p.get("tool_name", "")
             app.upsert_session(NAME, sid, cwd, status=Status.WORKING,
                                tool=f"{tool}: {summarize(tool, p.get('tool_input'))}"[:200])
-        elif ev == "PostToolUse":
+        elif ev in ("PostToolUse", "PostToolUseFailure"):
             app.upsert_session(NAME, sid, cwd, status=Status.WORKING)
         elif ev == "Notification":
             kind = p.get("notification_type")
@@ -109,6 +136,7 @@ class ClaudeCode:
                                text=(p.get("last_assistant_message") or p.get("error") or "")[:500] or None)
         elif ev == "SessionEnd":
             app.end_session(sid)
+            self._last_ts.pop(sid, None)
         return {}
 
     async def _permission(self, p: dict) -> dict:
@@ -122,7 +150,7 @@ class ClaudeCode:
         fut = asyncio.get_running_loop().create_future()
         a = Approval(id=f"pr-{next(self._ids)}", session_id=sid, tool_name=tool,
                      summary=summarize(tool, p.get("tool_input")), tool_input=p.get("tool_input") or {},
-                     suggestions=suggestions, future=fut)
+                     suggestions=suggestions, future=fut, fired_ts=p.get("_ts") or 0.0)
         app.add_approval(a)
         try:
             choice = await asyncio.wait_for(asyncio.shield(fut), timeout=app.cfg.approval_timeout_s)

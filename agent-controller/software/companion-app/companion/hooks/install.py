@@ -19,11 +19,13 @@ from ..config import Config
 CLAUDE_SETTINGS = Path.home() / ".claude" / "settings.json"
 REPORT_MODULE = "companion.hooks.report"
 
-# Events we listen to over HTTP, and whether they take a tool matcher.
-HTTP_EVENTS = {
+# Status events: forwarded in the background (async), so Claude Code never waits on us.
+STATUS_EVENTS = {
+    "SessionStart": False,
     "UserPromptSubmit": False,
     "PreToolUse": True,
     "PostToolUse": True,
+    "PostToolUseFailure": True,
     "Notification": False,
     "Stop": False,
     "StopFailure": False,
@@ -37,16 +39,19 @@ def python_command(python: str) -> str:
 
 
 def build_hooks(cfg: Config, python: str = sys.executable) -> dict[str, list[dict]]:
-    url = cfg.hook_url
+    """Every hook runs the report script, which is silent when the app isn't running.
+
+    (Claude Code's own `http` hook type prints "hook error" lines in that case.)
+    """
+    base = f"{python_command(python)} --url {cfg.hook_url}"
     out: dict[str, list[dict]] = {
-        # SessionStart only accepts command hooks. Async so it never delays startup.
-        "SessionStart": [{"hooks": [{"type": "command", "command": f"{python_command(python)} --url {url}",
-                                     "async": True, "timeout": 5}]}],
+        # Waits for the key press; prints the decision, or nothing (= normal prompt).
         "PermissionRequest": [{"matcher": "*", "hooks": [
-            {"type": "http", "url": url, "timeout": cfg.permission_hook_timeout_s}]}],
+            {"type": "command", "command": f"{base} --wait", "timeout": cfg.permission_hook_timeout_s}]}],
     }
-    for event, has_matcher in HTTP_EVENTS.items():
-        group: dict = {"hooks": [{"type": "http", "url": url, "timeout": cfg.status_hook_timeout_s}]}
+    for event, has_matcher in STATUS_EVENTS.items():
+        group: dict = {"hooks": [{"type": "command", "command": base, "async": True,
+                                  "timeout": cfg.status_hook_timeout_s + 3}]}
         if has_matcher:
             group = {"matcher": "*", **group}
         out[event] = [group]
@@ -54,6 +59,7 @@ def build_hooks(cfg: Config, python: str = sys.executable) -> dict[str, list[dic
 
 
 def is_ours(hook: dict) -> bool:
+    # http: the first version installed http hooks; recognizing them lets a reinstall replace them.
     if hook.get("type") == "http":
         u = urlparse(hook.get("url", ""))
         return u.hostname in ("127.0.0.1", "localhost") and u.path == "/hooks/claude"

@@ -1,4 +1,4 @@
-﻿# projects
+# projects
 
 Nico's hardware and software builds.
 
@@ -6,4 +6,6 @@ Nico's hardware and software builds.
 
 | Project | Status | Description |
 |---|---|---|
-| [agent-controller](./agent-controller) | v0 companion app working, hardware on order | Physical AI agent controller for Claude Code and other agents |
+| [agent-controller](./agent-controller) | In build: rev 2 design locked, parts arriving | Desk dock + detachable controller for Claude Code and other AI agents (hardware + firmware + Python) |
+
+Each project folder has its own README, build log and layout. Physical projects follow the structure in [agent-controller](./agent-controller#layout).

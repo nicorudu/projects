@@ -1,0 +1,4 @@
+out/
+__pycache__/
+*.stl
+*.step

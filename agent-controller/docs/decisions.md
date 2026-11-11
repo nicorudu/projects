@@ -4,6 +4,10 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-11 | Firmware built with PlatformIO, not the Arduino IDE | Two boards plus a desktop UI simulator in one project, pinned library versions, buildable from the command line | Arduino IDE |
+| 2026-11-11 | Dock screens are fixed LVGL templates filled by `view` messages from the Mac | Keeps firmware small; all logic stays in the companion app | — |
+| 2026-11-11 | Claude Code integration through HTTP hooks (`PermissionRequest` for approvals) | No terminal wrapper; safe fallback to the normal prompt when the device is off | PTY wrapper / `--dangerously-skip-permissions` |
+| 2026-11-11 | Build the software against a fake device and a UI simulator before hardware arrives | Most of the work isn't blocked on parts | — |
 | 2026-11-11 | Approvals through Claude Code hooks, not a PTY wrapper | Hooks can block and wait for the device's answer; simpler and brings approvals into v0 | PTY approval flow deferred to v1 |
 | 2026-11-11 | Build both USB and Wi-Fi data paths and measure them | USB should be faster and steadier for voice; Wi-Fi gives room range | Wi-Fi only |
 | 2026-11-11 | Controller is one rigid bar (keys + stick end); "rotate" means turning the whole bar | Matches SlashVibe's spec drawing; no pivot or wires through a pivot | Swiveling joystick pod |

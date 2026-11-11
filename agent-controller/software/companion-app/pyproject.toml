@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-controller-companion"
+version = "0.1.0"
+description = "Companion app for the AI Agent Controller: bridges the dock and controller to Claude Code and other agents."
+requires-python = ">=3.11"
+dependencies = [
+    "websockets>=13",
+    "aiohttp>=3.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+agent-controller = "companion.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["companion*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]

@@ -4,6 +4,13 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-11 — M0: companion app restructure + fake device
+- The companion app is now a proper package (`software/companion-app/companion/`). It has protocol v1, a Wi-Fi WebSocket transport, the state store, the key map for every screen, and a view builder that sends the dock only what changed.
+- USB packet framing (COBS) is written and tested now, so Path B only needs the serial port code when the dock arrives.
+- `tools/fake_device.py` is a terminal stand-in for the dock + controller. It speaks the same protocol the real hardware will: arrow keys = stick, `c` / `v` / `s` = Cancel / Voice / Send.
+- 28 automated tests cover the protocol, framing, screens, the handshake, heartbeat timeout, and duplicate-press protection.
+- Added [HANDOFF.md](HANDOFF.md), updated after every step, so the plan survives any chat reset.
+
 ## 2026-11-11 — Code architecture
 - Wrote the [software architecture](docs/architecture.md): three programs (companion app, dock firmware, controller firmware), one protocol over USB, Wi-Fi and ESP-NOW, screen-by-screen button map, voice pipeline, and platform plug-in contract.
 - Claude Code approvals will use its HTTP `PermissionRequest` hook. The companion app holds the request until you press a key; if the device is off, Claude Code falls back to its normal prompt.

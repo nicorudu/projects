@@ -2,6 +2,8 @@
 
 Personal build. Rev 2 written Nov 11, 2026. It replaces the clamshell design from Nov 7–8 (rev 1) with a desk dock plus a detachable controller, adds a USB data path alongside Wi-Fi, the voice pipeline, and the platform plug-in plan.
 
+Code architecture: [`architecture.md`](architecture.md).
+
 Reference product notes: `claude/slashvibe-reference.md` in the Vibecodes project.
 
 ### What changed from rev 1
@@ -249,6 +251,8 @@ class Platform:
 ---
 
 ## 8. Firmware layout (Arduino framework, two targets)
+
+> Updated in [architecture.md](architecture.md) §3 and §10: firmware is now a PlatformIO project with `lib/protocol`, `lib/ui` and a desktop simulator target. The module list below still applies.
 
 ```
 firmware/

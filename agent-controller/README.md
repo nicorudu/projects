@@ -11,10 +11,11 @@ A desk dock with a 4" screen plus a detachable controller with keys, a thumbstic
 | Design | Rev 2 (dock + detachable controller) locked as a concept. Print CAD waits for caliper measurements. |
 | Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv). |
 | Companion app | v0 working: a Claude Code task goes in, tool and done events come out |
+| Software architecture | Written ([architecture](docs/architecture.md)); milestones M0–M3 need no hardware |
 | Firmware | Not started |
 | Voice pipeline, platform plug-ins | Planned ([blueprint](docs/agent-controller-v0-blueprint.md) §6–7) |
 
-**Follow along:** [Build log](BUILDLOG.md) · [Renders](hardware/renders/) · [Decision log](docs/decisions.md)
+**Follow along:** [Build log](BUILDLOG.md) · [Renders](hardware/renders/) · [Decision log](docs/decisions.md) · [Software architecture](docs/architecture.md)
 
 ## Layout
 
@@ -25,6 +26,7 @@ agent-controller/
 ├── showcase.json          short summary for the portfolio site (nicorudu.com)
 ├── docs/
 │   ├── agent-controller-v0-blueprint.md   the plan: parts, pins, architecture, voice, plug-ins, tests
+│   ├── architecture.md                     how the code is organized and built
 │   ├── decisions.md                        every design decision and why
 │   ├── research/slashvibe-reference.md     notes on the reference product
 │   └── agent-controller-v0-spec.md         original clamshell spec (superseded)

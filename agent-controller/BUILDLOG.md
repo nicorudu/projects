@@ -4,6 +4,11 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-11 — Code architecture
+- Wrote the [software architecture](docs/architecture.md): three programs (companion app, dock firmware, controller firmware), one protocol over USB, Wi-Fi and ESP-NOW, screen-by-screen button map, voice pipeline, and platform plug-in contract.
+- Claude Code approvals will use its HTTP `PermissionRequest` hook. The companion app holds the request until you press a key; if the device is off, Claude Code falls back to its normal prompt.
+- Build order puts four milestones (fake device, Claude Code plug-in, voice on the Mac mic, UI simulator) before any hardware arrives.
+
 ## 2026-11-11 — Rev 2 locked: dock + detachable controller
 - Studied SlashVibe's live Kickstarter: its controller is one rigid bar (3 keys and a stick at one end) that charges through magnetic contacts on the dock. We copied that layout. → [research notes](docs/research/slashvibe-reference.md)
 - Added a **USB data path** (dock native USB, controller → dock over ESP-NOW) next to Wi-Fi. Both get built and timed head to head.

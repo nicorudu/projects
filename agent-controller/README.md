@@ -15,6 +15,8 @@ A desk dock with a 4" screen plus a detachable controller with keys, a thumbstic
 | Firmware | Not started |
 | Voice pipeline, platform plug-ins | Planned ([blueprint](docs/agent-controller-v0-blueprint.md) §6–7) |
 
+**Picking the project up?** Start with the [handoff](HANDOFF.md): current step, next step, rules and key facts.
+
 **Follow along:** [Build log](BUILDLOG.md) · [Renders](hardware/renders/) · [Decision log](docs/decisions.md) · [Software architecture](docs/architecture.md)
 
 ## Layout
@@ -22,6 +24,7 @@ A desk dock with a 4" screen plus a detachable controller with keys, a thumbstic
 ```
 agent-controller/
 ├── README.md              this page
+├── HANDOFF.md             where we are, what's next, rules — updated after every step
 ├── BUILDLOG.md            dated progress entries, newest first
 ├── showcase.json          short summary for the portfolio site (nicorudu.com)
 ├── docs/

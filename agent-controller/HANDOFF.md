@@ -7,11 +7,9 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** M0 and M1, pushed on branch `agent-controller-m0-m1`, with **PR #3** open to `main`. 45 tests pass.
+- **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live**: real Claude Code 2.1.322 in the cloud workspace → our `PermissionRequest` hook → fake device Approve → the command ran.
-- **Waiting on Nico:**
-  1. Merge the PR.
-  2. Do the Mac Mini test in §6. The steps that need a real Mac are terminal-tab focus, macOS permission prompts, and how Claude Code behaves when the app is off.
+- **In progress — Mac Mini test (§6):** steps 1–2 done on the Mac Mini (venv at `software/companion-app/.venv`). Step 3 (`install-hooks`) must be run by Nico himself — Claude Code's auto mode blocks Claude from editing `~/.claude/settings.json`. Then steps 4–8. The steps that need a real Mac are terminal-tab focus, macOS permission prompts, and how Claude Code behaves when the app is off.
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
   - Claude cleanup with modes prompt / message / email.
@@ -116,6 +114,9 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-11 — Mac Mini test started:
+  - Steps 1–2 OK. `test_approve` failed on every run on the M4 (Python 3.14 and 3.12 alike): the device's `view` and `led` are separate frames, and the test checked the LED as soon as the Approval view arrived. Fixed the test to wait for both. 45/45 pass, 5 runs in a row.
+  - Step 3 is left to Nico: auto mode won't let Claude modify its own `~/.claude/settings.json`.
 - 2026-11-11 — Opened PR #3 (M0 + M1) to `main`.
 - 2026-11-11 — M1 done:
   - Hook server, Claude Code plug-in (status + 4-option approvals, timeout and hang-up fallbacks), `install-hooks` / `uninstall-hooks` / `doctor`, SessionStart report script, macOS focus.

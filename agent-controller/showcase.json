@@ -1,0 +1,38 @@
+{
+  "slug": "agent-controller",
+  "title": "AI Agent Controller",
+  "tagline": "A desk dock and detachable controller for running AI coding agents: glance, flick, approve, speak.",
+  "status": "Designing — parts arriving, rev 2 locked",
+  "updated": "2026-11-11",
+  "stack": ["ESP32-S3", "XIAO ESP32S3", "LVGL", "Python", "Whisper", "Claude Code hooks", "CadQuery", "3D printing"],
+  "hero": "hardware/renders/2026-11-11-rev2-dock-controller/01-docked-open.png",
+  "repo": "https://github.com/nicorudu/projects/tree/main/agent-controller",
+  "timeline": [
+    {
+      "date": "2026-11-11",
+      "title": "Rev 2: dock + detachable controller",
+      "summary": "Rigid controller bar that charges on the dock, USB + Wi-Fi data paths, voice pipeline and platform plug-in plan.",
+      "images": [
+        "hardware/renders/2026-11-11-rev2-dock-controller/01-docked-open.png",
+        "hardware/renders/2026-11-11-rev2-dock-controller/02-controller-off-dock.png",
+        "hardware/renders/2026-11-11-rev2-dock-controller/04-exploded-dock.png",
+        "hardware/renders/2026-11-11-rev2-dock-controller/05-exploded-controller.png"
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "title": "Rev 1: parametric clamshell",
+      "summary": "First printed-shell design with automatic fit checks; showed the joystick was too tall and led to rev 2.",
+      "images": [
+        "hardware/renders/2026-11-09-rev1-clamshell/01-open.png",
+        "hardware/renders/2026-11-09-rev1-clamshell/03-exploded.png"
+      ]
+    },
+    {
+      "date": "2026-11-08",
+      "title": "Companion app works end to end",
+      "summary": "A task sent over WebSocket runs Claude Code and streams tool and done events back to the device.",
+      "images": []
+    }
+  ]
+}

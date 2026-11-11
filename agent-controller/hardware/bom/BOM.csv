@@ -1,0 +1,33 @@
+id,subsystem,part,spec,qty,unit_cost_usd,supplier,order_ref,status,notes
+D1,dock,ESP32-S3 dev board,"ESP32-S3-DevKitC-1 N16R8 (16 MB flash, 8 MB octal PSRAM), dual USB-C, pins soldered (""KIT C"")",1,9.91,AliExpress (MI Technology),,ordered,"GPIO35-37 are used by PSRAM, never wire to them"
+D2,dock,Display,"4.0in ST7796S 320x480 SPI TFT + FT6336U capacitive touch (LCDWIKI MSP4031 type), module 108 x 60.9 mm",1,21.39,AliExpress (Hosyond/Liantools),,ordered,
+D3,dock,I2S amplifier,MAX98357A breakout,1,4.05,AliExpress (KPQ Choice),,ordered,VIN from 5 V
+D4,dock,Speaker,"40 mm round, 4 ohm, 2 W, 5 mm thick (lot of 5)",1,3.52,AliExpress,,ordered,ETA ~2026-11-20
+D5,shared,Status LED,"WS2812B 5050 RGB module (10-pack; 1 dock + 1 controller)",1,4.08,AliExpress (SZHJW),,ordered,
+D6,shared,Pogo connector,"Magnetic pogo pin connector, 2-pin, 2.54 mm pitch, 2 A, with screw ears, male + female",1,,Amazon,,ordered,Female half in dock tray wall; male half on controller back edge
+D7,shared,Magnets,"Neodymium disc 6 x 2 mm (pack of 20+)",1,6.00,Amazon,,to order,Hold the controller on the dock
+C1,controller,Controller MCU,"Seeed Studio XIAO ESP32S3, plain (not Sense), Seeed 113991114",2,7.49,DigiKey,,to order,One with headers for the breadboard; one bare for the build
+C2,controller,Thumbstick,"Adafruit Mini Analog Thumbstick, Joy-Con style, #5628 (2 x 10k pots + center press, 2 mm pitch pins)",2,4.50,DigiKey or Adafruit,,to order,Measure with calipers on arrival
+C3,controller,Key switches,Kailh Choc V1 Red (low profile),5,0.60,keeb.io,2ZVCP8FTF,ordered,3 used + 2 spare
+C4,controller,Keycaps,"MBK PBT blank Choc keycaps, white, 1u",5,0.35,keeb.io,2ZVCP8FTF,ordered,3 used + 2 spare
+C5,controller,Microphones,INMP441 I2S MEMS mic module,2,2.38,AliExpress,,ordered,"Price is for the first one. Mic A L/R to GND, mic B L/R to 3V3 (one stereo stream)"
+C6,controller,Battery,"LiPo 3.7 V 1000 mAh 803040 (8 x 30 x 40 mm), JST-PH 2.0, with protection board",1,7.99,Amazon,,ordered,
+C7,controller,Charger,TP4056 USB-C Li-ion charger module with DW01A protection (1 A),1,7.00,Amazon,,check,Confirm it was ordered
+C8,controller,Power switch,"SS12D00G3 mini slide switch SPDT, 3 mm handle (pack of 10)",1,,AliExpress,,ordered,
+C9,controller,Battery-sense resistors,"Resistor kit, 1/4 W metal film 1%, must include 100 kOhm (brown-black-yellow)",1,8.00,Amazon,,ordering,2 x 100 kOhm used as battery voltage divider
+S1,shared,Hook-up wire,"28 AWG silicone wire, 10 colors",1,5.69,AliExpress (Auto DIY),,ordered,
+S2,shared,Fasteners,M2 brass heat-set inserts + M2 socket cap screws kit (BT-M2),1,8.33,AliExpress (YMAX),,ordered,
+S3,shared,Heat-shrink tubing,Assortment,1,,,,ordered,
+S4,shared,Pin headers,"2.54 mm male breakaway header, 40-pin",1,,DigiKey,,to order,For the breadboard XIAO
+S5,shared,Filament,PETG,1,,,,on hand,
+T1,tools,Soldering station,"Crtsweker 130 W station kit (helping hands, flux, solder, sucker, tips)",1,,Amazon,,ordered,
+T2,tools,Multimeter,AstroAI 2000-count TRMS,1,9.99,Amazon,,ordered,
+T3,tools,Breadboard kit,CHANZON 830 + 400 point breadboards + 40 jumpers,1,7.99,Amazon,,ordered,
+T4,tools,Wire strippers,,1,,,,on hand,
+T5,tools,USB-C data cable,USB-C to USB-C (data),1,,,,on hand,Mac to dock native USB port
+X1,unused,PS2 joystick module,KY-023 style,2,,AliExpress,,spare,Replaced by C2 (too tall)
+X2,unused,Rotary encoder,"EC11, 20 mm half shaft (5-pack)",1,4.00,AliExpress,,spare,No dial in rev 2
+X3,unused,Hinges,"Mini metal hinges 10 mm (25 pcs)",1,1.88,AliExpress,,spare,No clamshell in rev 2
+X4,unused,Speaker,"40 mm 8 ohm 1 W",1,1.09,AliExpress,,cancelled,Replaced by D4
+X5,unused,2.4 GHz radio,NRF24L01,2,,AliExpress,,spare if ordered,Replaced by ESP-NOW
+X6,unused,Regulator,Pololu S7V8F3 3.3 V buck-boost,1,9.95,Pololu,,spare if ordered,XIAO regulates its own power

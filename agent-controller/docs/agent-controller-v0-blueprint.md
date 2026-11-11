@@ -200,7 +200,7 @@ hold VOICE ─► mic stream ─► VAD trim ─► speech-to-text ─► cleanu
 | Voice activity detection (VAD) | Silero VAD or WebRTC VAD | Trims silence so speech-to-text gets less audio and finishes faster |
 | Speech-to-text | **Local Whisper on the M4:** whisper.cpp, MLX-Whisper or faster-whisper with a large-v3-turbo-class model | Private and free. **Groq Whisper** is the cloud fallback (and also for the Windows laptop). Both are passed the custom vocabulary as a prompt. |
 | Cleanup | A fast Claude model through the API | Removes fillers, fixes punctuation and formatting, keeps your wording. Mode-aware: **prompt** (precise), **message** (natural), **email** (polished). |
-| Dictionary | `voice/dictionary.yaml`: names, brands, projects, tech terms, with common mis-hearings mapped to the right spelling | Grow it by voice ("add … to my dictionary"). Later: learn automatically when you edit a pasted transcript. |
+| Dictionary | `software/companion-app/voice/dictionary.yaml`: names, brands, projects, tech terms, with common mis-hearings mapped to the right spelling | Grow it by voice ("add … to my dictionary"). Later: learn automatically when you edit a pasted transcript. |
 | Context | The frontmost app, plus the selected agent session and its project folder | Picks the mode and tone, and resolves "this file" or "that function" |
 | Edit by voice | After a transcript appears, hold Voice again and say the change ("change Tuesday to Thursday") | The cleanup LLM edits the pending text instead of appending |
 | Output | **Send** delivers it; **Cancel** throws it away | Text shows on the dock first, so nothing goes out unseen |
@@ -217,7 +217,7 @@ hold VOICE ─► mic stream ─► VAD trim ─► speech-to-text ─► cleanu
 
 ## 7. Platform plug-in plan
 
-Each platform is one plug-in file in `companion-app/platforms/`. A plug-in declares what it can do; the dock UI only shows actions a plug-in supports.
+Each platform is one plug-in file in `software/companion-app/platforms/`. A plug-in declares what it can do; the dock UI only shows actions a plug-in supports.
 
 ```python
 class Platform:

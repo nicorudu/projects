@@ -2,26 +2,49 @@
 
 A desk dock with a 4" screen plus a detachable controller with keys, a thumbstick and mics. It lets you watch, approve and talk to AI coding agents (Claude Code first) without switching windows. A Python companion app on the computer bridges it to your tools over USB or Wi-Fi. Inspired by SlashVibe.
 
-![Rev 2 concept, docked](hardware/renders/2026-11-11-rev2-dock-controller/01-docked-open.png)
+![Rev 2 concept, docked](media/web/rev2-01-docked-open.webp)
 
-### Status
-- Companion app: working (v0). Claude Code task in → tool and done events out.
-- Hardware: parts arriving; design rev 2 (dock + detachable controller) locked as a concept. Print CAD waits for caliper measurements.
-- Firmware: not started.
-- Voice pipeline and platform plug-ins: planned (see blueprint).
+## Status: in build
 
-### Follow along
-- **[Build log](BUILDLOG.md)**: dated entries, newest first
-- **[Renders](hardware/renders/)**: one folder per design revision
-
-### Files
-| Path | What |
+| Area | State |
 |---|---|
-| `companion-app/main.py` | Python companion app (WebSocket server + Claude Code subprocess) |
-| `docs/agent-controller-v0-blueprint.md` | Rev 2: parts, pin maps, USB + Wi-Fi architecture, voice pipeline, platform plug-ins, build and test plan |
-| `docs/research/slashvibe-reference.md` | Notes on the reference product |
-| `docs/agent-controller-v0-spec.md` | Original clamshell spec (superseded) |
-| `hardware/cad/` | Parametric CadQuery scripts, one folder per revision (outputs are git-ignored; rerun to regenerate) |
-| `hardware/renders/` | Renders, one dated folder per revision |
-| `media/photos/` | Bench and build photos (`YYYY-MM-DD-what.jpg`) |
-| `showcase.json` | Machine-readable summary (title, status, hero image, timeline) for the portfolio site |
+| Design | Rev 2 (dock + detachable controller) locked as a concept. Print CAD waits for caliper measurements. |
+| Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv). |
+| Companion app | v0 working: a Claude Code task goes in, tool and done events come out |
+| Firmware | Not started |
+| Voice pipeline, platform plug-ins | Planned ([blueprint](docs/agent-controller-v0-blueprint.md) §6–7) |
+
+**Follow along:** [Build log](BUILDLOG.md) · [Renders](hardware/renders/) · [Decision log](docs/decisions.md)
+
+## Layout
+
+```
+agent-controller/
+├── README.md              this page
+├── BUILDLOG.md            dated progress entries, newest first
+├── showcase.json          short summary for the portfolio site (nicorudu.com)
+├── docs/
+│   ├── agent-controller-v0-blueprint.md   the plan: parts, pins, architecture, voice, plug-ins, tests
+│   ├── decisions.md                        every design decision and why
+│   ├── research/slashvibe-reference.md     notes on the reference product
+│   └── agent-controller-v0-spec.md         original clamshell spec (superseded)
+├── hardware/
+│   ├── bom/BOM.csv        every part: spec, supplier, order status
+│   ├── wiring/            wiring diagrams and harness photos (pin maps live in the blueprint)
+│   ├── cad/<rev>/         parametric CadQuery scripts, one folder per revision
+│   ├── renders/<date>-<rev>/   renders from those scripts, never overwritten
+│   └── print/             print settings and a per-part print log
+├── firmware/              dock + controller firmware (planned)
+├── software/companion-app/   Python app on the Mac / PC
+├── tests/                 test results, including the USB vs Wi-Fi shoot-out
+└── media/
+    ├── photos/            real build photos, YYYY-MM-DD-what.jpg
+    └── web/               small WebP versions for the website and social posts
+```
+
+## Conventions
+- **Dates** are `YYYY-MM-DD` in every file and folder name, so they sort in order.
+- **Revisions:** a new design revision gets new folders (`cad/revN-…`, `renders/<date>-revN-…`). Old ones stay as history.
+- **Parts** are referred to by their BOM ID (`D2`, `C5` …).
+- **Generated files** (STL, STEP, CAD output) are not committed. Rerun the script, or attach finished print sets to a GitHub Release.
+- **Every milestone** gets a build log entry, a decision log line if something changed, and fresh `media/web/` images if the look changed. Then update `showcase.json` so the website stays current.

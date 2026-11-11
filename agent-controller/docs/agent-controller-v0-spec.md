@@ -1,5 +1,7 @@
 # AI Agent Controller v0 Prototype Spec
 
+> **Superseded (Nov 11, 2026):** the clamshell form factor, parts list and pin choices below are out of date. See `agent-controller-v0-blueprint.md` (rev 2) for the dock + detachable controller design. This file is kept for history.
+
 Written Nov 7, 2026. Personal learning build — not a commercial product.
 
 ## Goal

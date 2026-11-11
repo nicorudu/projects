@@ -2,14 +2,27 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-11 · by Claude (cloud session)
+Last updated: 2026-11-11 · by Claude (Mac Mini session)
 
 ---
 
 ## 1. Where we are right now
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
-  - M1 was **verified live**: real Claude Code 2.1.322 in the cloud workspace → our `PermissionRequest` hook → fake device Approve → the command ran.
-- **In progress — Mac Mini test (§6):** steps 1–2 done on the Mac Mini (venv at `software/companion-app/.venv`). Step 3 (`install-hooks`) must be run by Nico himself — Claude Code's auto mode blocks Claude from editing `~/.claude/settings.json`. Then steps 4–8. The steps that need a real Mac are terminal-tab focus, macOS permission prompts, and how Claude Code behaves when the app is off.
+  - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
+- **Mac Mini test — done 2026-11-11.** Hooks are installed on the Mac Mini (venv at `software/companion-app/.venv`). Note: Claude Code's auto mode won't let Claude run `install-hooks` / `uninstall-hooks` (it edits Claude's own `~/.claude/settings.json`), so Nico runs those.
+  - **Works:**
+    - Status on the fake device (working / waiting / done, LED).
+    - Approve: C's own menu closed by itself; C showed "Allowed by PermissionRequest hook".
+    - Reject (`c`): "Denied by PermissionRequest hook"; Claude didn't retry.
+    - Ask in terminal (↑ Enter): B said "Answer in the terminal", C's menu answered normally, the row went to done.
+    - Send (`s`): C became the active window, with no macOS permission prompt.
+    - A curl straight to the hook server.
+  - **Three issues — the cloud session is fixing these; don't fix them in other sessions:**
+    1. **Approve for session changes the permission mode.** C switched to "accept edits on": we apply *all* `permission_suggestions`, and they included a `setMode` change.
+    2. **Terminal menu and hook run at the same time.** In interactive mode Claude Code shows its own menu while our hook is open; the first answer wins. Answering in C leaves a stale Approval screen on B until the 2-minute timeout.
+    3. **Hook errors with the app off.** Everything still works, but C prints `hook error: connect ECONNREFUSED 127.0.0.1:8766` for UserPromptSubmit, PreToolUse, PostToolUse and Stop.
+  - Also fixed on the Mac Mini: a test race in `test_approve` (see step log).
+- **Waiting on Nico:** merge the PR for branch `agent-controller-mac-mini-test`.
 - **Next step (M2): voice on the Mac mic.**
   - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
   - Claude cleanup with modes prompt / message / email.
@@ -19,10 +32,11 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 - **M1 design notes (from the hooks docs, rechecked 2026-11-11):**
   - `SessionStart` accepts only command hooks. We use an async command hook that runs `python -m companion.hooks.report`, which posts the event plus the terminal app and TTY.
   - All other events are `http` hooks to `/hooks/claude`. Status hooks get a 2 s timeout. `PermissionRequest` gets 600 s; the app itself answers within `approval_timeout_s` (120 s), or with no decision.
-  - While a `PermissionRequest` hook is open, the terminal waits. So the Approval screen has 4 options: Approve / Approve for session / Reject / Ask in terminal (= no decision → normal prompt).
-  - "Approve for session" = `allow` + `updatedPermissions` = the request's `permission_suggestions` with `destination` changed to `"session"`.
+  - The Approval screen has 4 options: Approve / Approve for session / Reject / Ask in terminal (= no decision → normal prompt).
+  - ~~While a `PermissionRequest` hook is open, the terminal waits.~~ **Wrong (Mac Mini test):** in interactive mode the terminal shows its own menu at the same time, and the first answer wins (issue 2 above).
+  - "Approve for session" = `allow` + `updatedPermissions` = the request's `permission_suggestions` with `destination` changed to `"session"`. Passing *all* suggestions also applies `setMode` ones (issue 1 above).
   - Hook server checks: loopback only, `Host` must be localhost/127.0.0.1, and the body must be JSON (blocks browser cross-site posts).
-  - To check on the Mac Mini: whether a refused connection (app not running) prints a "hook error" line in Claude Code. If it does, the fix is to run `uninstall-hooks` when not using the device, or switch status hooks to async command hooks.
+  - A refused connection (app not running) **does** print a "hook error" line in Claude Code (checked on the Mac Mini; issue 3 above). Fix options noted before the test: run `uninstall-hooks` when not using the device, or switch status hooks to async command hooks.
 - **Code map (M0 + M1):**
   - `software/companion-app/companion/`
     - `core/app.py`: state reducers, inputs, render loop, heartbeat watchdog.
@@ -44,7 +58,7 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 | # | What | Hardware? | State |
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
-| M1 | Claude Code HTTP hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini check pending |
+| M1 | Claude Code HTTP hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested; 3 fixes in progress (cloud session) |
 | M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
 | M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
 | M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
@@ -88,7 +102,7 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - **Order:** C1 XIAO ESP32S3 ×2, C2 Adafruit #5628 ×2, D7 magnets, S4 header strip, C9 resistor kit (needs 100 kΩ). Confirm C7 TP4056 was ordered.
 - **Arrivals:** AliExpress 5–10 days from ~2026-11-09; speaker ETA ~2026-11-20. On arrival, measure the stick, display and pogo connector with calipers so the print CAD can be finalized.
 - **Repo is private.** Make it public when you want the website to link to it and load its images.
-- **Mac Mini test (M1), about 15 minutes.** Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
+- **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
   1. **Get the code** (after merging the PR):
      - If the repo isn't on the Mac yet: `gh repo clone nicorudu/projects ~/projects` (run `gh auth login` first if needed).
      - Otherwise: `cd ~/projects && git checkout main && git pull`.
@@ -114,9 +128,11 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
-- 2026-11-11 — Mac Mini test started:
-  - Steps 1–2 OK. `test_approve` failed on every run on the M4 (Python 3.14 and 3.12 alike): the device's `view` and `led` are separate frames, and the test checked the LED as soon as the Approval view arrived. Fixed the test to wait for both. 45/45 pass, 5 runs in a row.
-  - Step 3 is left to Nico: auto mode won't let Claude modify its own `~/.claude/settings.json`.
+- 2026-11-11 — Mac Mini test (§6) done:
+  - Setup: Python 3.14.7. `test_approve` failed on every run on the M4 (Python 3.14 and 3.12 alike): the device's `view` and `led` are separate frames, and the test checked the LED as soon as the Approval view arrived. Fixed the test to wait for both. 45/45 pass, 5 runs in a row.
+  - Nico ran `install-hooks` (9 hooks; auto mode blocks Claude from editing its own settings) and steps 4–8.
+  - Works: status + LED, Approve, Reject, Ask in terminal, Send-key focus (no macOS prompt), curl to the hook server.
+  - Three issues found, assigned to the cloud session: Approve for session applies a `setMode` suggestion; terminal menu and hook race (stale Approval screen on B); `ECONNREFUSED` hook errors with the app off. Details in §1.
 - 2026-11-11 — Opened PR #3 (M0 + M1) to `main`.
 - 2026-11-11 — M1 done:
   - Hook server, Claude Code plug-in (status + 4-option approvals, timeout and hang-up fallbacks), `install-hooks` / `uninstall-hooks` / `doctor`, SessionStart report script, macOS focus.

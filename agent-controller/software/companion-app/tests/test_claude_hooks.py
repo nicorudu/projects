@@ -101,10 +101,10 @@ async def answer(stack_make, *keys, **cfg_changes):
     app, ws_url, hook_url = await stack_make(**cfg_changes)
     dev = await device(ws_url)
     pending = asyncio.create_task(post(hook_url, perm_request()))
-    await dev.wait_for(lambda d: d.view["screen"] == "approval")
+    # view and led are separate frames; wait for both (on a fast machine the led can trail the view)
+    await dev.wait_for(lambda d: d.view["screen"] == "approval" and d.led == "waiting")
     assert dev.view["tool"] == "Bash" and dev.view["summary"] == "rm -rf node_modules"
     assert dev.view["options"] == ["Approve", "Approve for session", "Reject", "Ask in terminal"]
-    assert dev.led == "waiting"
     for k in keys:
         await dev.send_input(k)
     result = await asyncio.wait_for(pending, 5)

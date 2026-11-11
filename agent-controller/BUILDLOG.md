@@ -4,6 +4,15 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-11 — M1 tested on the Mac Mini
+- Ran the full Mac Mini test with a real Claude Code session, the companion app and the fake device in three Terminal windows.
+- **Works:** live status and LED; Approve (Claude Code's own menu closes by itself and shows "Allowed by PermissionRequest hook"); Reject (Claude doesn't retry); Ask in terminal (the normal prompt answers as usual); Send brings the session's window to the front with no macOS permission prompt; a direct curl to the hook server.
+- **Three issues found** (being fixed in a separate session):
+  1. "Approve for session" also switched Claude Code to "accept edits on", because it applied every suggestion Claude Code offered, including a mode change.
+  2. In interactive mode Claude Code shows its own permission menu while our hook waits, and the first answer wins. Answering in the terminal leaves a stale Approval screen on the device for 2 minutes.
+  3. With the companion app off, Claude Code still works but prints `hook error: connect ECONNREFUSED 127.0.0.1:8766` on most events.
+- Fixed a test that failed every time on the M4: it checked the LED a moment before the device had received it.
+
 ## 2026-11-11 — M1: Claude Code approvals from the device
 - **First live approval.** A real Claude Code session asked for permission to run a Bash command. The fake device showed the Approval screen, one press of Approve let it run, and the command wrote its file.
 - Claude Code status flows in through its hooks: working (with the current tool), waiting, done, error. The app sends them to a local hook server on `127.0.0.1:8766`.

@@ -7,7 +7,7 @@ Last updated: 2026-11-12 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** research, use cases, v0 spec, decision log. Project folder created on branch `live-interpreter-kickoff` (PR to `main`).
+- **Done:** research, use cases, v0 spec, decision log. Project folder created on branch `live-interpreter-kickoff`, PR #8 to `main`.
 - **No code yet.**
 - **Next step: M1, one-way pipe on the Mac.** Mic → `gpt-realtime-translate` → speakers, using OpenAI's own voice, with a timestamp at every stage so mouth-to-ear delay is measured. Also add a small `keys:set` script that stores API keys in the OS keychain.
 - **Blocked on:** an OpenAI API key (M1). ElevenLabs is needed from M2, Twilio from M5 (see §6).
@@ -62,7 +62,7 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and `git branch -u`. Otherwise the stop hook reports "unpushed commits".
 
 ## 6. What Nico needs to do
-- **Review and merge the kickoff PR.** The README tells your story in first person; edit it however you like.
+- **Review and merge the kickoff PR (#8).** The README tells your story in first person; edit it however you like.
 - **Repo is private.** Make it public when you want the website to link to it.
 - **Accounts, in the order they're needed:**
   1. **OpenAI API** key with Realtime API access (M1). Set a monthly spend limit.
@@ -80,4 +80,4 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 - License for the code when the repo goes public.
 
 ## 8. Step log (newest first)
-- 2026-11-12 — Project kickoff: research, use cases (Nico's family; his wife's classroom), spec, decision log, handoff, build log, showcase.json. Branch `live-interpreter-kickoff`.
+- 2026-11-12 — Project kickoff: research, use cases (Nico's family; his wife's classroom), spec, decision log, handoff, build log, showcase.json. Branch `live-interpreter-kickoff`, PR #8.

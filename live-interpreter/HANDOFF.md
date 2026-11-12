@@ -63,7 +63,7 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 
 ## 6. What Nico needs to do
 - **Review and merge the kickoff PR (#8).** The README tells your story in first person; edit it however you like.
-- **Repo is private.** Make it public when you want the website to link to it.
+- **The `projects` repo is public**, so the branch, the PR and your story in the README are already visible. Edit or trim anything you'd rather keep private before merging.
 - **Accounts, in the order they're needed:**
   1. **OpenAI API** key with Realtime API access (M1). Set a monthly spend limit.
   2. **ElevenLabs** plan with API access and at least 12 free voice slots for the voice matrix (M2).

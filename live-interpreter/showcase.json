@@ -1,0 +1,20 @@
+{
+  "slug": "live-interpreter",
+  "title": "Live Interpreter",
+  "tagline": "Speak your language on any phone call or face to face; the other person hears you live in theirs, in a voice that sounds like you.",
+  "status": "planning",
+  "status_text": "Planning: spec and research done, first pipeline next",
+  "updated": "2026-11-12",
+  "tags": "Real-time speech translation, OpenAI Realtime API, ElevenLabs, Twilio, TypeScript, Python",
+  "hero": "",
+  "hero_alt": "",
+  "repo": "https://github.com/nicorudu/projects/tree/main/live-interpreter",
+  "timeline": [
+    {
+      "date": "2026-11-12",
+      "title": "Why I'm building a live interpreter",
+      "summary": "Growing up, my parents struggled to talk with my teachers and coaches. My wife, a teacher, sees the same gap with her students' families. The plan: real-time translated calls and meetings, in a natural voice, with nothing for the other person to install.",
+      "images": []
+    }
+  ]
+}

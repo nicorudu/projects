@@ -30,7 +30,7 @@ Built-in options exist (Pixel 10 Voice Translate, Apple Live Translation for cal
 2. **Its built-in voices are not used for the main experience.** The model doesn't support voice selection or custom prompting. So we take its **translated transcript stream**, and speak it with our own matched voice (ElevenLabs). Its own audio stays available as a "fast mode" to compare latency.
 3. **ElevenLabs Realtime Translation is the ideal engine but is gated.** It streams translated speech in a chosen `voice_id`, but its WebSocket API is currently for enterprise workspaces only. The code gets an engine adapter slot for it so it can be swapped in later.
 4. **Voices: ElevenLabs Flash streaming TTS + a pre-designed voice matrix** made once with the Voice Design API (gender, age, accent, accent strength). No voice is generated during a call; the system picks from the matrix.
-5. **First language pair: English ↔ Spanish.** It's the founding use case (a Colombian family talking with an English-speaking school), and every engine in this spec supports it, including the open-source Hibiki-Zero (Spanish → English). Adding a pair later means adding voices to the matrix, not code.
+5. **Build with English ↔ Spanish first, then add the launch set.** Spanish is the founding use case (a Colombian family talking with an English-speaking school) and about three in four US English learners. Once the pipeline works, M5 adds seven more languages: Arabic, Chinese (Mandarin), Vietnamese, Portuguese, Russian, Hindi and Filipino (Tagalog). See "Languages" below.
 6. **No audio is stored.** Logs keep timings, events and (optionally) text only.
 7. **The other person never needs an app.** A parent can be reached on any phone, including a landline, or join a meeting by scanning a QR code into a web page. Only the person starting the conversation uses the app.
 8. **Captions are always on.** Both sides can see the original and the translation, so a wrong number, date or name can be caught and corrected on the spot.
@@ -59,6 +59,7 @@ Person B audio ──► (mirror of the above) ───────────
 | Translation engine adapter | `openai-realtime-translate` (v0, paid), `qwen-cascade` (v0, free: Qwen3-ASR → Qwen3.5), `elevenlabs-realtime` (if access), `qwen-livetranslate` (hosted Qwen API, optional), `hibiki-zero` (open-source stretch) |
 | Phrase chunker | Turns translated text deltas into speakable chunks (clause or punctuation boundaries, max wait timer) |
 | TTS adapter | ElevenLabs WebSocket streaming (v0, paid), Qwen3-TTS via MLX (v0, free) |
+| Language router | Picks, per language pair, which engine hears, which translates and which voice speaks (see "Languages") |
 | Voice profiler | Estimates gender and age band from the speaker's first few seconds |
 | Voice picker | Maps profile + accent + target language to a voice ID from the matrix |
 | Session controller | Starts/stops sessions, barge-in, disclosure prompt, logging |
@@ -75,12 +76,12 @@ The goal is "sounds like the same kind of person," decided in the first few seco
 
 **Step 3 — Pick from the voice matrix.** Built once with ElevenLabs Voice Design, which takes a description plus `gender`, `age` (young / middle_aged / old), `accent` and `accent_strength`. Each design returns three options; pick the best and save it (saving takes a voice slot on the plan).
 
-| Output language | Accent | Gender × age | Voices |
-| --- | --- | --- | --- |
-| English | Light Latin American Spanish | 2 × 3 | 6 |
-| Spanish | Light American English | 2 × 3 | 6 |
+| Speaker's language | Accent | Gender × age | Voices | Speaks |
+| --- | --- | --- | --- | --- |
+| Spanish | Light Latin American Spanish | 2 × 3 | 6 | English (and any other output language) |
+| English | Light American English | 2 × 3 | 6 | Spanish (and any other output language) |
 
-12 voices for the first pair. Store their IDs in `voices.json`, with the prompt used for each so they can be regenerated.
+12 voices for the first pair; the launch set grows this by speaker language (see "Languages"). Store their IDs in `voices.json`, with the prompt used for each so they can be regenerated.
 
 **Accent strength is a setting** (subtle / noticeable / off). Default: subtle.
 
@@ -120,6 +121,47 @@ Phone (Twilio) / browser ──► Oracle Cloud Always Free VM
 - **Accent.** Whether VoiceDesign can produce a believable light Colombian accent in English.
 
 **Related, but not free:** Qwen3.8-LiveTranslate (Sept 2026) is Qwen's own hosted interpreter: it understands 60 languages, speaks 29, and keeps the speaker's voice. It's API-only with no open weights, so it's a possible paid adapter, not part of the free path.
+
+## Languages
+
+### Launch set (M5)
+
+Chosen from the most common home languages of English learners in US public schools (NCES, fall 2021) plus Nico's picks. Every language below is heard and translated by the free path; the voice is where coverage differs.
+
+| Language | US English learners (rank, count) | Hears (free: Qwen3-ASR) | Speaks free | Speaks paid (ElevenLabs Flash v2.5) | OpenAI translate output |
+| --- | --- | --- | --- | --- | --- |
+| Spanish | #1, 4,023,289 | ✓ | ✓ Qwen3-TTS | ✓ | ✓ |
+| Arabic | #2, 130,917 | ✓ | Chatterbox Multilingual (to test) | ✓ | ✗ |
+| Chinese (Mandarin) | #4, 95,584 | ✓ | ✓ Qwen3-TTS | ✓ | ✓ |
+| Vietnamese | #5, 75,070 | ✓ | Chatterbox Multilingual (to test) | ✓ | ✓ |
+| Portuguese | #6, 50,205 | ✓ | ✓ Qwen3-TTS | ✓ | ✓ |
+| Russian | #7, 39,403 | ✓ | ✓ Qwen3-TTS | ✓ | ✓ |
+| Hindi | not in top 15 (Nico's pick) | ✓ | Chatterbox Multilingual (to test) | ✓ | ✓ |
+| Filipino (Tagalog) | #15, 19,319 | ✓ | OmniVoice (to test) | ✓ | ✗ |
+
+(#3 in the NCES list is English itself, reported for students from multilingual homes.)
+
+**"Indian" means Hindi for now.** Urdu ranks higher among US English learners (#10, 26,567) and is close to Hindi when spoken, but uses a different script for captions, and Qwen3-ASR doesn't list it. Confirm with Nico's wife's school which Indian languages its families speak.
+
+### Language router
+
+One rule per language, kept in config:
+
+1. **Hear:** Qwen3-ASR for all 8 (free). The OpenAI engine stays an option where it covers the pair.
+2. **Translate:** Qwen3.5 for any pair (free, prompted, glossary-aware). `gpt-realtime-translate` when the target is one of its 13 outputs and the paid path is chosen.
+3. **Speak:** Qwen3-TTS for es / zh / pt / ru. For ar / vi / hi / fil, an open voice if it passes the native-speaker check (Chatterbox Multilingual or OmniVoice), otherwise ElevenLabs Flash v2.5.
+
+This means even the "free" setup may pay for voice in four languages, depending on how the open voices sound. ElevenLabs bills only by characters spoken, so that cost stays small.
+
+### Voices grow by speaker language
+
+The voice models are multilingual, so a voice is chosen by **who is speaking** (their sex, age band and accent), and then speaks whichever language the listener needs. Each speaker language gets 6 voices (2 sexes × 3 age bands) with a light accent of that language. The launch set plus English is 9 × 6 = **54 voices**.
+- On the free path, each voice is a short reference clip, so there's no limit.
+- On ElevenLabs, each saved voice takes a slot, and plans cap the number. Start with Spanish and English accents, and use neutral voices for the other languages until the plan allows more.
+
+### Next wave (v1)
+
+Haitian Creole (#8), Hmong (#9), Urdu (#10), Swahili (#13) and Somali (#14). Neither Qwen3-TTS, Chatterbox Multilingual, ElevenLabs Flash v2.5 nor OpenAI's translator outputs Haitian Creole or Hmong, and Qwen3-ASR doesn't hear them (ElevenLabs v3's 74-language list is still to check). Candidates: OmniVoice (open TTS, 600+ languages) for the voice and Meta's Omnilingual ASR (1,600+ languages) for hearing; Qwen3.8-LiveTranslate also speaks Urdu. Korean (#11) and French (#12) can be added any time, since every engine already covers them.
 
 ## Modes in detail
 
@@ -205,16 +247,17 @@ Build in order; each one working and logged before the next.
 2. **Matched voice.** Translated text → phrase chunker → TTS, on both paths: ElevenLabs streaming TTS and Qwen3-TTS. Build the 12-voice matrix for each. Manual profiles only. *Done when:* a listener who hasn't heard the speaker correctly guesses their gender and rough age from the translated voice, and latency stays within budget.
 3. **Automatic voice profiling.** Python sidecar with the audeering model, voice picker, lock-in and 15-second re-check. *Done when:* 10 test speakers (friends, recordings) get a sensible voice without manual setup.
 4. **Web room, two-way.** Rooms, links, both directions, captions, barge-in. *Done when:* a 5-minute English ↔ Spanish conversation with a friend in another room feels usable.
-5. **Phone bridge.** Server moves to the Oracle Always Free VM, connected to the Mac mini over Tailscale. Twilio number, outbound flow, two legs, disclosure, barge-in, "original underneath" setting. *Done when:* you call a Spanish-speaking friend's regular phone and hold a 5-minute conversation.
-6. **In-person mode.** PWA screen, earbuds routing, half-duplex gate, big captions. *Done when:* a face-to-face exchange works without the phone's speaker feeding back into the translator.
-7. **Portfolio polish.** README with architecture diagram, latency chart from real logs, a 60-second demo video of a real translated phone call, a "how it works" page. Hand any site changes for nicorudu.com to the website assistant.
+5. **Launch languages.** Language router, the 7 added languages, voices per speaker language, and a voice test for ar / vi / hi / fil: open voice first (Chatterbox Multilingual, OmniVoice), ElevenLabs if it fails. *Done when:* a native speaker of each launch language holds a 3-minute web-room conversation with an English speaker and rates the translation and voice as understandable and natural.
+6. **Phone bridge.** Server moves to the Oracle Always Free VM, connected to the Mac mini over Tailscale. Twilio number, outbound flow, two legs, disclosure, barge-in, "original underneath" setting. *Done when:* you call a Spanish-speaking friend's regular phone and hold a 5-minute conversation.
+7. **In-person mode.** PWA screen, earbuds routing, half-duplex gate, big captions. *Done when:* a face-to-face exchange works without the phone's speaker feeding back into the translator.
+8. **Portfolio polish.** README with architecture diagram, latency chart from real logs, a 60-second demo video of a real translated phone call, a "how it works" page. Hand any site changes for nicorudu.com to the website assistant.
 
 **Stretch (v1+)**
 
 - **Hibiki-Zero.** (MIT, 3B parameters) translates French, Spanish, Portuguese and German into English with voice transfer built in. It needs an NVIDIA GPU (8 GB VRAM should work, 12 GB is safe), so it would run on a rented GPU for the Spanish → English direction. (Qwen3-TTS moved into v0 as the free path.)
 - **Qwen3.8-LiveTranslate adapter** (hosted, paid): 60 languages understood, 29 spoken, keeps the speaker's voice. Worth comparing against OpenAI once v0 works.
 - **Accent knob from research:** the original Hibiki controls how close the output stays to the source voice; higher settings give very strong accents. Worth an experiment for the "slight accent" feature.
-- **Wider language coverage (high priority after v0).** `gpt-realtime-translate` only outputs 13 languages, and several common among newcomer families (for example Arabic, Haitian Creole, Dari, Pashto, Swahili) aren't among them. Add a second engine path: streaming speech-to-text + translation (Soniox advertises any-to-any across 60+ languages) feeding the same TTS step. Check each TTS's language list before promising a language.
+- **Next-wave languages (high priority after v0).** Haitian Creole, Hmong, Urdu, Swahili, Somali; see "Languages". Soniox (advertises any-to-any translation across 60+ languages) is another hearing-and-translating option to compare. Check each voice model's language list before promising a language.
 - **Meeting recap in both languages (opt-in).** After a conference or call, a short summary of what was agreed (dates, forms, next steps), in both languages. Needs both people's consent, because it means keeping text.
 - **Glossary for school terms** (IEP, ESOL, permission slip, field trip). `gpt-realtime-translate` doesn't support custom prompting, so this needs the second engine path or a correction step on the translated text.
 - ElevenLabs Realtime Translation adapter if enterprise access comes through.
@@ -233,6 +276,7 @@ Build in order; each one working and logged before the next.
 | Noisy room / car | Still usable | Note accuracy drop |
 | Phone call to a landline or mobile | Works with no app on their side | Clean audio both ways |
 | Speakerphone in person mode | No feedback loop | No self-translation |
+| Each launch language with a native speaker (web room) | Understandable translation and natural voice | Native speaker rates both "good" or better |
 | Mock parent-teacher conference (QR web room, two devices) | Parent joins by QR with no app; both follow along with captions | Joined in under 30 s; dates and numbers come through correctly |
 | 10-minute call | No drift, no crashes, cost logged | Stable |
 
@@ -249,7 +293,8 @@ Build in order; each one working and logged before the next.
 ## Risks and open questions
 
 - **Transcript granularity.** If the translated text arrives in chunks that are too small or too late, the matched voice will lag. Fallback: fast mode with OpenAI's own voice.
-- **Output language limit.** `gpt-realtime-translate` only outputs 13 languages, which misses many families the school use case is about. See "Wider language coverage" above.
+- **Language coverage.** `gpt-realtime-translate` outputs 13 languages (no Arabic or Filipino) and Qwen3-TTS speaks 10, so the language router has to mix engines. Haitian Creole and Hmong aren't covered yet. See "Languages".
+- **Translation quality varies by language.** Benchmarks lean toward big languages. Every launch language needs a native-speaker check before it's offered.
 - **Accuracy on what matters.** A wrong date, time or amount is worse than a slow translation. Captions on both sides are the v0 safety net; a "repeat that" control and read-back of numbers are candidates for v1.
 - **Disclosure and privacy.** The other person's speech goes to third-party APIs. Play the disclosure, store no audio, and don't use it for anything sensitive. Schools have their own student-privacy rules (in the US, FERPA) and often contracted interpreters; v0 is a personal prototype, not a school-approved tool. (Not legal advice.)
 - **Model license.** The audeering age/gender model is CC-BY-NC-SA (non-commercial). Fine for a portfolio; swap it out if this ever becomes a product.
@@ -279,3 +324,9 @@ Build in order; each one working and logged before the next.
 - [Quantized Qwen3-TTS on CPU, real-time factors (ocdevel)](https://dev.ocdevel.com/blog/20260711-quantized-cpu-tts)
 - [Oracle Always Free limits halved (terminalbytes)](https://terminalbytes.com/oracle-cloud-free-tier-changes-2026)
 - [Qwen3.8-LiveTranslate (API only)](https://www.artiverse.ca/alibabas-qwen38-livetranslate-targets-faster-real-time-speech-translation/)
+- [NCES Digest table 204.27: English learners by home language (fall 2021)](https://nces.ed.gov/programs/digest/d23/tables/dt23_204.27.asp)
+- [ElevenLabs: supported languages by model](https://elevenlabs.io/docs/help-center/other/what-languages-do-you-support)
+- [Qwen3-ASR language list (PyPI)](https://pypi.org/project/qwen-asr/)
+- [Chatterbox Multilingual (Resemble AI)](https://resemble.ai/introducing-chatterbox-multilingual-open-source-tts-for-23-languages)
+- [OmniVoice: open TTS for 600+ languages](https://dev.to/_46ea277e677b888e0cd13/omnivoice-open-source-tts-with-600-languages-and-zero-shot-voice-cloning-1mpn)
+- [Qwen speech-to-speech models and language table (Qwen docs)](https://docs.platform.qianwenai.com/developer-guides/speech/s2s-models)

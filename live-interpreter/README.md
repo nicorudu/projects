@@ -38,6 +38,7 @@ They speak English ─► server ─► live translation ─► matched voice (S
   - **Paid path:** OpenAI `gpt-realtime-translate` with ElevenLabs voices.
   - Both sit behind adapters, so ElevenLabs Realtime Translation, Qwen LiveTranslate or Hibiki-Zero can be swapped in later.
 - **Voice:** a small model guesses the speaker's sex and age in the first seconds; the app picks a pre-designed voice of the same kind, with a light accent from the speaker's language.
+- **Languages:** built with English ↔ Spanish first, then the launch set: Spanish, Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi and Filipino. Next: Haitian Creole, Hmong, Urdu, Swahili and Somali.
 
 ## Layout
 

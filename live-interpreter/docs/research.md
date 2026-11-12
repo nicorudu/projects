@@ -63,6 +63,24 @@ Earlier generation, for reference: SenseVoice (Alibaba FunAudioLLM) is a fast mu
 - **No GPUs in the free tier.** The cheapest Oracle GPU (`VM.GPU.A10.1`, NVIDIA A10 24 GB) lists at about $2/hour.
 - **Fit for this project:** great as the free, always-on public server (Twilio bridge, web rooms, session control). Too slow to run the voice models live on 2 Arm cores. Models run on the Mac mini, reached over a private Tailscale tunnel.
 
+## 8. Languages (checked 2026-11-12)
+
+**Most common home languages of US English learners, fall 2021 (NCES Digest table 204.27):** 1 Spanish 4,023,289 · 2 Arabic 130,917 · 3 English 116,771 · 4 Chinese 95,584 · 5 Vietnamese 75,070 · 6 Portuguese 50,205 · 7 Russian 39,403 · 8 Haitian Creole 31,122 · 9 Hmong 30,181 · 10 Urdu 26,567 · 11 Korean 24,270 · 12 French 23,648 · 13 Swahili 21,833 · 14 Somali 19,367 · 15 Tagalog 19,319. Spanish is 76.4% of all English learners. Hindi, Gujarati, Punjabi and Telugu aren't in the top 15. ("English" covers students from multilingual homes.)
+
+**Who covers what:**
+
+| Engine | Role | Launch languages covered | Notable gaps |
+| --- | --- | --- | --- |
+| Qwen3-ASR (free) | Hears | All 8 (es, ar, zh, vi, pt, ru, hi, fil) | Urdu, Haitian Creole, Hmong, Somali, Swahili not listed |
+| Qwen3.5 (free) | Translates text | All 8 (family covers 201 languages) | Quality per language to test |
+| Qwen3-TTS (free) | Speaks | es, zh, pt, ru | ar, vi, hi, fil |
+| Chatterbox Multilingual (free, MIT, 23 languages) | Speaks, zero-shot cloning | ar, zh, hi, pt, ru, es, vi | fil |
+| OmniVoice (free, Apache 2.0, 600+ languages, 2026-03-31) | Speaks, zero-shot cloning | Claims all | Quality per language unknown |
+| ElevenLabs Flash v2.5 (paid, 32 languages, ~75 ms) | Speaks | All 8 | No Urdu, Haitian Creole or Hmong |
+| OpenAI `gpt-realtime-translate` (paid) | Hears + translates + speaks | es, zh, vi, pt, ru, hi | ar, fil |
+| Qwen3.8-LiveTranslate (paid, hosted) | Hears + translates + speaks, keeps the speaker's voice | All 8, plus Urdu (29 spoken languages) | Haitian Creole, Hmong |
+| Meta Omnilingual ASR (free, 1,600+ languages) | Hears | — | Candidate for next-wave languages |
+
 ## Sources
 
 - [OpenAI: Advancing voice intelligence with new models in the API](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/)
@@ -110,3 +128,13 @@ Earlier generation, for reference: SenseVoice (Alibaba FunAudioLLM) is a fast mu
 - [computeprices: Oracle A10 pricing](https://computeprices.com/providers/oracle/gpus/a10)
 - [BrainDetox: running a backend on Oracle Always Free (capacity and idle-reclaim risks, Japanese)](https://braindetox.kr/ja/posts/oracle_always_free_backend_2026.html)
 - [ApX: Qwen3.5-2B model page (201-language coverage)](https://apxml.com/zh/models/qwen35-2b)
+- [NCES Digest table 204.27: English learners by home language](https://nces.ed.gov/programs/digest/d23/tables/dt23_204.27.asp)
+- [NCES Fast Facts: English learners](https://nces.ed.gov/fastfacts/display.asp?id=96)
+- [ElevenLabs: supported languages by model](https://elevenlabs.io/docs/help-center/other/what-languages-do-you-support)
+- [ElevenLabs: models overview](https://elevenlabs.io/docs/models)
+- [Qwen3-ASR language list (PyPI)](https://pypi.org/project/qwen-asr/)
+- [Chatterbox Multilingual (Resemble AI)](https://resemble.ai/introducing-chatterbox-multilingual-open-source-tts-for-23-languages)
+- [OmniVoice: open TTS for 600+ languages (DEV Community)](https://dev.to/_46ea277e677b888e0cd13/omnivoice-open-source-tts-with-600-languages-and-zero-shot-voice-cloning-1mpn)
+- [Qwen3.8-LiveTranslate speech output languages (DataLearner, Chinese)](https://www.datalearner.com/ai-models/pretrained-models/1093)
+- [Qwen speech-to-speech models and language table (Qwen docs)](https://docs.platform.qianwenai.com/developer-guides/speech/s2s-models)
+- [Omnilingual ASR on Apple Silicon (soniqo benchmarks)](https://soniqo.audio/benchmarks)

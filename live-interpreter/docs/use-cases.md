@@ -38,7 +38,7 @@ Both sides of the same conversation want it to happen. What's missing is a way t
 2. **It must sound human.** A natural voice of the same sex and roughly the same age, with a light accent, so it feels like talking to a person, and the listener can tell the words are being interpreted.
 3. **Accuracy beats speed on what matters.** Dates, times, amounts, names and forms must come through exactly. Captions on both sides in v0; "repeat that" and number read-back later.
 4. **Fast enough for real back-and-forth.** Under 2 seconds from speaking to hearing on a phone call (target).
-5. **Language coverage beyond Spanish.** The school case includes families who speak languages outside the first engine's 13 outputs (for example Arabic, Haitian Creole, Dari, Pashto, Swahili). That's the main reason for a second engine path after v0.
+5. **Language coverage beyond Spanish.** Launch set: Spanish, Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi and Filipino. Next wave: Haitian Creole, Hmong, Urdu, Swahili and Somali. Chosen from the most common home languages of US English learners plus Nico's picks; see the spec's "Languages" section.
 6. **Privacy by default.** No audio stored. Any recap or transcript is opt-in for both people. A disclosure at the start of every call.
 7. **Simple for the person starting it.** Pick a language, enter a number or show a QR code, talk.
 

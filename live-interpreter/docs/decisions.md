@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-12 | Voices are chosen by the speaker's language (6 per language: sex × age band, light accent), then speak any output language | The voice models are multilingual; avoids a separate matrix per language pair | 6 voices per output language |
+| 2026-11-12 | A language router picks hear / translate / speak engines per language: Qwen3-ASR + Qwen3.5 for all; Qwen3-TTS for es / zh / pt / ru; open voice or ElevenLabs for ar / vi / hi / fil | No single engine speaks all 8 for free; Qwen3-TTS covers 4 of them | One engine for everything |
+| 2026-11-12 | Launch languages (new M5, after the web room): Spanish, Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi, Filipino. Build and tune with Spanish first | Top NCES English-learner languages plus Nico's picks (Hindi, Filipino); Haitian Creole and Hmong lack engine support for now | English ↔ Spanish only |
 | 2026-11-12 | M1 builds the free path first, then the OpenAI path, and compares them | The free path needs no accounts, so work can start right away; the comparison decides the default | M1 = OpenAI only |
 | 2026-11-12 | Server hosted on an Oracle Cloud Always Free Arm VM (≤ 2 OCPU / 12 GB); models stay on the Mac mini, reached over Tailscale | Free, always-on public address for Twilio and web rooms; 2 Arm cores with no GPU are too slow to run the voice models live | Fly.io / Render |
 | 2026-11-12 | Add a free, fully open-source path: Qwen3-ASR → Qwen3.5 → Qwen3-TTS on the Mac mini (MLX), behind the same adapters as the paid path | Nico wants a version that costs nothing to run; all three are Apache 2.0, and Qwen3.5 can take a glossary in its prompt | Paid APIs only |

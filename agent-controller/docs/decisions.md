@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-12 | Voice engine is Wispr Faux (Nico's own dictation app), not a new Whisper pipeline in the companion | Already more accurate and polished; one engine on Mac and Windows | mlx-whisper / Groq + Claude cleanup in the companion |
+| 2026-11-12 | Voice flow: text shows on the dock first; Send delivers, Cancel discards | Avoids mistakes; matches SlashVibe | — |
+| 2026-11-12 | The control link goes into a copy of Wispr Faux inside this project; the wispr-faux repo is never edited | Keep Nico's working app safe | Editing wispr-faux directly |
 | 2026-11-11 | All Claude Code hooks are command hooks running `companion.hooks.report` (async for status, blocking for approvals) | Claude Code's `http` hooks print "hook error" lines whenever the app is off; the script stays silent | HTTP hooks |
 | 2026-11-11 | Device and terminal both answer approvals; the first answer wins, and the device clears when the session moves on | In interactive mode Claude Code shows its own menu while our hook waits (Mac Mini test) | Device-only answer |
 | 2026-11-11 | "Approve for session" applies only `addRules` / `addDirectories` suggestions | Applying a `setMode` suggestion switched Claude Code to accept-edits (Mac Mini test) | All suggestions |

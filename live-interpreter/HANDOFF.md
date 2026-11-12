@@ -77,7 +77,7 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 - Does ElevenLabs Voice Design produce a convincing light Colombian accent, or only a general Latin American one?
 - Is ElevenLabs TTS after `gpt-realtime-translate` fast enough, or does "fast mode" (OpenAI's voice) need to be the phone default?
 - Which second engine for wider language coverage (Soniox or another), and which TTS covers those languages well.
-- License for the code when the repo goes public.
+- License for the code (the repo is public, so this matters once code lands).
 
 ## 8. Step log (newest first)
 - 2026-11-12 — Project kickoff: research, use cases (Nico's family; his wife's classroom), spec, decision log, handoff, build log, showcase.json. Branch `live-interpreter-kickoff`, PR #8.

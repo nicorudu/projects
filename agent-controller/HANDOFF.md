@@ -32,12 +32,16 @@ Last updated: 2026-11-11 · by Claude (cloud session)
   - Approve for session keeps `manual mode on`.
   - With the app off: the normal menu appears and there are **no hook error lines**.
 - **Mac Mini state:** the repo is on `main`, the hooks are installed (10, command type), and the venv is at `software/companion-app/.venv`. Test files `~/agent-controller-test-*.txt` can be deleted.
-- **Next step (M2): voice on the Mac mic.**
-  - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
-  - Claude cleanup with modes prompt / message / email.
-  - Personal dictionary at `~/.agent-controller/dictionary.yaml`; API keys in the keychain.
-  - Delivery: paste into the focused terminal tab, or start a managed session.
-  - The Mac mic stands in for the controller mics until hardware.
+- **M2 (voice): planned, tabled 2026-11-12 at Nico's request.** Don't start it until he says so.
+  - **Voice engine = Wispr Faux, Nico's own dictation app** (`nicorudu/wispr-faux`: Swift for Mac, C#/.NET for Windows; on-device Whisper large-v3 turbo, stumble cleanup with a guard, clipboard-safe paste). The companion app doesn't get its own Whisper pipeline.
+  - **Rule: never edit the `nicorudu/wispr-faux` repo directly.** The control link goes into a copy of Wispr Faux inside this project (`software/wispr-faux-controller/`, app name "Wispr Faux Controller", its own bundle ID).
+    - A stray branch `control-link-spec` was pushed there by mistake on 2026-11-12. Nico deletes it at github.com/nicorudu/wispr-faux/branches; the cloud session can't delete branches.
+  - **UX (decided):** the Voice key → Wispr Faux transcribes → the text shows on the dock's Voice review screen → **Send** delivers it, **Cancel** discards it. As close to SlashVibe as possible.
+  - **Delivery (proposed):** the stick ←/→ on the review screen picks where Send goes: the app in front (paste), or a Claude Code session (focus its tab, paste, Return).
+  - **Order:** Mac first, then Windows.
+  - **Link spec draft:** [docs/wispr-faux-control-link.md](docs/wispr-faux-control-link.md) (loopback WebSocket, token + Origin check, listen/stop/cancel, external audio for the controller mics, insert with Return).
+  - **Open question:** does the copy *replace* the original on the Mac (one app: hotkey + controller), or run *side by side* (no hotkey, ~1–2 GB more memory, possible 2-minute model reloads)?
+  - **Work split:** spec + companion side in the cloud; the Swift build and test with Claude Code on the Mac Mini (needs Xcode).
 - **M1 design notes (from the hooks docs, rechecked 2026-11-11):**
   - `SessionStart` accepts only command hooks. We use an async command hook that runs `python -m companion.hooks.report`, which posts the event plus the terminal app and TTY.
   - ~~All other events are `http` hooks.~~ **Since the hook fixes:** every event uses the same command hook (`companion.hooks.report`). Status events are async; `PermissionRequest` waits (`--wait`, 600 s hook timeout). The app answers within `approval_timeout_s` (120 s), or gives no decision.
@@ -68,7 +72,7 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
 | M1 | Claude Code hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested and fixes rechecked |
-| M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
+| M2 | Voice: Wispr Faux (a copy in this project) as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
 | M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
 | M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
 | M5 | Controller firmware: keys, stick, mics, battery, ESP-NOW | Yes | waits for parts |
@@ -147,6 +151,10 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
 - Controller battery life on Wi-Fi vs ESP-NOW.
 
 ## 8. Step log (newest first)
+- 2026-11-12 — M2 planning:
+  - Decided Wispr Faux is the voice engine, with dock review then Send/Cancel, Mac first.
+  - Rule from Nico: don't edit the wispr-faux repo; use a copy in this project.
+  - Saved the link spec draft. M2 tabled for now.
 - 2026-11-11 — Mac Mini recheck after PR #5 (all passed):
   - After `git checkout main && git pull` (the Mac had been left on the test branch): 54 tests pass; `install-hooks` installed 10 hooks.
   - Answer-in-terminal cleared B (`pr-1 -> None`, "Answered in the terminal").

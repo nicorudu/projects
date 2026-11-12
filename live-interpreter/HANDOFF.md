@@ -33,7 +33,7 @@ Details for each: [spec](docs/spec.md) "Build milestones".
 3. **Git:** branch first, never commit to `main`. Commit author `nicorudu <nicorudu@users.noreply.github.com>`. Never put Nico's personal email in commits or external requests.
 4. **Secrets** (OpenAI, ElevenLabs, Twilio) go in the OS keychain locally and the host's secret store when deployed. Never in the repo.
 5. **No audio, transcripts or call logs in the repo**, ever (`.gitignore` covers them).
-6. Nico uses an **M4 Mac mini** (main) and an **HP OmniBook X Flip (Windows)**. Code must run on both.
+6. Nico uses an **M4 Mac mini** (main) and an **HP OmniBook X Flip (Windows)**. Code must run on both, except the free-path model server, which uses MLX (Apple Silicon only) in v0.
 7. **Voice cloning** is only ever opt-in, and only for the account owner's own voice. Never clone the other person on a call.
 
 ## 4. Design in one paragraph

@@ -238,13 +238,13 @@ Build in order; each one working and logged before the next.
 
 ## Working notes for Claude Code
 
-- Keep transports, engines, TTS and voice picking behind adapter interfaces so engines can be swapped (OpenAI → ElevenLabs Realtime → Hibiki-Zero) without touching the rest.
+- Keep transports, engines, TTS and voice picking behind adapter interfaces so engines can be swapped (OpenAI ↔ Qwen free path ↔ ElevenLabs Realtime ↔ Hibiki-Zero) without touching the rest.
 - One config file for all timings, thresholds and the voice matrix path.
 - Unit tests for the phrase chunker, resampler and voice picker. Replay recorded test audio (your own, with consent) for regression tests.
 - After every step: commit, add an entry to `BUILDLOG.md`, and update `HANDOFF.md` so nothing is lost when a conversation compacts. Save key prompts in `prompts/`.
 - Git: branch first, never commit to `main`. Commit author `nicorudu <nicorudu@users.noreply.github.com>`.
 - Never commit audio, transcripts, call logs, keys or `.env` files (already in `.gitignore`).
-- Code must run on the M4 Mac mini and the Windows laptop.
+- Code must run on the M4 Mac mini and the Windows laptop. Exception: the free-path model server uses MLX, which is Apple Silicon only. On Windows or Linux, Qwen3-TTS can use its GGML backend later.
 
 ## Risks and open questions
 

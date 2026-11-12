@@ -5,7 +5,7 @@
   "status": "planning",
   "status_text": "Planning: spec and research done, first pipeline next",
   "updated": "2026-11-12",
-  "tags": "Real-time speech translation, OpenAI Realtime API, ElevenLabs, Twilio, TypeScript, Python",
+  "tags": "Real-time speech translation, Qwen (open source), OpenAI Realtime API, ElevenLabs, Twilio, TypeScript, Python",
   "hero": "",
   "hero_alt": "",
   "repo": "https://github.com/nicorudu/projects/tree/main/live-interpreter",

@@ -43,6 +43,26 @@ What was checked before starting, so it doesn't need re-researching. Checked 202
 - **audeering `wav2vec2-large-robust-24-ft-age-gender`:** estimates age (0–100) and gender (child / female / male) from raw audio. 318M parameters, runs on CPU. License CC-BY-NC-SA 4.0 (non-commercial: fine for a portfolio, replace if it ever becomes a product).
 - The accent doesn't need a model in v0: it's the speaker's source language (plus region if set).
 
+## 6. Free path: open Qwen models (checked 2026-11-12)
+
+All Apache 2.0, open weights on Hugging Face and ModelScope.
+
+| Model | Released | What it does | Speed notes |
+| --- | --- | --- | --- |
+| **Qwen3-ASR** 0.6B / 1.7B | 2026-01-29 | Speech-to-text and language ID for 30 languages + 22 Chinese dialects (incl. en, es, ar, fr, de, pt, it, ko, ru, vi, ja, th, id). Streaming and offline in one model. The 1.7B is state of the art among open ASR models per Qwen; the 0.6B trades a little accuracy for speed (average time-to-first-token ~92 ms). `pip install qwen-asr` | MLX port: 30–36× real time on an M5 Pro (soniqo benchmark) |
+| **Qwen3.5** small: 0.8B, 2B, 4B, 9B | 2026-03-02 | General LLMs, used here as a prompted text translator. The family covers 201 languages. 9B is the strongest small model; 4B targets 6–8 GB machines | To be measured on the M4 |
+| **Qwen3-TTS** 0.6B / 1.7B (Base, CustomVoice, VoiceDesign) | 2026-01 | 10 languages (zh, en, ja, ko, de, fr, ru, pt, es, it; Spanish includes Latin American). VoiceDesign makes voices from a description; Base clones from 3 s of audio; documented "voice design then clone" flow. Streaming, ~97 ms first audio on GPU | Apple Silicon MLX: RTF ~0.55 (M2 Max) to ~0.7–0.8, peak memory ~4–6 GB. CPU only: about 3× slower than real time on a shared 4-vCPU box, ~1.28 RTF on Neoverse-N1-class Arm cores |
+| Qwen3.8-LiveTranslate (hosted) | 2026-09-19 | Simultaneous interpretation: 60 languages in, 29 spoken out, keeps the speaker's voice. **API only, no weights** | — |
+
+Earlier generation, for reference: SenseVoice (Alibaba FunAudioLLM) is a fast multilingual ASR model; Qwen3-ASR is the newer, better-covered choice for this project.
+
+## 7. Oracle Cloud (checked 2026-11-12)
+
+- **Always Free Arm (Ampere A1, `VM.Standard.A1.Flex`):** 1,500 OCPU-hours and 9,000 GB-hours a month, which equals **2 OCPUs and 12 GB of memory** always on. Halved from 4 OCPUs / 24 GB in 2026; enforced from 2026-08-18. Usable as 1 or 2 VMs.
+- **Watch-outs:** if a tenancy goes over the Always Free A1 limit when a trial ends, **all** A1 instances are disabled (deleted after 30 days), not just the excess. Create the VM at 2 OCPU / 12 GB or less. New A1 VMs can fail with "out of capacity"; idle Always Free VMs can be reclaimed.
+- **No GPUs in the free tier.** The cheapest Oracle GPU (`VM.GPU.A10.1`, NVIDIA A10 24 GB) lists at about $2/hour.
+- **Fit for this project:** great as the free, always-on public server (Twilio bridge, web rooms, session control). Too slow to run the voice models live on 2 Arm cores. Models run on the Mac mini, reached over a private Tailscale tunnel.
+
 ## Sources
 
 - [OpenAI: Advancing voice intelligence with new models in the API](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/)
@@ -70,3 +90,23 @@ What was checked before starting, so it doesn't need re-researching. Checked 202
 - [Hibiki-Zero paper (arXiv 2602.11072)](https://arxiv.org/abs/2602.11072)
 - [Qwen3-TTS release overview](https://comfyui-wiki.com/en/news/2026-01-22-alibaba-qwen3-tts-release)
 - [audeering age/gender model](https://huggingface.co/audeering/wav2vec2-large-robust-24-ft-age-gender)
+- [Qwen3-ASR on GitHub](https://github.com/QwenLM/Qwen3-ASR)
+- [Qwen3-ASR open-source announcement (Alibaba Cloud)](https://www.alibabacloud.com/blog/qwen3-asr-%26-qwen3-forcedaligner-is-now-open-sourced-robust-streaming-and-multilingual_602843)
+- [Qwen3-ASR technical report (arXiv 2601.21337)](https://arxiv.org/pdf/2601.21337v2)
+- [Qwen3.5 small models (NYU Shanghai RITS)](https://rits.shanghai.nyu.edu/ai/qwen-3-5-small-models-9b-parameters-that-beat-120b/)
+- [Qwen3.5 family guide (Codersera)](https://codersera.com/blog/qwen-3-5-complete-guide-2026/)
+- [Qwen3-TTS model card](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base)
+- [Qwen3-TTS languages (docs)](https://www.mintlify.com/QwenLM/Qwen3-TTS/concepts/languages)
+- [Qwen3-TTS repository mirror (README sections incl. "Voice Design then Clone")](https://gitee.com/fmtx/Qwen3-TTS)
+- [soniqo: Qwen3-TTS on Apple Silicon](https://soniqo.audio/guides/speak)
+- [soniqo: Apple Silicon ASR/TTS benchmarks](https://soniqo.audio/benchmarks)
+- [Qwen3-TTS MLX skill (performance table)](https://skills.sh/agiseek/agent-skills/qwen3-tts-mlx)
+- [ocdevel: quantized Qwen3-TTS on CPU](https://dev.ocdevel.com/blog/20260711-quantized-cpu-tts)
+- [Qwen3.8-LiveTranslate (artiverse)](https://www.artiverse.ca/alibabas-qwen38-livetranslate-targets-faster-real-time-speech-translation/)
+- [Oracle docs: Always Free resources](https://docs.oracle.com/iaas/Content/FreeTier/resourceref.htm)
+- [terminalbytes: Oracle free tier changes 2026](https://terminalbytes.com/oracle-cloud-free-tier-changes-2026)
+- [Linuxiac: Oracle cuts free tier Ampere A1 resources in half](https://linuxiac.com/?p=214114)
+- [issoh: Oracle Free Tier at 2 OCPU, trial-end rule, capacity errors (Japanese)](https://www.issoh.co.jp/tech/details/17531/)
+- [computeprices: Oracle A10 pricing](https://computeprices.com/providers/oracle/gpus/a10)
+- [BrainDetox: running a backend on Oracle Always Free (capacity and idle-reclaim risks, Japanese)](https://braindetox.kr/ja/posts/oracle_always_free_backend_2026.html)
+- [ApX: Qwen3.5-2B model page (201-language coverage)](https://apxml.com/zh/models/qwen35-2b)

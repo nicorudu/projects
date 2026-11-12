@@ -7,20 +7,20 @@ Last updated: 2026-11-12 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** research, use cases, v0 spec, decision log. Project folder created on branch `live-interpreter-kickoff`, PR #8 to `main`.
+- **Done:** research, use cases, v0 spec, decision log, free open-source path (Qwen models on the Mac mini, Oracle Always Free VM as the server). Project folder on branch `live-interpreter-kickoff`, PR #8 to `main`.
 - **No code yet.**
-- **Next step: M1, one-way pipe on the Mac.** Mic → `gpt-realtime-translate` → speakers, using OpenAI's own voice, with a timestamp at every stage so mouth-to-ear delay is measured. Also add a small `keys:set` script that stores API keys in the OS keychain.
-- **Blocked on:** an OpenAI API key (M1). ElevenLabs is needed from M2, Twilio from M5 (see §6).
+- **Next step: M1, one-way pipe on the Mac, free path first.** Mic → Qwen3-ASR → Qwen3.5 → Qwen3-TTS (one stock voice) → speakers, all via MLX, with a timestamp at every stage so mouth-to-ear delay is measured. Then the same with `gpt-realtime-translate` once the OpenAI key exists, and compare. Also add a small `keys:set` script that stores API keys in the OS keychain.
+- **Not blocked:** the free path needs no accounts. Needs a session on the Mac mini (MLX only runs on Apple Silicon). OpenAI key for the paid half of M1, ElevenLabs for M2, Twilio + Oracle VM for M5 (see §6).
 
 ## 2. Milestones
 
 | # | What | Needs | State |
 |---|---|---|---|
-| M1 | One-way pipe on the Mac (OpenAI voice), latency log | OpenAI key | **next** |
-| M2 | Matched voice: transcript → phrase chunker → ElevenLabs TTS; 12-voice matrix; manual profiles | ElevenLabs | planned |
+| M1 | One-way pipe on the Mac, free Qwen path then OpenAI path; latency + memory log | Mac mini; OpenAI key for the paid half | **next** |
+| M2 | Matched voice on both paths: phrase chunker → ElevenLabs TTS and Qwen3-TTS; 12-voice matrix each; manual profiles | ElevenLabs for the paid half | planned |
 | M3 | Automatic voice profiling (audeering sidecar), voice picker, lock-in + 15 s re-check | — | planned |
 | M4 | Web room, two-way: rooms, link + QR, captions, barge-in | — | planned |
-| M5 | Phone bridge: Twilio number, outbound flow, two legs, disclosure, barge-in | Twilio | planned |
+| M5 | Phone bridge: server on the Oracle VM + Tailscale to the Mac mini; Twilio number, outbound flow, two legs, disclosure, barge-in | Twilio, Oracle VM | planned |
 | M6 | In-person mode: PWA screen, earbuds routing, half-duplex gate | — | planned |
 | M7 | Portfolio polish: README diagram, latency chart, 60 s demo of a real call, showcase update | — | planned |
 | v1 | Wider language coverage (second engine), meeting recap (opt-in), glossary, inbound calls | — | after v0 |
@@ -37,7 +37,7 @@ Details for each: [spec](docs/spec.md) "Build milestones".
 7. **Voice cloning** is only ever opt-in, and only for the account owner's own voice. Never clone the other person on a call.
 
 ## 4. Design in one paragraph
-A Node + TypeScript server runs two one-way translation pipelines per conversation (A → B and B → A). Each pipeline streams the speaker's audio into OpenAI `gpt-realtime-translate`, takes its translated text as it arrives, cuts it into speakable phrases, and speaks them with ElevenLabs streaming TTS in a voice picked from a pre-designed matrix (sex × age band × output language, with a light accent from the speaker's language). A Python sidecar guesses sex and age from the first ~4 seconds of speech. Audio gets in and out through transport adapters: Twilio call legs (phone bridge), browser WebSockets (web room, QR join) or the device's own mic and speaker (in person). Captions for both sides are always on.
+A Node + TypeScript server runs two one-way translation pipelines per conversation (A → B and B → A). Each pipeline turns the speaker's audio into translated text, cuts it into speakable phrases, and speaks them in a voice picked from a pre-designed matrix (sex × age band × output language, with a light accent from the speaker's language). Two interchangeable engines: **paid** (OpenAI `gpt-realtime-translate` + ElevenLabs TTS) and **free** (Qwen3-ASR → Qwen3.5 → Qwen3-TTS, running with MLX on the Mac mini). The server lives on an Oracle Always Free VM and reaches the Mac mini over Tailscale. A Python sidecar guesses sex and age from the first ~4 seconds of speech. Audio gets in and out through transport adapters: Twilio call legs (phone bridge), browser WebSockets (web room, QR join) or the device's own mic and speaker (in person). Captions for both sides are always on.
 
 Full detail: [spec](docs/spec.md) · [use cases](docs/use-cases.md) · [research](docs/research.md) · [decisions](docs/decisions.md) · [build log](BUILDLOG.md).
 
@@ -56,7 +56,12 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 - **iOS:** no API gives a third-party app the remote caller's audio on a cellular call. VoIP apps have their own raw audio. Apple's call translation in CallKit apps can only be switched on/off (`CXSetTranslatingCallAction`).
 - **audeering `wav2vec2-large-robust-24-ft-age-gender`:** age 0–100, gender child / female / male, 318M params, CPU OK, **CC-BY-NC-SA 4.0**.
 - **Hibiki-Zero (open source, MIT):** fr / es / pt / de → en only, 3B params, NVIDIA GPU (8 GB VRAM should work, 12 GB safe). Demo: `uvx -p 3.13 hibiki-zero serve`.
-- **Qwen3-TTS (open source, Apache 2.0):** 10 languages, voice design from text, 3 s cloning, ~97 ms first audio.
+- **Free path (all Apache 2.0, details in [research.md §6](docs/research.md)):**
+  - **Qwen3-ASR** 0.6B / 1.7B (2026-01-29): 30 languages + 22 Chinese dialects incl. en / es / ar, language ID, streaming. `pip install qwen-asr`. MLX port 30–36× real time (M5 Pro).
+  - **Qwen3.5** small 0.8B / 2B / 4B / 9B (2026-03-02): prompted translator; glossary can go in the prompt.
+  - **Qwen3-TTS** 0.6B / 1.7B (2026-01): 10 languages (zh, en, ja, ko, de, fr, ru, pt, es, it); VoiceDesign from a description, Base clones from 3 s; "design then clone" for a fixed voice matrix. MLX RTF ~0.55–0.8, peak ~4–6 GB. On CPU it's slower than real time.
+  - **Qwen3.8-LiveTranslate** (2026-09-19): hosted only, no weights. 60 languages in, 29 spoken, keeps the speaker's voice.
+- **Oracle Cloud Always Free Arm:** 2 OCPU / 12 GB total (halved in 2026, enforced 2026-08-18), no GPU. Going over the A1 limit at trial end disables **all** A1 instances. "Out of capacity" errors happen; idle VMs can be reclaimed. Cheapest Oracle GPU (A10) ≈ $2/hour.
 - **Workflow quirks in the cloud sessions** (same repo as agent-controller):
   - Open PRs with `gh api repos/nicorudu/projects/pulls -X POST …`; the GitHub MCP tool returns 404 for this repo.
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and `git branch -u`. Otherwise the stop hook reports "unpushed commits".
@@ -64,10 +69,13 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 ## 6. What Nico needs to do
 - **Review and merge the kickoff PR (#8).** The README tells your story in first person; edit it however you like.
 - **The `projects` repo is public**, so the branch, the PR and your story in the README are already visible. Edit or trim anything you'd rather keep private before merging.
-- **Accounts, in the order they're needed:**
-  1. **OpenAI API** key with Realtime API access (M1). Set a monthly spend limit.
-  2. **ElevenLabs** plan with API access and at least 12 free voice slots for the voice matrix (M2).
-  3. **Twilio** account and one phone number (M5). Check what the trial account allows (for example, which numbers it can call) before testing with friends.
+- **Tell Claude how much memory (RAM) the Mac mini has.** It decides which Qwen model sizes the free path uses.
+- **Accounts, in the order they're needed** (the free path needs none of them until M5):
+  1. **OpenAI API** key with Realtime API access (paid half of M1). Set a monthly spend limit.
+  2. **ElevenLabs** plan with API access and at least 12 free voice slots for the voice matrix (paid half of M2).
+  3. **Oracle Cloud** account (M5). Create one Arm VM (`VM.Standard.A1.Flex`) at **no more than 2 OCPUs and 12 GB**, so it stays free when the trial ends.
+  4. **Tailscale** (free for personal use) on the Mac mini and the Oracle VM (M5).
+  5. **Twilio** account and one phone number (M5). Check what the trial account allows (for example, which numbers it can call) before testing with friends.
 - **Don't paste keys into chat or files.** M1 adds a `keys:set` script that asks for each key and stores it in the keychain.
 - **Test speakers:** line up a few friends or family (Spanish and English speakers, different ages) who agree to be test callers for M2–M5.
 - **Ask your wife** which scenarios and languages matter most for her students' families. It shapes the v1 language list.
@@ -76,8 +84,11 @@ Checked 2026-11-12. Sources are in [research.md](docs/research.md).
 - Final name.
 - Does ElevenLabs Voice Design produce a convincing light Colombian accent, or only a general Latin American one?
 - Is ElevenLabs TTS after `gpt-realtime-translate` fast enough, or does "fast mode" (OpenAI's voice) need to be the phone default?
+- Is the free Qwen path fast enough on the M4 for live calls, and which model sizes fit in its memory?
+- Can Qwen3-TTS VoiceDesign do a believable light Colombian accent in English?
 - Which second engine for wider language coverage (Soniox or another), and which TTS covers those languages well.
 - License for the code (the repo is public, so this matters once code lands).
 
 ## 8. Step log (newest first)
+- 2026-11-12 — Added the free path (Qwen3-ASR → Qwen3.5 → Qwen3-TTS on the Mac mini) and Oracle Always Free hosting to the spec, research, decisions and this handoff. M1 now starts with the free path.
 - 2026-11-12 — Project kickoff: research, use cases (Nico's family; his wife's classroom), spec, decision log, handoff, build log, showcase.json. Branch `live-interpreter-kickoff`, PR #8.

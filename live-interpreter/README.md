@@ -16,8 +16,8 @@ Both sides want the conversation to happen. This project is my attempt to make i
 |---|---|
 | Spec | v0 written ([spec](docs/spec.md)) |
 | Research | Engines, phone-call access, voices and costs checked 2026-11-12 ([research](docs/research.md)) |
-| Code | Not started. Next: M1, a one-way Spanish → English pipe on the Mac with latency measured |
-| Accounts | OpenAI API, ElevenLabs and Twilio needed (see [handoff](HANDOFF.md) §6) |
+| Code | Not started. Next: M1, a one-way Spanish → English pipe on the Mac, free path first, with latency measured |
+| Accounts | None for the free path. OpenAI API and ElevenLabs for the paid path, Twilio for phone calls, Oracle Cloud for hosting (see [handoff](HANDOFF.md) §6) |
 
 **Picking the project up?** Start with the [handoff](HANDOFF.md): current step, next step, rules and key facts.
 
@@ -33,8 +33,11 @@ They speak English ─► server ─► live translation ─► matched voice (S
 - **Phone bridge:** phones don't let apps tap into carrier calls, so the server sits in the middle. It calls you, then calls them (Twilio), and only passes translated speech between the two calls. They just answer their phone.
 - **Web room:** share a link or QR code; each person talks through a browser. Good for in-person meetings with two devices.
 - **In person:** one phone, you in earbuds, them on the speaker.
-- **Translation:** OpenAI `gpt-realtime-translate` in v0, behind an adapter so ElevenLabs Realtime Translation or open-source Hibiki-Zero can be swapped in.
-- **Voice:** a small model guesses the speaker's sex and age in the first seconds; the app picks a pre-designed ElevenLabs voice with a light accent from the speaker's language.
+- **Two engines, same app:**
+  - **Free path:** open Qwen models on a Mac mini. Qwen3-ASR hears, Qwen3.5 translates, Qwen3-TTS speaks. A free Oracle Cloud VM is the public server.
+  - **Paid path:** OpenAI `gpt-realtime-translate` with ElevenLabs voices.
+  - Both sit behind adapters, so ElevenLabs Realtime Translation, Qwen LiveTranslate or Hibiki-Zero can be swapped in later.
+- **Voice:** a small model guesses the speaker's sex and age in the first seconds; the app picks a pre-designed voice of the same kind, with a light accent from the speaker's language.
 
 ## Layout
 
@@ -50,6 +53,7 @@ live-interpreter/
 │   ├── research.md    what exists, engines, phone access, voices, costs (with sources)
 │   └── decisions.md   every decision and why
 ├── server/            Node + TypeScript: transports, engines, TTS, session control (M1+)
+├── modelserver/       Python + MLX on the Mac mini: Qwen3-ASR, Qwen3.5, Qwen3-TTS for the free path (M1)
 ├── client/            Vite + TypeScript PWA (M4+)
 ├── profiler/          Python sidecar: speaker sex/age estimate (M3)
 ├── voices/            voice matrix: IDs + the prompts that made them (M2)

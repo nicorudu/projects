@@ -34,6 +34,7 @@ Built-in options exist (Pixel 10 Voice Translate, Apple Live Translation for cal
 6. **No audio is stored.** Logs keep timings, events and (optionally) text only.
 7. **The other person never needs an app.** A parent can be reached on any phone, including a landline, or join a meeting by scanning a QR code into a web page. Only the person starting the conversation uses the app.
 8. **Captions are always on.** Both sides can see the original and the translation, so a wrong number, date or name can be caught and corrected on the spot.
+9. **A free, fully open-source path is built alongside the paid one.** Open Qwen models (Qwen3-ASR → Qwen3.5 → Qwen3-TTS) run on the Mac mini; a free Oracle Cloud VM is the public server. Both paths sit behind the same adapters, so each call can use either. See "Free path" below.
 
 ## Architecture
 
@@ -55,9 +56,9 @@ Person B audio ──► (mirror of the above) ───────────
 | --- | --- |
 | Transport adapters | Twilio leg, browser WebSocket, in-person mic/speaker. All expose the same "audio in / audio out" interface |
 | Audio utils | Resampling and format conversion (Twilio μ-law 8 kHz ↔ 24 kHz PCM16), voice activity detection |
-| Translation engine adapter | `openai-realtime-translate` (v0), `elevenlabs-realtime` (if access), `hibiki-zero` (open-source stretch) |
+| Translation engine adapter | `openai-realtime-translate` (v0, paid), `qwen-cascade` (v0, free: Qwen3-ASR → Qwen3.5), `elevenlabs-realtime` (if access), `qwen-livetranslate` (hosted Qwen API, optional), `hibiki-zero` (open-source stretch) |
 | Phrase chunker | Turns translated text deltas into speakable chunks (clause or punctuation boundaries, max wait timer) |
-| TTS adapter | ElevenLabs WebSocket streaming (v0), Qwen3-TTS (open-source stretch) |
+| TTS adapter | ElevenLabs WebSocket streaming (v0, paid), Qwen3-TTS via MLX (v0, free) |
 | Voice profiler | Estimates gender and age band from the speaker's first few seconds |
 | Voice picker | Maps profile + accent + target language to a voice ID from the matrix |
 | Session controller | Starts/stops sessions, barge-in, disclosure prompt, logging |
@@ -84,6 +85,41 @@ The goal is "sounds like the same kind of person," decided in the first few seco
 **Accent strength is a setting** (subtle / noticeable / off). Default: subtle.
 
 **Cloning (later, opt-in only).** Instant cloning of the actual speaker would sound closest, but it means copying someone's voice. Only ever offer it to the account owner for their own voice, never to the other person on the call.
+
+## Free path (all open source)
+
+The same pipeline with every paid model swapped for an open one from Alibaba's Qwen team. All three are Apache 2.0: free to download, run and use, including commercially.
+
+| Step | Model | What matters here |
+| --- | --- | --- |
+| **Hear** | **Qwen3-ASR** 0.6B or 1.7B (released 2026-01-29) | 30 languages plus 22 Chinese dialects, including English, Spanish and Arabic. Identifies the language itself. Streaming and offline in one model. An Apple Silicon (MLX) port runs about 30× faster than real time (measured on an M5 Pro; expect less on an M4, still far more than needed) |
+| **Translate** | **Qwen3.5** small model, 4B or 9B (released 2026-03-02) | Text-to-text translation with a short prompt. Because it's prompted, a school glossary ("IEP", "permission slip") can go straight into the instructions, which the OpenAI model doesn't allow |
+| **Speak** | **Qwen3-TTS** 1.7B VoiceDesign + Base (released 2026-01) | 10 languages: Chinese, English, Japanese, Korean, German, French, Russian, Portuguese, Spanish (European and Latin American) and Italian. Designs voices from a text description, clones from 3 seconds of audio, streams. Faster than real time on Apple Silicon |
+
+**Voice matching on the free path** works like the ElevenLabs matrix: design each of the 12 voices once with VoiceDesign ("a man in his 30s, warm, speaking English with a light Colombian accent"), keep a short reference clip of each, and speak with the Base model cloning from that clip so the voice stays identical every call. Qwen documents this "design, then clone" flow.
+
+**Where it runs:**
+
+```
+Phone (Twilio) / browser ──► Oracle Cloud Always Free VM
+                              public address, Twilio bridge, web rooms, session control
+                                        │  private tunnel (Tailscale)
+                                        ▼
+                              Mac mini M4: Qwen3-ASR → Qwen3.5 → Qwen3-TTS (MLX)
+```
+
+- **Oracle's free VM hosts the server, not the models.** The Always Free Arm allowance is now 2 OCPUs and 12 GB of memory (halved from 4 / 24 in 2026), with no GPU. Qwen3-TTS on CPUs of that class runs a bit slower than real time even with more cores, so live speech would lag. As an always-on public address for Twilio and the web rooms it's ideal, and free.
+- **The Mac mini does the AI work.** It stays private behind the tunnel; nothing on it is exposed to the internet. It has to be on and online during calls.
+- **Memory:** Qwen3-TTS alone peaks around 4–6 GB in MLX. Check how much memory is used with all three models loaded; smaller variants (ASR 0.6B, Qwen3.5 4B, TTS 0.6B Base) are the fallback.
+
+**What still costs money:** phone-bridge minutes on Twilio. The web room and in-person modes are completely free on this path.
+
+**Limits to test:**
+- **Speed.** Three models in a row may be slower than one streaming API. Measured in M1 against the OpenAI path. If it's too slow: smaller models, or a rented GPU by the hour (Oracle's A10 is about $2/hour, so not free).
+- **Languages.** Qwen3-TTS speaks 10 languages, so the language gap from the school use case (Arabic, Haitian Creole and others) is still open on the voice side, even though Qwen3-ASR can hear Arabic.
+- **Accent.** Whether VoiceDesign can produce a believable light Colombian accent in English.
+
+**Related, but not free:** Qwen3.8-LiveTranslate (Sept 2026) is Qwen's own hosted interpreter: it understands 60 languages, speaks 29, and keeps the speaker's voice. It's API-only with no open weights, so it's a possible paid adapter, not part of the free path.
 
 ## Modes in detail
 
@@ -127,12 +163,14 @@ Reference implementations to read first: OpenAI's realtime translation cookbook 
 | --- | --- | --- |
 | Server | Node.js + TypeScript (Fastify + `ws`) | Matches the OpenAI and Twilio reference demos |
 | Client | Vite + TypeScript PWA | Works on iPhone, Android, Mac and Windows from one codebase |
-| Translation | OpenAI `gpt-realtime-translate` | Optional source transcript via `gpt-realtime-whisper` ($0.017/min) |
-| TTS | ElevenLabs Flash, WebSocket streaming | Voices from the Voice Design matrix |
+| Translation (paid) | OpenAI `gpt-realtime-translate` | Optional source transcript via `gpt-realtime-whisper` ($0.017/min) |
+| Translation (free) | Qwen3-ASR + Qwen3.5 (4B or 9B) via MLX on the Mac mini | Python model service the server calls over the tunnel |
+| TTS (paid) | ElevenLabs Flash, WebSocket streaming | Voices from the Voice Design matrix |
+| TTS (free) | Qwen3-TTS via MLX on the Mac mini | Voices designed once, then cloned from reference clips |
 | Voice profiler | Python sidecar (FastAPI + transformers) | audeering age/gender model, CPU |
 | Telephony | Twilio Programmable Voice + bidirectional Media Streams | One phone number |
-| Local dev | M4 Mac mini + ngrok for a public WSS URL | Twilio needs to reach the server |
-| Hosting (later) | Fly.io or Render | Must support long-lived WebSockets |
+| Local dev | M4 Mac mini + ngrok for a public WSS URL | Until the Oracle VM is set up |
+| Hosting | Oracle Cloud Always Free Arm VM (≤ 2 OCPU / 12 GB) for the server; Mac mini for models over Tailscale | Must support long-lived WebSockets. Fly.io or Render as fallback |
 | Secrets | OS keychain locally (macOS Keychain / Windows Credential Manager), the host's secret store when deployed | OpenAI, ElevenLabs, Twilio keys. Never in the repo, never in a committed file |
 
 ## Latency budget (targets to measure, not facts)
@@ -152,7 +190,8 @@ Log a timestamp at every stage boundary for every phrase. Compare "matched voice
 
 ## Cost per conversation minute (rough)
 
-- **Translation:** $0.034 per audio minute per direction. Both directions stream continuously, so roughly **$0.07 per conversation minute**.
+- **Free path:** $0 for models and the Oracle VM. Only Twilio minutes cost money, and only in phone-bridge mode.
+- **Translation (paid path):** $0.034 per audio minute per direction. Both directions stream continuously, so roughly **$0.07 per conversation minute**.
 - **Voice:** ElevenLabs bills by characters (Flash and Turbo use about 0.5–1 credit per character), so cost depends on how much is said and the plan's credit price.
 - **Phone:** two billed Twilio legs per call plus the number's monthly fee. Check Twilio's current rates before testing.
 
@@ -162,17 +201,18 @@ Fine for a portfolio project. Add a hard per-call time limit and a monthly spend
 
 Build in order; each one working and logged before the next.
 
-1. **One-way pipe on the Mac.** Mic → `gpt-realtime-translate` → speakers, using OpenAI's own audio. Stage-timing log. *Done when:* you speak Spanish and hear English with mouth-to-ear measured and logged.
-2. **Matched voice.** Translated text deltas → phrase chunker → ElevenLabs streaming TTS. Generate the 12-voice matrix. Manual profiles only. *Done when:* a listener who hasn't heard the speaker correctly guesses their gender and rough age from the translated voice, and latency stays within budget.
+1. **One-way pipe on the Mac, two engines.** Free path first, because it needs no accounts: mic → Qwen3-ASR → Qwen3.5 → Qwen3-TTS (one stock voice) → speakers. Then the paid path when the OpenAI key arrives: mic → `gpt-realtime-translate` → speakers, using OpenAI's own audio. Stage-timing log for both. *Done when:* you speak Spanish and hear English on both paths, with mouth-to-ear measured side by side and memory use noted.
+2. **Matched voice.** Translated text → phrase chunker → TTS, on both paths: ElevenLabs streaming TTS and Qwen3-TTS. Build the 12-voice matrix for each. Manual profiles only. *Done when:* a listener who hasn't heard the speaker correctly guesses their gender and rough age from the translated voice, and latency stays within budget.
 3. **Automatic voice profiling.** Python sidecar with the audeering model, voice picker, lock-in and 15-second re-check. *Done when:* 10 test speakers (friends, recordings) get a sensible voice without manual setup.
 4. **Web room, two-way.** Rooms, links, both directions, captions, barge-in. *Done when:* a 5-minute English ↔ Spanish conversation with a friend in another room feels usable.
-5. **Phone bridge.** Twilio number, outbound flow, two legs, disclosure, barge-in, "original underneath" setting. *Done when:* you call a Spanish-speaking friend's regular phone and hold a 5-minute conversation.
+5. **Phone bridge.** Server moves to the Oracle Always Free VM, connected to the Mac mini over Tailscale. Twilio number, outbound flow, two legs, disclosure, barge-in, "original underneath" setting. *Done when:* you call a Spanish-speaking friend's regular phone and hold a 5-minute conversation.
 6. **In-person mode.** PWA screen, earbuds routing, half-duplex gate, big captions. *Done when:* a face-to-face exchange works without the phone's speaker feeding back into the translator.
 7. **Portfolio polish.** README with architecture diagram, latency chart from real logs, a 60-second demo video of a real translated phone call, a "how it works" page. Hand any site changes for nicorudu.com to the website assistant.
 
 **Stretch (v1+)**
 
-- **Open-source path.** Hibiki-Zero (MIT, 3B parameters) translates French, Spanish, Portuguese and German into English with voice transfer built in. It needs an NVIDIA GPU (8 GB VRAM should work, 12 GB is safe), so run it on a rented GPU for the Spanish → English direction. Qwen3-TTS (Apache 2.0, 10 languages, voice design from descriptions, ~97 ms first audio) can replace ElevenLabs for the voice step.
+- **Hibiki-Zero.** (MIT, 3B parameters) translates French, Spanish, Portuguese and German into English with voice transfer built in. It needs an NVIDIA GPU (8 GB VRAM should work, 12 GB is safe), so it would run on a rented GPU for the Spanish → English direction. (Qwen3-TTS moved into v0 as the free path.)
+- **Qwen3.8-LiveTranslate adapter** (hosted, paid): 60 languages understood, 29 spoken, keeps the speaker's voice. Worth comparing against OpenAI once v0 works.
 - **Accent knob from research:** the original Hibiki controls how close the output stays to the source voice; higher settings give very strong accents. Worth an experiment for the "slight accent" feature.
 - **Wider language coverage (high priority after v0).** `gpt-realtime-translate` only outputs 13 languages, and several common among newcomer families (for example Arabic, Haitian Creole, Dari, Pashto, Swahili) aren't among them. Add a second engine path: streaming speech-to-text + translation (Soniox advertises any-to-any across 60+ languages) feeding the same TTS step. Check each TTS's language list before promising a language.
 - **Meeting recap in both languages (opt-in).** After a conference or call, a short summary of what was agreed (dates, forms, next steps), in both languages. Needs both people's consent, because it means keeping text.
@@ -232,3 +272,10 @@ Build in order; each one working and logged before the next.
 - [Qwen3-TTS overview](https://comfyui-wiki.com/en/news/2026-01-22-alibaba-qwen3-tts-release)
 - [Deepgram: Is ElevenLabs real-time? (credit pricing)](https://deepgram.com/learn/is-elevenlabs-real-time-what-developers-need-to-know)
 - [Soniox vs. OpenAI translation comparison (vendor page)](https://soniox.com/compare-translation/openai)
+- [Qwen3-ASR on GitHub](https://github.com/QwenLM/Qwen3-ASR) and [open-source announcement](https://www.alibabacloud.com/blog/qwen3-asr-%26-qwen3-forcedaligner-is-now-open-sourced-robust-streaming-and-multilingual_602843)
+- [Qwen3.5 small models (NYU Shanghai RITS)](https://rits.shanghai.nyu.edu/ai/qwen-3-5-small-models-9b-parameters-that-beat-120b/)
+- [Qwen3-TTS model card](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base) and [language notes](https://www.mintlify.com/QwenLM/Qwen3-TTS/concepts/languages)
+- [Qwen3-TTS speed on Apple Silicon (soniqo)](https://soniqo.audio/guides/speak) and [Apple Silicon ASR benchmarks](https://soniqo.audio/benchmarks)
+- [Quantized Qwen3-TTS on CPU, real-time factors (ocdevel)](https://dev.ocdevel.com/blog/20260711-quantized-cpu-tts)
+- [Oracle Always Free limits halved (terminalbytes)](https://terminalbytes.com/oracle-cloud-free-tier-changes-2026)
+- [Qwen3.8-LiveTranslate (API only)](https://www.artiverse.ca/alibabas-qwen38-livetranslate-targets-faster-real-time-speech-translation/)

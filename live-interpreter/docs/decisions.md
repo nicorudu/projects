@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-12 | M1 builds the free path first, then the OpenAI path, and compares them | The free path needs no accounts, so work can start right away; the comparison decides the default | M1 = OpenAI only |
+| 2026-11-12 | Server hosted on an Oracle Cloud Always Free Arm VM (≤ 2 OCPU / 12 GB); models stay on the Mac mini, reached over Tailscale | Free, always-on public address for Twilio and web rooms; 2 Arm cores with no GPU are too slow to run the voice models live | Fly.io / Render |
+| 2026-11-12 | Add a free, fully open-source path: Qwen3-ASR → Qwen3.5 → Qwen3-TTS on the Mac mini (MLX), behind the same adapters as the paid path | Nico wants a version that costs nothing to run; all three are Apache 2.0, and Qwen3.5 can take a glossary in its prompt | Paid APIs only |
 | 2026-11-12 | Wider language coverage is the first priority after v0 | The school use case includes families who speak languages outside `gpt-realtime-translate`'s 13 outputs (e.g. Arabic, Haitian Creole) | — |
 | 2026-11-12 | Captions always on, for both sides | Dates, amounts and names must be catchable when the translation is wrong | — |
 | 2026-11-12 | The other person never needs an app (phone bridge for any phone, QR code for web rooms) | Families may have no smartphone, no app, no account | — |

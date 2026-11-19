@@ -64,7 +64,7 @@ Kept as they were: both boards, the display, the amp and speaker, the mics, the 
 |---|---|---|
 | Fold-flat screen on a ribbed base | Yes | 4.0" 480 × 320 touch panel. Our screen is lower resolution than theirs looks. |
 | Detachable wireless controller | Yes | ESP-NOW radio in place of their 2.4 GHz link |
-| Pivoting joystick block | Yes | Printed pivot with magnet detents |
+| Pivoting joystick block | Yes | Printed pivot. A magnet holds it in line; a printed click holds it at 90°. |
 | Three large key plates | Yes | Printed plates on Choc switches. Travel is 3 mm, against their 1.8 mm. |
 | Wide flat stick cap, four ticks | Yes | Printed cap on a Joy-Con-style stick |
 | Dual close-talk mics on the end face | Yes | 2 × INMP441 |
@@ -121,13 +121,13 @@ The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The re
 | C2 | Adafruit #5628 mini thumbstick × 2 | The stick |
 | C7 | TP4056 USB-C charger with protection | Charging the controller |
 | C9 | Resistor kit that includes 10 kΩ, 22 kΩ, 100 kΩ and 150 kΩ | Battery level, docked sense, green button |
-| D7 | 6 × 2 mm neodymium magnets, 20 or more | Docking, pivot detents, lid |
+| D7 | 6 × 2 mm neodymium magnets, 20 or more | Docking, pivot, lid |
 | S4 | 2.54 mm breakaway header strip | Breadboard XIAO |
 
 ### B. New in rev 3
 | ID | Part | Spec | Why |
 |---|---|---|---|
-| C10 | Tactile push buttons | 6 × 6 mm, through-hole, 5 mm tall, pack of 10 or more | The green button on the joystick block |
+| C10 | Tactile push buttons | 6 × 6 mm, through-hole, 5 mm tall, pack of 10 or more | Two are used: the green button on the joystick block, and the sensor that tells whether the block is swung out |
 
 ### C. Check you have these. Earlier lists missed them.
 | ID | Item | Why |
@@ -158,7 +158,7 @@ The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The re
 | Radio audio drops words | Gaps in dictation | Compressed audio, a small buffer, resend on loss. Measured in M6. |
 | First word clipped | "…factor the" instead of "Refactor the" | Keep the mics running with a short rolling buffer whenever the controller is awake |
 | The screen redraws slowly | Laggy lists | The dock draws from small messages, not streamed pictures. Measured in M4. |
-| The lid won't stay open | Lid flops | A printed stop at 105° plus a magnet. No friction hinge needed. |
+| The lid won't stay open | Lid flops | The lid leans back onto a printed stop at 105°, so gravity holds it. No friction hinge needed. |
 | Parts differ from listings | Holes don't line up | Nothing is printed before M7a's measurements |
 | SlashVibe's open-source code is AGPL | Copying it would force that license on our code | Learn from how it behaves; write our own code |
 

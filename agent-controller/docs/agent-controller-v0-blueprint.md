@@ -13,7 +13,7 @@ Written 2026-11-18. It replaces rev 2 (Nov 11). Rev 3 follows a full re-check of
 | Keys: Cancel / Voice / Send | Keys: **Cancel / Send / Voice**, with Voice beside the joystick |
 | 1u keyboard keycaps | **Large printed key plates**, about 25 × 36 mm |
 | Stick click opens and confirms | **Click not used.** Right opens, left goes back, Send confirms. |
-| Status LED beside the stick | **Green button** on the block, with the status LED under it |
+| Status LED beside the stick | **Green button** on the block, with the status LED in a small window beside it |
 | Controller lies in a tray on the dock | Controller **attaches to the base's front face**; no tray |
 | Controller can talk to the Mac directly over Wi-Fi | Controller **always** talks to the dock (ESP-NOW). Only the dock talks to the Mac. |
 | No position sensing | The controller knows whether the block is **swung out** and whether it is **docked**, so stick directions always match what you see |

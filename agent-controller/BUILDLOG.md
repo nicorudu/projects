@@ -4,6 +4,24 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-18 — Option: a fixed-tilt screen (rev 3b)
+- Mocked up a version where the screen never folds: it sits in a rigid wedge at 60°. Same base, same controller, same footprint. → [comparison](docs/option-fixed-tilt.md), [renders](hardware/renders/2026-11-18-rev3b-fixed-tilt/)
+- It removes the hinge, the wires that flex across it, the lid magnets and the pin bending. It gives up closing flat.
+- Not chosen. The folding lid stays the plan.
+
+![folding lid and fixed tilt](media/web/rev3b-01-compare.webp)
+
+## 2026-11-18 — Rev 3 concept model: the finished look and an x-ray
+- Built the whole device as a 3D model with every part in its place. → [renders](hardware/renders/2026-11-18-rev3-concept/)
+- Eight views: open, block swung out, controller off the dock, closed, two x-ray views, and both halves exploded with labels.
+- The model checks itself: no two parts overlap, with the lid closed, the block in line, and the block swung out.
+- It found five tight spots, listed in [blueprint §4.7](docs/agent-controller-v0-blueprint.md). The main one: the display's pins were taller than the room behind it in the lid.
+- **Decision:** the lid grows from 10 to 13 mm and the display's pins are bent flat. The device is about 35 mm tall when closed.
+
+![rev 3 concept](media/web/rev3-02-device-open.webp)
+
+![rev 3 x-ray](media/web/rev3-05-xray.webp)
+
 ## 2026-11-18 — Rev 3: plan and blueprint rebuilt from the reference
 - Went back through every photo in the chat and everything public about SlashVibe: the site, the Kickstarter page, its FAQ, updates and comments, four demo videos and the press coverage. → [reference notes](docs/research/slashvibe-reference.md)
 - **The joystick block pivots.** It swings out 90° so your thumb rests on the stick while your fingers stay on the keys. The earlier notes said it didn't; Nico's photo shows it does.

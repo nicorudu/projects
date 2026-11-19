@@ -1,0 +1,2 @@
+OVERLAPS, lid closed + block in line (expected: none)
+OVERLAPS, block swung out 90 deg (expected: none)

@@ -6,15 +6,43 @@
   "status_text": "Building: rev 3 design (pivoting joystick block); approvals work from the fake device",
   "updated": "2026-11-18",
   "tags": "ESP32-S3, Python, Whisper, Claude Code, CadQuery, 3D printing",
-  "hero": "media/web/rev2-01-docked-open.webp",
-  "hero_alt": "Concept render of the agent controller: a small screen on a hinged dock with a three-key controller bar docked at the front",
+  "hero": "media/web/rev3-02-device-open.webp",
+  "hero_alt": "Concept render of the agent controller: a small screen on a hinged lid, a ribbed base, three large keys and a joystick block that pivots",
   "repo": "https://github.com/nicorudu/projects/tree/main/agent-controller",
   "timeline": [
     {
       "date": "2026-11-18",
       "title": "Rev 3: the joystick block pivots",
-      "summary": "A full re-check of the reference product. The joystick block now swings out 90° under your thumb, the keys became large plates, and the plan and blueprint were rebuilt around that.",
+      "summary": "A full re-check of the reference product. The joystick block now swings out 90° under your thumb, the keys became large plates, and the plan and blueprint were rebuilt around that. A 3D concept model places every part and checks that nothing collides.",
       "images": [
+        {
+          "src": "media/web/rev3-02-device-open.webp",
+          "alt": "Concept render: docked, screen open"
+        },
+        {
+          "src": "media/web/rev3-03-block-swung-out.webp",
+          "alt": "Concept render: the joystick block swung out 90 degrees, mics facing you"
+        },
+        {
+          "src": "media/web/rev3-04-closed.webp",
+          "alt": "Concept render: lid closed"
+        },
+        {
+          "src": "media/web/rev3-05-xray.webp",
+          "alt": "X-ray view with every part labeled"
+        },
+        {
+          "src": "media/web/rev3-06-xray-top.webp",
+          "alt": "X-ray view from above, lid removed"
+        },
+        {
+          "src": "media/web/rev3-07-exploded-dock.webp",
+          "alt": "Lid and base exploded, every part labeled"
+        },
+        {
+          "src": "media/web/rev3-08-exploded-controller.webp",
+          "alt": "Controller exploded, every part labeled"
+        },
         {
           "src": "media/web/rev3-01-layout.webp",
           "alt": "Layout drawing: the controller in line, with the joystick block swung out, and a side view with the lid open"

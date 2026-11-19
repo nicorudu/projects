@@ -1,0 +1,2 @@
+OVERLAPS, fixed tilt, block in line (expected: none)
+OVERLAPS, fixed tilt, block swung out 90 deg (expected: none)

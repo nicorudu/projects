@@ -20,9 +20,12 @@ Last updated: 2026-11-18 · by Claude (cloud session)
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
   - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
+  - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and the tight spots are in blueprint §4.7. The lid is 13 mm thick (decided), so the device is about 35 mm tall closed.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
-- **PR #9** holds rev 3 and the shopping list (docs only). It includes PR #7, so merging #9 covers both.
+- **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
+- **PR #10** (branch `agent-controller-m1b`) holds the concept model and its renders. M1b code work continues on the same branch or a new one after it merges.
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
+- **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
@@ -189,9 +192,18 @@ The full list is in blueprint §13. The main ones:
 - Whether docked sensing and 1 A charging through the dock behave on the breadboard.
 - Whether the key plates need the rear hinge, and whether the controller ends up 22 or 24 mm tall.
 - What the reference's green button and four contacts really do (check their source code when it's published).
+- Four tight spots from the concept model still wait for measurements (blueprint §4.7). The display one is decided: a 13 mm lid, pins bent flat.
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Fixed-tilt option (rev 3b) mocked up at Nico's request: model, seven renders, overlap check passes, comparison doc `docs/option-fixed-tilt.md`. Not chosen yet.
+- 2026-11-18 — Nico chose the thicker lid: 13 mm, display pins bent flat. Model, renders, layout drawing, blueprint §4.1/§4.3/§4.7 and plan updated. Closed size is now about 124 × 112 × 35 mm.
+- 2026-11-18 — Rev 3 concept model:
+  - `hardware/cad/rev3-pivot/concept.py` builds the device with every part placed, runs an overlap check (passes) and renders eight views.
+  - Renders in `hardware/renders/2026-11-18-rev3-concept/`, web copies in `media/web/rev3-02…08`.
+  - Blueprint §4.7 added: where each part goes and five tight spots. `showcase.json` hero and timeline updated.
+  - Rerun with `xvfb-run -a python3 concept.py` (needs cadquery, trimesh, vtk, manifold3d, Pillow).
+- 2026-11-18 — PR #9 merged to `main` at Nico's request (PR #7 closed with it). Started branch `agent-controller-m1b`.
 - 2026-11-18 — Shopping list and second parts audit:
   - Wrote `hardware/bom/shopping-list-2026-11-18.md`.
   - BOM: added C11, C12, T8–T11; S6 moved to "to order"; C10 became an assortment.

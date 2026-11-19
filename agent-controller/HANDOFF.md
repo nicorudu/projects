@@ -25,6 +25,7 @@ Last updated: 2026-11-18 · by Claude (cloud session)
 - **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
 - **PR #10** (branch `agent-controller-m1b`) holds the concept model and its renders. M1b code work continues on the same branch or a new one after it merges.
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
+- **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
@@ -195,6 +196,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Fixed-tilt option (rev 3b) mocked up at Nico's request: model, seven renders, overlap check passes, comparison doc `docs/option-fixed-tilt.md`. Not chosen yet.
 - 2026-11-18 — Nico chose the thicker lid: 13 mm, display pins bent flat. Model, renders, layout drawing, blueprint §4.1/§4.3/§4.7 and plan updated. Closed size is now about 124 × 112 × 35 mm.
 - 2026-11-18 — Rev 3 concept model:
   - `hardware/cad/rev3-pivot/concept.py` builds the device with every part placed, runs an overlap check (passes) and renders eight views.

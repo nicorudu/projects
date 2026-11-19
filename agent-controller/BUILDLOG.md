@@ -4,6 +4,13 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-18 — Option: a fixed-tilt screen (rev 3b)
+- Mocked up a version where the screen never folds: it sits in a rigid wedge at 60°. Same base, same controller, same footprint. → [comparison](docs/option-fixed-tilt.md), [renders](hardware/renders/2026-11-18-rev3b-fixed-tilt/)
+- It removes the hinge, the wires that flex across it, the lid magnets and the pin bending. It gives up closing flat.
+- Not chosen. The folding lid stays the plan.
+
+![folding lid and fixed tilt](media/web/rev3b-01-compare.webp)
+
 ## 2026-11-18 — Rev 3 concept model: the finished look and an x-ray
 - Built the whole device as a 3D model with every part in its place. → [renders](hardware/renders/2026-11-18-rev3-concept/)
 - Eight views: open, block swung out, controller off the dock, closed, two x-ray views, and both halves exploded with labels.

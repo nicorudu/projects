@@ -4,6 +4,7 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-18 | A fixed-tilt screen (rev 3b) is mocked up as an option; the folding lid stays the plan until Nico chooses | It removes the hinge, the flexing wires and the pin bending, but it can't close and departs from the reference | — |
 | 2026-11-18 | The lid is 13 mm thick, and the display's pins are bent flat (Nico's choice) | The pins are about 8 mm tall and a 10 mm lid had 1.3 mm behind the display; bending avoids desoldering 14 pins | 10 mm lid with the header removed |
 | 2026-11-18 | Part placement fixed by a 3D concept model with an automatic overlap check: dock board on the right of the base, battery under the Send and Voice switches, XIAO and charger at the left end, dock status light in the base top | The x-ray views show every part in place and the check proves nothing collides | Placement described in words only |
 | 2026-11-18 | The pivot sits 4 mm in from the front face with a 12 mm knuckle; the Voice plate is notched around it | The block must clear the key section through the whole 90° swing | Pivot position left open |

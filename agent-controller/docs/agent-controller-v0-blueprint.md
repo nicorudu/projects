@@ -420,6 +420,7 @@ Breadboard tips:
 5. Whether the controller ends up 22 or 24 mm tall.
 6. What SlashVibe's green button and four contacts really do. Check their source code when it's published.
 7. The tight spots in §4.7. The first is decided (a 13 mm lid); the other four wait for the caliper measurements.
+8. Folding lid or fixed tilt. The folding lid is the plan. A fixed-tilt version is mocked up and ready as a fallback: [option-fixed-tilt.md](option-fixed-tilt.md).
 
 ## 14. After v0
 - To-dos by voice and the meeting assistant.

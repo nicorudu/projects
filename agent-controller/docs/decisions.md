@@ -4,6 +4,21 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-18 | The battery connects through a JST-PH pigtail, and a 0.1 µF capacitor sits on the battery-reading pin | Nothing is soldered to a live battery; the high-resistance divider reads steadily | Soldering the battery leads; no capacitor |
+| 2026-11-18 | The controller gets its own breadboard, and the dock's current is measured with a USB-C power meter | The dock stays wired while the controller is built; charging current through the dock must be measured, not guessed | Sharing the kit breadboards; multimeter only |
+| 2026-11-18 | The joystick block pivots 90° on a hollow printed pin, with the wires through the pin | The reference does this (Nico's photo, brand film, teardown). The Nov 11 "no swivel" decision was wrong. | Rigid bar |
+| 2026-11-18 | Key order is Cancel / Send / Voice, with Voice beside the joystick | Photos of real units | Cancel / Voice / Send |
+| 2026-11-18 | Keys are large printed plates on Choc switches, hinged at the rear edge | Matches the reference's look; a big plate on one switch would tilt otherwise | 1u keycaps |
+| 2026-11-18 | The stick click is unused; right opens, left goes back, only Send confirms an approval | The reference stick has no click; a stray flick must never approve anything | Click to open and confirm |
+| 2026-11-18 | A green button on the joystick block, sharing one analog pin with the pivot sensor | The reference has it; the XIAO has no spare pin | LED only |
+| 2026-11-18 | The controller attaches to the base's front face; no tray | Reference layout; a tray would block the pivot | Tray in the dock |
+| 2026-11-18 | The controller only talks to the dock (ESP-NOW); USB vs Wi-Fi is compared on the dock's link | Same as the reference; better battery; less firmware | Controller also on Wi-Fi |
+| 2026-11-18 | The controller senses "block swung out" and "docked" and remaps stick directions itself | Stick directions must match what the user sees in all three positions | No position sensing |
+| 2026-11-18 | Screens stay templates filled by small messages; no streamed pictures | Fast on our hardware; the reference streams its interface from the computer | — |
+| 2026-11-18 | Learn from SlashVibe's open-source release but don't copy its code | It will be AGPL-3.0, which would force that license on our code | — |
+| 2026-11-12 | Voice engine is Wispr Faux (Nico's own dictation app), not a new Whisper pipeline in the companion | Already more accurate and polished; one engine on Mac and Windows | mlx-whisper / Groq + Claude cleanup in the companion |
+| 2026-11-12 | Voice flow: text shows on the dock first; Send delivers, Cancel discards | Avoids mistakes; matches SlashVibe | — |
+| 2026-11-12 | The control link goes into a copy of Wispr Faux inside this project; the wispr-faux repo is never edited | Keep Nico's working app safe | Editing wispr-faux directly |
 | 2026-11-11 | All Claude Code hooks are command hooks running `companion.hooks.report` (async for status, blocking for approvals) | Claude Code's `http` hooks print "hook error" lines whenever the app is off; the script stays silent | HTTP hooks |
 | 2026-11-11 | Device and terminal both answer approvals; the first answer wins, and the device clears when the session moves on | In interactive mode Claude Code shows its own menu while our hook waits (Mac Mini test) | Device-only answer |
 | 2026-11-11 | "Approve for session" applies only `addRules` / `addDirectories` suggestions | Applying a `setMode` suggestion switched Claude Code to accept-edits (Mac Mini test) | All suggestions |

@@ -2,11 +2,29 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-11 · by Claude (cloud session)
+Last updated: 2026-11-18 · by Claude (cloud session)
 
 ---
 
 ## 1. Where we are right now
+- **Rev 3 (2026-11-18): the plan and blueprint were rebuilt** after re-checking every photo in the chat and everything public about SlashVibe. Where older notes disagree, rev 3 wins.
+  - Read in this order: [plan](docs/plan.md) → [blueprint rev 3](docs/agent-controller-v0-blueprint.md) → [reference notes](docs/research/slashvibe-reference.md).
+  - **Biggest correction: the joystick block pivots 90°.** The Nov 11 notes said it didn't. Nico's photo and the brand film show it does.
+  - Also changed:
+    - Key order is Cancel / Send / Voice.
+    - Keys are large printed plates.
+    - The stick click is unused.
+    - A green button is added on the block.
+    - The controller attaches to the base's front face (no tray).
+    - The controller only talks to the dock.
+  - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
+  - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
+  - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
+  - **The code has not changed.** It still uses the older key map until milestone M1b.
+- **PR #9** holds rev 3 and the shopping list (docs only). It includes PR #7, so merging #9 covers both.
+- **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
+- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
+- **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
 - **Mac Mini test — done 2026-11-11.** Hooks are installed on the Mac Mini (venv at `software/companion-app/.venv`). Note: Claude Code's auto mode won't let Claude run `install-hooks` / `uninstall-hooks` (it edits Claude's own `~/.claude/settings.json`), so Nico runs those.
@@ -32,12 +50,16 @@ Last updated: 2026-11-11 · by Claude (cloud session)
   - Approve for session keeps `manual mode on`.
   - With the app off: the normal menu appears and there are **no hook error lines**.
 - **Mac Mini state:** the repo is on `main`, the hooks are installed (10, command type), and the venv is at `software/companion-app/.venv`. Test files `~/agent-controller-test-*.txt` can be deleted.
-- **Next step (M2): voice on the Mac mic.**
-  - Speech-to-text interface: `stt.transcribe(audio, vocab)`, using mlx-whisper locally with Groq as the fallback.
-  - Claude cleanup with modes prompt / message / email.
-  - Personal dictionary at `~/.agent-controller/dictionary.yaml`; API keys in the keychain.
-  - Delivery: paste into the focused terminal tab, or start a managed session.
-  - The Mac mic stands in for the controller mics until hardware.
+- **M2 (voice): planned, tabled 2026-11-12 at Nico's request.** Don't start it until he says so.
+  - **Voice engine = Wispr Faux, Nico's own dictation app** (`nicorudu/wispr-faux`: Swift for Mac, C#/.NET for Windows; on-device Whisper large-v3 turbo, stumble cleanup with a guard, clipboard-safe paste). The companion app doesn't get its own Whisper pipeline.
+  - **Rule: never edit the `nicorudu/wispr-faux` repo directly.** The control link goes into a copy of Wispr Faux inside this project (`software/wispr-faux-controller/`, app name "Wispr Faux Controller", its own bundle ID).
+    - A stray branch `control-link-spec` was pushed there by mistake on 2026-11-12. Nico deletes it at github.com/nicorudu/wispr-faux/branches; the cloud session can't delete branches.
+  - **UX (decided):** the Voice key → Wispr Faux transcribes → the text shows on the dock's Voice review screen → **Send** delivers it, **Cancel** discards it. As close to SlashVibe as possible.
+  - **Delivery (proposed):** the stick ←/→ on the review screen picks where Send goes: the app in front (paste), or a Claude Code session (focus its tab, paste, Return).
+  - **Order:** Mac first, then Windows.
+  - **Link spec draft:** [docs/wispr-faux-control-link.md](docs/wispr-faux-control-link.md) (loopback WebSocket, token + Origin check, listen/stop/cancel, external audio for the controller mics, insert with Return).
+  - **Open question:** does the copy *replace* the original on the Mac (one app: hotkey + controller), or run *side by side* (no hotkey, ~1–2 GB more memory, possible 2-minute model reloads)?
+  - **Work split:** spec + companion side in the cloud; the Swift build and test with Claude Code on the Mac Mini (needs Xcode).
 - **M1 design notes (from the hooks docs, rechecked 2026-11-11):**
   - `SessionStart` accepts only command hooks. We use an async command hook that runs `python -m companion.hooks.report`, which posts the event plus the terminal app and TTY.
   - ~~All other events are `http` hooks.~~ **Since the hook fixes:** every event uses the same command hook (`companion.hooks.report`). Status events are async; `PermissionRequest` waits (`--wait`, 600 s hook timeout). The app answers within `approval_timeout_s` (120 s), or gives no decision.
@@ -64,32 +86,47 @@ Last updated: 2026-11-11 · by Claude (cloud session)
 
 ## 2. Milestones
 
-| # | What | Hardware? | State |
+Full table with pass conditions: [plan §5](docs/plan.md).
+
+| # | What | Needs parts? | State |
 |---|---|---|---|
-| M0 | Package restructure, protocol v1, WebSocket transport, state/intents/view, fake device | No | **done** (2026-11-11) |
-| M1 | Claude Code hooks: live status + approvals from the fake device; install/uninstall hooks | No (Mac Mini to test live) | **done** (2026-11-11), Mac Mini tested and fixes rechecked |
-| M2 | Voice on the Mac mic: Whisper (mlx / Groq fallback) + Claude cleanup + dictionary | No (Mac Mini) | next |
-| M3 | LVGL UI in the desktop simulator (PlatformIO `sim` env) | No | planned |
-| M4 | Dock firmware: display, touch, USB + Wi-Fi transports | Yes | waits for parts |
-| M5 | Controller firmware: keys, stick, mics, battery, ESP-NOW | Yes | waits for parts |
-| M6 | USB vs Wi-Fi latency shoot-out, print CAD from caliper measurements | Yes | waits for parts |
+| M0 | Package restructure, protocol v1, WebSocket transport, fake device | No | **done** (2026-11-11) |
+| M1 | Claude Code hooks: live status + approvals from the fake device | No | **done** (2026-11-11), tested on the Mac Mini |
+| M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **next** |
+| M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
+| M3 | Screens in the desktop simulator, styled like the reference | No | can start with M1b |
+| M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | waits for the parts check |
+| M5 | Controller on the breadboard: keys, stick, AUX input, mics, ESP-NOW | Yes | after M4 |
+| M6 | USB vs Wi-Fi speed test, battery test | Yes | after M5 |
+| M7a | Measure every part with calipers | Yes | with M4 |
+| M7b | Rev 3 CAD + four test prints (pivot, key plate, stick cap, hinge) | Printer | after M7a |
+| M7c | Full print, wiring, assembly | Yes | after M7b |
+| M8 | Polish: usage header, sounds, Work Brief, Cursor and chat apps | No | after M7c |
 
 ## 3. Standing rules (from Nico)
 1. **Document everything in GitHub after every step**, and update this handoff, so nothing is lost when the chat compacts.
 2. **Audit shopping lists rigorously.** Every part change goes into `hardware/bom/BOM.csv` with a status. Past misses cost real shipping time.
 3. **Website (nicorudu.com):** don't edit it. Write the exact fixes for Nico to hand to his website Claude assistant.
-4. **v0 should be as close to v1 as possible**, and the printed shell should look as accurate to the reference (SlashVibe) as possible.
+4. **v0 should be as close to v1 as possible**, and the printed shell should look as accurate to the reference (SlashVibe) as possible. When Nico points at something in a photo, check the photo before answering.
 5. **Git:** branch first, never commit to `main`. Commit author `nicorudu <nicorudu@users.noreply.github.com>`. Never put Nico's personal email in commits or external requests.
 6. **Secrets** (Groq, Anthropic keys) go in the OS keychain via `keyring`, never in the repo.
 7. Nico uses an **M4 Mac Mini** (main; Claude Code runs better there) and an **HP OmniBook X Flip (Windows)**. Code must run on both.
 
 ## 4. Design in one paragraph
-Desk dock (ESP32-S3 N16R8 DevKitC, 4" ST7796 touch screen on a fold-flat hinge, MAX98357A + 40 mm 4 Ω 2 W speaker, WS2812B, USB-C to the Mac on the back) plus a detachable controller bar (XIAO ESP32S3, 3 Choc keys = Cancel / Voice / Send, Adafruit #5628 Joy-Con stick with a flat printed cap, 2× INMP441 mics, 1000 mAh LiPo, TP4056, slide switch, LED). The controller sits on magnets and charges through a 2-pin magnetic pogo connector. Two data paths, built and timed side by side: **A** Wi-Fi WebSocket, **B** dock USB CDC with the controller relayed over ESP-NOW. A Python companion app on the computer does all the logic; the dock only draws the screens it's sent.
+Three bodies, like the reference. A **lid** (4" ST7796 touch screen) folds flat onto a **base** (ESP32-S3 N16R8 DevKitC, MAX98357A + 40 mm 4 Ω 2 W speaker under a ribbed top, WS2812B, USB-C out the back). A detachable **controller** attaches to the base's front face with magnets and charges through a 2-pin magnetic connector. The controller has a key section (XIAO ESP32S3, three Choc switches under large printed plates = Cancel / Send / Voice, 1000 mAh LiPo, TP4056, slide switch) and a **joystick block that pivots 90°** on a hollow pin (Adafruit #5628 stick with a wide flat cap and no click, a green button, a status LED, 2× INMP441 mics on the end face). The controller talks only to the dock over ESP-NOW. The dock talks to the computer over USB (default) or Wi-Fi; the two are timed side by side. A Python companion app does all the logic; the dock only draws the screens it's sent.
 
-Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps, power, protocol, voice, plug-ins, tests) · [architecture](docs/architecture.md) (code layout, state, screens/keys, hooks, milestones) · [decisions](docs/decisions.md) · [build log](BUILDLOG.md).
+Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [blueprint rev 3](docs/agent-controller-v0-blueprint.md) (mechanical design, pin maps, power, controls, screens, tests) · [architecture](docs/architecture.md) (code layout, state, screens/keys, hooks, milestones) · [decisions](docs/decisions.md) · [build log](BUILDLOG.md).
 
 ## 5. Key technical facts (so they don't need re-researching)
-- **Pins.** Dock: never use GPIO35–37 (octal PSRAM). Avoid strapping pins 0/3/45/46. Controller: all 11 XIAO pins are used; analog on ADC1 only. Full maps are in blueprint §4.
+- **Pins.** Dock: never use GPIO35–37 (octal PSRAM). Avoid strapping pins 0/3/45/46. Controller: all 11 XIAO pins are used. Full maps are in blueprint §5.
+  - Rev 3 controller map: D0/D1 stick X/Y, D2 battery + docked sense, D3 AUX (green button + pivot sensor on a resistor ladder), D4 Voice, D5 Send, D6 LED, D7 Cancel, D8–D10 mics.
+  - Ten wires cross the pivot: 3V3, GND, BAT+, stick X, stick Y, LED data, green button, mic BCK, mic WS, mic data.
+- **Reference facts that drive the design** (sources in the reference notes):
+  - The joystick block pivots; the stick has no click; right opens and left goes back.
+  - Key order is Cancel / Send / Voice.
+  - Selecting a session brings its window forward.
+  - The reference uses 4 dock contacts and a green-capped button.
+  - Its software will be open-sourced under AGPL-3.0, expected by mid-December 2026. Read it then; don't copy code.
 - **Protocol v1.**
   - Every message has `"v":1,"t":…`. Inputs carry `seq` + `ts` and are acked.
   - Framing: WebSocket text = JSON, binary = audio. USB = COBS `[kind:u8][payload]` (1 = JSON, 2 = audio). ESP-NOW ≤ 250 B.
@@ -111,9 +148,14 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and run `git branch -u`. Otherwise the stop hook reports "unpushed commits".
 
 ## 6. What Nico needs to do
-- **Order:** C1 XIAO ESP32S3 ×2, C2 Adafruit #5628 ×2, D7 magnets, S4 header strip, C9 resistor kit (needs 100 kΩ). Confirm C7 TP4056 was ordered.
-- **Arrivals:** AliExpress 5–10 days from ~2026-11-09; speaker ETA ~2026-11-20. On arrival, measure the stick, display and pogo connector with calipers so the print CAD can be finalized.
-- **Repo is private.** Make it public when you want the website to link to it and load its images.
+- **Answer the four decisions in [plan §8](docs/plan.md):** parts status, the new and missing items, voice, and finish.
+- **Buy the parts on the [shopping list](hardware/bom/shopping-list-2026-11-18.md):**
+  - New: C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, S6 jumper kit, T8 USB-C power meter, T9 breadboards.
+  - From Nov 11, if not ordered yet: C1 XIAO ×2, C2 thumbstick ×2, C7 TP4056, C9 resistor kit (10k, 22k, 100k, 150k), D7 magnets, S4 header strip.
+  - Check you have: T6 calipers, T7 1.5 mm hex key, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+- **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
+- **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
+- **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
   1. **Get the code** (after merging the PR):
      - If the repo isn't on the Mac yet: `gh repo clone nicorudu/projects ~/projects` (run `gh auth login` first if needed).
@@ -141,12 +183,32 @@ Full detail: [blueprint](docs/agent-controller-v0-blueprint.md) (parts, pin maps
   6. **App off:** Ctrl-C in A, then ask C to `touch ~/agent-controller-test-11.txt`. There should be **no** "hook error" lines, and C's normal menu appears.
 
 ## 7. Open questions
-- Which transport becomes the default (decided by the M6 shoot-out).
-- How to get Cursor's "waiting for approval" status (which Cursor hooks fire).
-- Cloud agent APIs (ChatGPT, Grok, etc.) for status, beyond focus + paste.
-- Controller battery life on Wi-Fi vs ESP-NOW.
+The full list is in blueprint §13. The main ones:
+- Which link becomes the default (decided by the M6 test).
+- Where the usage header's numbers come from.
+- Whether docked sensing and 1 A charging through the dock behave on the breadboard.
+- Whether the key plates need the rear hinge, and whether the controller ends up 22 or 24 mm tall.
+- What the reference's green button and four contacts really do (check their source code when it's published).
+- How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Shopping list and second parts audit:
+  - Wrote `hardware/bom/shopping-list-2026-11-18.md`.
+  - BOM: added C11, C12, T8–T11; S6 moved to "to order"; C10 became an assortment.
+  - Blueprint: a 0.1 µF capacitor on D2, the battery on a JST-PH pigtail, breadboard tips.
+  - Checked nicorudu.com: the project isn't listed there yet. Nico's website chat handles it.
+- 2026-11-18 — Opened PR #9 (rev 3 docs; includes PR #7).
+- 2026-11-18 — Rev 3:
+  - Re-checked every image dropped into the chat (92 files) and re-researched SlashVibe (site, Kickstarter, four demo videos, press).
+  - Rewrote the reference notes with a corrections table.
+  - Wrote the complete plan (`docs/plan.md`) and blueprint rev 3.
+  - Updated the BOM (C10, S6–S9, T6–T7), the architecture's controls table and the decision log.
+  - Added the layout drawing and its script (`hardware/cad/rev3-pivot/layout.py`).
+  - No code changes.
+- 2026-11-12 — M2 planning:
+  - Decided Wispr Faux is the voice engine, with dock review then Send/Cancel, Mac first.
+  - Rule from Nico: don't edit the wispr-faux repo; use a copy in this project.
+  - Saved the link spec draft. M2 tabled for now.
 - 2026-11-11 — Mac Mini recheck after PR #5 (all passed):
   - After `git checkout main && git pull` (the Mac had been left on the test branch): 54 tests pass; `install-hooks` installed 10 hooks.
   - Answer-in-terminal cleared B (`pr-1 -> None`, "Answered in the terminal").

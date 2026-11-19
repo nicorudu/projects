@@ -2,20 +2,20 @@
 
 A desk dock with a 4" screen plus a detachable controller with keys, a thumbstick and mics. It lets you watch, approve and talk to AI coding agents (Claude Code first) without switching windows. A Python companion app on the computer bridges it to your tools over USB or Wi-Fi. Inspired by SlashVibe.
 
-![Rev 2 concept, docked](media/web/rev2-01-docked-open.webp)
+![Rev 3 layout](media/web/rev3-01-layout.webp)
 
 ## Status: in build
 
 | Area | State |
 |---|---|
-| Design | Rev 2 (dock + detachable controller) locked as a concept. Print CAD waits for caliper measurements. |
-| Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv). |
+| Design | **Rev 3** (pivoting joystick block, large key plates) is the current design: [plan](docs/plan.md) and [blueprint](docs/agent-controller-v0-blueprint.md). Print CAD waits for caliper measurements. |
+| Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv) and the [shopping list](hardware/bom/shopping-list-2026-11-18.md). |
 | Companion app | M0 + M1 done: live Claude Code status, and approvals answered from the fake device (tested against real Claude Code) |
 | Software architecture | Written ([architecture](docs/architecture.md)); next is M2 voice on the Mac mic |
 | Firmware | Not started |
 | Voice pipeline, platform plug-ins | Planned ([blueprint](docs/agent-controller-v0-blueprint.md) §6–7) |
 
-**Picking the project up?** Start with the [handoff](HANDOFF.md): current step, next step, rules and key facts.
+**Picking the project up?** Start with the [handoff](HANDOFF.md), then the [plan](docs/plan.md): current step, next step, rules and key facts.
 
 **Follow along:** [Build log](BUILDLOG.md) · [Renders](hardware/renders/) · [Decision log](docs/decisions.md) · [Software architecture](docs/architecture.md)
 
@@ -28,7 +28,8 @@ agent-controller/
 ├── BUILDLOG.md            dated progress entries, newest first
 ├── showcase.json          short summary for the portfolio site (nicorudu.com)
 ├── docs/
-│   ├── agent-controller-v0-blueprint.md   the plan: parts, pins, architecture, voice, plug-ins, tests
+│   ├── plan.md                             the complete plan: goal, milestones, parts checks, risks
+│   ├── agent-controller-v0-blueprint.md   how to build it: mechanical design, pins, power, controls, tests
 │   ├── architecture.md                     how the code is organized and built
 │   ├── decisions.md                        every design decision and why
 │   ├── research/slashvibe-reference.md     notes on the reference product

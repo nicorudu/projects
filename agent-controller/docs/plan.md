@@ -82,7 +82,7 @@ Kept as they were: both boards, the display, the amp and speaker, the mics, the 
 | Aluminium shell, soft-touch finish | No | Printed PETG. Sanding and paint are optional. |
 | 20+ agents | Partly | Claude Code first, then Cursor and the chat apps through focus and paste |
 
-**Size, honestly.** The reference is 105 × 89 × 21 mm. Ours will be about 124 × 112 × 32 mm closed. Our display module is 108 mm wide, the dev boards are tall, and the battery is 8 mm thick.
+**Size, honestly.** The reference is 105 × 89 × 21 mm. Ours will be about 124 × 112 × 35 mm closed. Our display module is 108 mm wide, the dev boards are tall, and the battery is 8 mm thick.
 
 ---
 

@@ -139,8 +139,8 @@ BOM IDs in brackets. Order status is in the BOM, not here.
 | Controller | 124 × 40 × 22 | Flush with the base top. May grow to 24 (see 4.5). |
 | Key section | 80 × 40 | Left part of the controller |
 | Joystick block | 44 × 40 | Right part |
-| Lid | 124 × 82 × 10 | Overhangs the controller by 10 when closed |
-| Whole device, closed | about 124 × 112 × 32 | Reference: 105 × 89 × 21 |
+| Lid | 124 × 82 × 13 | Overhangs the controller by 10 when closed. 13 thick so the display's pins fit, bent flat (decided 2026-11-18). |
+| Whole device, closed | about 124 × 112 × 35 | Reference: 105 × 89 × 21 |
 | Whole device, open | Lid stops at 105° | |
 
 ### 4.2 Base
@@ -152,6 +152,7 @@ BOM IDs in brackets. Order status is in the BOM, not here.
 
 ### 4.3 Lid and hinge
 - A frame around the display module with the screen in landscape.
+- **Display pins:** the module's 14 pins stick out of its back. Bend them flat toward the middle of the module with pliers, so plug-on jumper wires lie along its back. Nothing is desoldered.
 - **Hinge:** two knuckles at the back corners with M2 screws as pins. A printed stop holds the lid at 105°. One magnet pair holds it shut.
 - **Wires:** 11 or 12 wires (display, touch, power) cross beside the hinge through a slot, with a slack loop inside the base.
 
@@ -220,7 +221,7 @@ The model is `hardware/cad/rev3-pivot/concept.py`. It places every part and chec
 
 | # | Where | Numbers | If it doesn't fit |
 |---|---|---|---|
-| 1 | Display in the lid | The lid has 1.3 mm behind the display. The display's pin header is about 8 mm tall. | The header comes off and the wires are soldered to its pads. Otherwise the pins are bent flat and the lid grows from 10 to about 13 mm. |
+| 1 | Display in the lid | **Decided 2026-11-18:** the lid is 13 mm thick and the display's pins are bent flat. That leaves 4.3 mm behind the display; the bent pins and their plugs need about 3.2 mm. | If the plugs don't fit, solder the wires to the pins instead |
 | 2 | Battery under the switches | 1.0 mm between the battery and the switch pins, with the pins trimmed to 1.5 mm and a 0.6 mm printed guard sheet between them | If the battery measures over 8.2 mm, the controller and the base grow from 22 to 24 mm |
 | 3 | Dock board in the base | The board is 69 mm long; the base is 67.6 mm deep inside. The board's front end sits in a pocket that leaves 0.8 mm of wall. | The base grows 2 mm deeper |
 | 4 | Dock board pins | They end 0.3 mm above the bottom plate | Wires are soldered to the sides of the pins. Plug-on connectors don't fit. |
@@ -418,7 +419,7 @@ Breadboard tips:
 4. Whether the key plates need the rear hinge.
 5. Whether the controller ends up 22 or 24 mm tall.
 6. What SlashVibe's green button and four contacts really do. Check their source code when it's published.
-7. The five tight spots in §4.7. The first one matters most: whether the display's pin header comes off, or the lid gets thicker.
+7. The tight spots in §4.7. The first is decided (a 13 mm lid); the other four wait for the caliper measurements.
 
 ## 14. After v0
 - To-dos by voice and the meeting assistant.

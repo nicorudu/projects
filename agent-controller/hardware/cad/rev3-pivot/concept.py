@@ -30,7 +30,7 @@ H = 22.0                        # height of base and controller
 CD = 40.0                       # controller depth (y 0..40)
 BD = 72.0                       # base depth (y 40..112)
 Y0, Y1 = CD, CD + BD            # base front / back
-LID_D, LID_T = 82.0, 10.0
+LID_D, LID_T = 82.0, 13.0             # 13: room for the display's pins, bent flat
 LID_Y0 = Y1 - LID_D             # 30: the closed lid overhangs the controller by 10
 OPEN_DEG = 105.0
 JX = 18.0                       # joint between key section (left) and joystick block (right)
@@ -145,6 +145,10 @@ def dock_parts():
     P["lid_back"] = bk
     P["display"] = box(-54, 54, 36.0, 96.8, z0 + 1.2, z0 + 1.2 + 5.45)
     P["screen"] = box(-42.0, 42.0, 38.4, 94.4, z0 + 1.1, z0 + 1.2)
+    # the display's 14-pin header, pins bent flat so jumper plugs lie along the back of the module
+    hd = box(-54.0, -51.4, 48.2, 83.8, z0 + 6.65, z0 + 9.15)
+    hd = hd.union(box(-51.4, -44.5, 48.6, 83.4, z0 + 8.0, z0 + 8.7))
+    P["display_header"] = hd
     P["lid_magnet_lid"] = cyl_z(-57.0, 50.0, z0 + 0.15, z0 + 2.15, 3.0)
     P["hinge_pin1"] = cyl_x(-62.0, -46.0, Y1, H, 1.0)
     P["hinge_pin2"] = cyl_x(46.0, 62.0, Y1, H, 1.0)
@@ -312,7 +316,7 @@ PART_COL = {
     "base_floor": "floor", "base_shell": "shell", "contacts_base": "pogo", "dock_magnet_L": "magnet",
     "dock_magnet_R": "magnet", "lid_magnet_base": "magnet", "dock_board": "esp", "speaker": "speaker",
     "amp": "amp", "dock_led": "led", "lid_bezel": "bezel", "lid_back": "shell", "display": "display",
-    "screen": "screen", "lid_magnet_lid": "magnet", "hinge_pin1": "pin", "hinge_pin2": "pin",
+    "screen": "screen", "display_header": "pin", "lid_magnet_lid": "magnet", "hinge_pin1": "pin", "hinge_pin2": "pin",
     "key_body": "shell", "switch_plate": "splate", "battery_guard": "guard", "battery": "battery",
     "xiao": "xiao", "xiao_usb": "pin", "charger": "tp", "slide_switch": "slide", "contacts_ctrl": "pogo",
     "ctrl_magnet_L": "magnet", "ctrl_magnet_R": "magnet", "pivot_sensor": "button",
@@ -324,7 +328,7 @@ PART_COL = {
 for _i in (1, 2, 3):
     PART_COL[f"switch{_i}"] = "switch"
     PART_COL[f"plate{_i}"] = "plate"
-LID = {"lid_bezel", "lid_back", "display", "screen", "lid_magnet_lid"}
+LID = {"lid_bezel", "lid_back", "display", "screen", "display_header", "lid_magnet_lid"}
 SHELLS = {"base_floor", "base_shell", "lid_bezel", "lid_back", "key_body", "block_body", "block_top",
           "retainer", "plate1", "plate2", "plate3", "stick_cap", "screen"}
 
@@ -604,13 +608,14 @@ def main():
            title="Controller off the dock", sub="Magnets and two spring contacts on the base's front face.")
     # 4. closed
     render(scene(open_deg=0), (-170, -250, 170), (0, 56, 14), p("04-closed.png"), zoom=1.3,
-           title="Closed", sub="About 124 x 112 x 32 mm. The lid overhangs the controller by 10 mm.")
+           title="Closed", sub="About 124 x 112 x 35 mm. The lid overhangs the controller by 10 mm.")
 
     # 5. x-ray, three-quarter view, labelled
     xs = scene(xray=True)
     LM = lid_open()
     lab = [
         ('4" display + touch (in the lid)', anc(T(dock["display"], LM), "c")),
+        ("Display pins, bent flat", anc(T(dock["display_header"], LM), "c")),
         ("Speaker, 40 mm, under the open slots", anc(dock["speaker"])),
         ("Amplifier (MAX98357A)", anc(dock["amp"])),
         ("Dock board (ESP32-S3), pins down", (47, 92, 12.1)),
@@ -660,13 +665,14 @@ def main():
         "dock_magnet_R": tr(0, -22, 0), "lid_magnet_base": tr(0, 0, 50), "base_shell": tr(0, 0, 80),
         "hinge_pin1": tr(-16, 0, 80), "hinge_pin2": tr(16, 0, 80),
         "lid_magnet_lid": tr(0, 0, 112), "lid_bezel": tr(0, 0, 128), "screen": tr(0, 0, 128),
-        "display": tr(0, 0, 152), "lid_back": tr(0, 0, 180),
+        "display": tr(0, 0, 152), "display_header": tr(0, 0, 160), "lid_back": tr(0, 0, 184),
     }
     DM = {k: T(m, ex[k]) for k, m in dock.items()}
     items = [(DM[k], COL[PART_COL[k]]) for k in DM]
     lab = [
         ("Lid back", anc(DM["lid_back"])),
         ('4" ST7796 display with touch, 108 x 61 mm', anc(DM["display"])),
+        ("Display pins, bent flat for plug-on wires", anc(DM["display_header"])),
         ("Lid frame + screen window", anc(DM["lid_bezel"], "front")),
         ("Lid magnet", anc(DM["lid_magnet_lid"])),
         ("Hinge pin (M2 screw), one each side", anc(DM["hinge_pin2"], "right")),

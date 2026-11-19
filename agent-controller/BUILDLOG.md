@@ -8,7 +8,8 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 - Built the whole device as a 3D model with every part in its place. → [renders](hardware/renders/2026-11-18-rev3-concept/)
 - Eight views: open, block swung out, controller off the dock, closed, two x-ray views, and both halves exploded with labels.
 - The model checks itself: no two parts overlap, with the lid closed, the block in line, and the block swung out.
-- It found five tight spots, listed in [blueprint §4.7](docs/agent-controller-v0-blueprint.md). The main one: the display's pin header is taller than the room behind it in the lid.
+- It found five tight spots, listed in [blueprint §4.7](docs/agent-controller-v0-blueprint.md). The main one: the display's pins were taller than the room behind it in the lid.
+- **Decision:** the lid grows from 10 to 13 mm and the display's pins are bent flat. The device is about 35 mm tall when closed.
 
 ![rev 3 concept](media/web/rev3-02-device-open.webp)
 

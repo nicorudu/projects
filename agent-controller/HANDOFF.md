@@ -20,7 +20,7 @@ Last updated: 2026-11-18 · by Claude (cloud session)
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
   - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
-  - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and five tight spots are in blueprint §4.7.
+  - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and the tight spots are in blueprint §4.7. The lid is 13 mm thick (decided), so the device is about 35 mm tall closed.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
 - **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
 - **PR #10** (branch `agent-controller-m1b`) holds the concept model and its renders. M1b code work continues on the same branch or a new one after it merges.
@@ -191,10 +191,11 @@ The full list is in blueprint §13. The main ones:
 - Whether docked sensing and 1 A charging through the dock behave on the breadboard.
 - Whether the key plates need the rear hinge, and whether the controller ends up 22 or 24 mm tall.
 - What the reference's green button and four contacts really do (check their source code when it's published).
-- The five tight spots from the concept model (blueprint §4.7). First: does the display's pin header come off, or does the lid get thicker?
+- Four tight spots from the concept model still wait for measurements (blueprint §4.7). The display one is decided: a 13 mm lid, pins bent flat.
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Nico chose the thicker lid: 13 mm, display pins bent flat. Model, renders, layout drawing, blueprint §4.1/§4.3/§4.7 and plan updated. Closed size is now about 124 × 112 × 35 mm.
 - 2026-11-18 — Rev 3 concept model:
   - `hardware/cad/rev3-pivot/concept.py` builds the device with every part placed, runs an overlap check (passes) and renders eight views.
   - Renders in `hardware/renders/2026-11-18-rev3-concept/`, web copies in `media/web/rev3-02…08`.

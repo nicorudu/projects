@@ -8,7 +8,7 @@ Last updated: 2026-11-19 · by Claude (cloud session)
 
 ## 1. Where we are right now
 - **Done:** research, use cases, v0 spec, decision log, free open-source path, launch languages. PR #8 (kickoff) merged to `main` on 2026-11-18.
-- **Done 2026-11-19:** full audit of the docs against current facts, and a formal [plan](docs/plan.md) (scope, milestones M0–M8, decision gates G1–G6, schedule, budget, risks). Branch `live-interpreter-plan`.
+- **Done 2026-11-19:** full audit of the docs against current facts, and a formal [plan](docs/plan.md) (scope, milestones M0–M8, decision gates G1–G6, schedule, budget, risks). Branch `live-interpreter-plan`, PR #11.
 - **No code yet.**
 - **Next step: M0, the scaffold**, in a cloud session once Nico says go: repo layout, adapter interfaces, phrase chunker, resampler and μ-law codec, pause detection, timing logger, fake engines, a keychain script for API keys, and an automated end-to-end test with fake engines. Needs no hardware and no accounts.
 - **Then M1, one-way pipe on the Mac, free path first.** Mic → pause detection → Qwen3-ASR → Qwen3.5 → Qwen3-TTS (one stock voice) → speakers, all via MLX, phrase by phrase, with a timestamp at every stage. Then the same with `gpt-realtime-translate` once the OpenAI key exists, and compare (gate G1).
@@ -83,7 +83,7 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
 
 ## 6. What Nico needs to do
 - **Answer the plan's open questions** ([plan §16](docs/plan.md)): the Mac mini's memory (RAM), sessions per week, the $150 cap, the languages at your wife's school, and whether phone comes before languages.
-- **Say go on M0** (the scaffold) and merge the plan PR.
+- **Say go on M0** (the scaffold) and merge the plan PR (#11).
 - **The `projects` repo is public**, so everything here, including your story in the README, is visible.
 - **Accounts, in the order they're needed** (the free path needs none of them until M6):
   1. **OpenAI API** key with Realtime API access (paid half of M1). Set a monthly spend limit.
@@ -108,7 +108,7 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
 - License for the code (the repo is public, so this matters once code lands).
 
 ## 8. Step log (newest first)
-- 2026-11-19 — Audit and formal plan. PR #8 merged. Corrected: paid voice is Eleven v4 Turbo; Qwen3-ASR can't stream on the Mac, so the free path is phrase by phrase; Gemini 3.5 Live Translate and OmniVoice added as candidates; Twilio trial limits, prices and consent note; voice-slot counts. Added M0 (scaffold) and [docs/plan.md](docs/plan.md). Branch `live-interpreter-plan`.
+- 2026-11-19 — Audit and formal plan. PR #8 merged. Corrected: paid voice is Eleven v4 Turbo; Qwen3-ASR can't stream on the Mac, so the free path is phrase by phrase; Gemini 3.5 Live Translate and OmniVoice added as candidates; Twilio trial limits, prices and consent note; voice-slot counts. Added M0 (scaffold) and [docs/plan.md](docs/plan.md). Branch `live-interpreter-plan`, PR #11.
 - 2026-11-12 — Chose the launch languages (es, ar, zh, vi, pt, ru, hi, fil) from NCES data and Nico's picks; mapped coverage per engine; added a language router and new milestone M5 (old M5–M7 are now M6–M8).
 - 2026-11-12 — Added the free path (Qwen3-ASR → Qwen3.5 → Qwen3-TTS on the Mac mini) and Oracle Always Free hosting to the spec, research, decisions and this handoff. M1 now starts with the free path.
 - 2026-11-12 — Project kickoff: research, use cases (Nico's family; his wife's classroom), spec, decision log, handoff, build log, showcase.json. Branch `live-interpreter-kickoff`, PR #8.

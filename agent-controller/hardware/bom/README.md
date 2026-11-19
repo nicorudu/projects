@@ -7,4 +7,4 @@
 - Update the status the day a part arrives, and put caliper measurements in `notes`.
 - Prices are what was paid (USD, per unit where qty > 1). Blank means not recorded.
 
-Status as of 2026-11-11.
+Order statuses were last confirmed on 2026-11-11. Rev 3 (2026-11-18) added C10, S6–S9, T6 and T7; items marked `check` need Nico to confirm he has them.

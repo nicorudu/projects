@@ -27,7 +27,6 @@ flowchart LR
   P --> OS
   D[Dock firmware<br/>ESP32-S3] <-- "USB (Path B) / Wi-Fi (Path A)" --> T
   C[Controller firmware<br/>XIAO ESP32S3] -- "ESP-NOW via dock (Path B)" --> D
-  C -. "Wi-Fi (Path A)" .-> T
   T --> CORE --> UI --> T
   CORE <--> V
   CORE <--> P
@@ -125,15 +124,20 @@ The full message list lives in `firmware/lib/protocol/messages.h` and `companion
 
 ## 6. Screens and controls
 
-| Screen | Shows | Stick ←/→ | Stick ↑/↓ | Click | Cancel | Voice (hold) | Send |
-|---|---|---|---|---|---|---|---|
-| **Home** | Every session: status, name, last activity; usage header | Switch filter (all / waiting / done) | Move selection | Open detail | — | Record a prompt for the selected session | Bring the selected session's window to the front |
-| **Detail** | Last output, current tool, step | Previous / next session | Scroll | Back to Home | Back to Home | Record a prompt for this session | Bring window to front |
-| **Approval** (pops up when an agent asks) | Tool, command or file, options (Approve / Approve for session / Reject / Ask in terminal) | Change option | Change option | Confirm option | Reject | — | Confirm option |
-| **Voice review** | Live transcript, then cleaned text and its destination | Change destination | Scroll text | — | Discard draft | Hold again to edit by voice | Deliver it |
-| **Toast** (overlay) | "Sent", "Approved", "Disconnected" | — | — | — | — | — | — |
+> **Rev 3 (2026-11-18).** This table matches [blueprint rev 3](agent-controller-v0-blueprint.md) §7, which follows the reference product's demo videos. The code still implements the older map (stick click, filters on Home) until milestone **M1b** changes `core/intents.py`.
 
+| Screen | Shows | Stick ↑/↓ | Stick → | Stick ← | Cancel | Send | Voice (hold) | Green button |
+|---|---|---|---|---|---|---|---|---|
+| **Agents** (home) | Every session: status dot, status word, title; usage header | Select; the session's window comes forward after 0.6 s | Open detail | — | — | Bring the window forward now | Dictate to the selected session | Home / wake |
+| **Detail** | Status, time worked, last message | Scroll | — | Back | Back | Bring the window forward | Dictate to this session | Home |
+| **Approval** (pops up when an agent asks) | Tool, command or file, options (Approve / Approve for session / Reject / Ask in terminal) | Change option | — | — | Reject | Confirm | — | — |
+| **Voice review** | Live transcript, then cleaned text and its destination | Scroll text | Change destination | Change destination | Discard | Deliver | Hold again to edit by voice | — |
+| **Toast** (overlay) | "Sent", "Approved", "Disconnected" | — | — | — | — | — | — | — |
+
+- **No stick click.** The reference's stick has two axes only, so nothing depends on a click.
+- **Only Send confirms an approval.** A stray flick can never approve anything.
 - **Flick detection:** a direction counts when the stick passes 60% of its travel and returns below 30% (hysteresis), so one flick is one step. Holding past 60% for 400 ms auto-repeats.
+- **Directions are remapped on the controller** for its position (block swung out, docked in line, or handheld), so the app always receives what the user meant.
 - **Alert sound:** plays when a session becomes WAITING. It is muted while you're recording and can be switched off.
 - **LED:** blue = working, amber pulse = something is waiting, green flash = done, red = error or disconnected, white = recording.
 
@@ -221,7 +225,7 @@ The frame buffers go in PSRAM; SPI to the display runs over DMA at 20 MHz first,
 **Controller (XIAO ESP32S3):**
 - `input` task: 5 ms key debounce, 100 Hz stick sampling, calibrated center and deadband.
 - `mic` task: I2S DMA → mix to mono → PCM or ADPCM → 20 ms frames.
-- `link` task: Wi-Fi or ESP-NOW.
+- `link` task: ESP-NOW to the dock only (rev 3: the controller never talks to the Mac directly).
 - **Power:** light sleep after 30 s idle, waking on any key. The radio stays off until a key is pressed (Path B) or keeps a low-rate connection (Path A). The battery is read every 30 s.
 
 **Pairing:** the first time the controller sits on the dock, the dock shows a code. Pressing Send stores each other's MAC address for ESP-NOW.
@@ -244,7 +248,7 @@ The frame buffers go in PSRAM; SPI to the display runs over DMA at 20 MHz first,
 | **M2** Voice pipeline using the Mac's mic | No | Hold a key, speak, cleaned text pastes into Claude, ChatGPT and Cursor |
 | **M3** LVGL screens in the simulator | No | All five screens driven by the companion app |
 | **M4** Dock firmware on the real board (USB + Wi-Fi) | Dock parts | Same screens on the real display over both paths |
-| **M5** Controller firmware (Wi-Fi, then ESP-NOW via dock) | Controller parts | Real keys, stick and mics drive everything |
+| **M5** Controller firmware (ESP-NOW via the dock) | Controller parts | Real keys, stick and mics drive everything |
 | **M6** Latency shoot-out, then shell CAD and print | All parts | `tests/latency-shootout.md` filled in; assembled device |
 
 ## 13. Decisions made here (defaults; change any)

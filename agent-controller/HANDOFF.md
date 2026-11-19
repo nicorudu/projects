@@ -20,6 +20,7 @@ Last updated: 2026-11-18 · by Claude (cloud session)
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
+- **PR #9** holds rev 3 (docs only). It includes PR #7, so merging #9 covers both.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
@@ -188,6 +189,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Opened PR #9 (rev 3 docs; includes PR #7).
 - 2026-11-18 — Rev 3:
   - Re-checked every image dropped into the chat (92 files) and re-researched SlashVibe (site, Kickstarter, four demo videos, press).
   - Rewrote the reference notes with a corrections table.

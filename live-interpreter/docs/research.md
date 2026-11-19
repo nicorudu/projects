@@ -1,6 +1,6 @@
 # Research notes — Live Interpreter
 
-What was checked before starting, so it doesn't need re-researching. Checked 2026-11-12; recheck anything older than a few months before relying on it (prices and access change).
+What was checked before starting, so it doesn't need re-researching. Checked 2026-11-12, re-checked 2026-11-19 (see §9 for what changed); recheck anything older than a few months before relying on it (prices and access change).
 
 ## 1. What already exists (consumer)
 
@@ -10,7 +10,8 @@ What was checked before starting, so it doesn't need re-researching. Checked 202
 | Apple Live Translation (AirPods, Phone app, CallKit apps) | Hold both AirPod stems; needs iPhone 15 Pro or newer on iOS 26+. Also works in CallKit VoIP apps | Apple devices only, Apple's voices, short list of language pairs |
 | Pixel 10 Voice Translate | Translates phone calls on-device in the speaker's own voice | Pixel 10 only; a handful of languages paired with English |
 | Sanas Translate, LiveLingo, Microsoft Translator, DeepL Voice | Real-time conversation apps (Microsoft's runs on web, mobile and desktop; DeepL aims at work meetings and face-to-face talks) | Both people usually need the app or a shared screen; no voice matching |
-| ElevenLabs Realtime Translation | Each person hears the other in their language in a natural voice, 90+ languages | Enterprise only (contact centers, carriers) |
+| ElevenLabs Realtime Translation | Each person hears the other in their language in a natural voice, 90+ languages | Enterprise alpha only (contact centers, carriers) |
+| Google Translate app / Google Meet with Gemini 3.5 Live Translate | Continuous speech-to-speech translation, 70+ languages | Inside Google's own apps; no phone-call bridge to any phone, no chosen voice |
 
 **Takeaway:** nobody offers "call any phone, the other person hears you in their language, in a voice like yours" as something an individual can use. That's the gap.
 
@@ -27,7 +28,8 @@ What was checked before starting, so it doesn't need re-researching. Checked 202
 | --- | --- | --- | --- | --- | --- |
 | **OpenAI `gpt-realtime-translate`** (May 7, 2026) | Self-serve API | 70+ in, 13 out (en, es, pt, fr, de, it, ru, zh, ja, ko, hi, id, vi) | None (no voice selection or custom prompting) | $0.034/min | Streams translated audio + transcript deltas while the speaker talks. One target language per session. **v0 choice.** |
 | OpenAI `gpt-realtime-whisper` | Self-serve | — | — | $0.017/min | Streaming source-language transcript, for captions |
-| **ElevenLabs Realtime Translation** | Enterprise workspaces only | 90+ | Takes a `voice_id`; TTS model options incl. `eleven_v4_turbo` (default), `eleven_flash_v2_5`, `eleven_v3` | Custom | Ideal fit; adapter slot reserved |
+| **ElevenLabs Realtime Translation** | Enterprise alpha (launched 2026-10-21); still not self-serve on 2026-11-19 | 90+ | Takes a `voice_id`; TTS model options incl. `eleven_v4_turbo` (default), `eleven_flash_v2_5`, `eleven_v3` | Custom | Ideal fit; adapter slot reserved |
+| **Google Gemini 3.5 Live Translate** (2026-06-09) | Public preview, Gemini Live API and AI Studio | 70+ in and out, 2,000+ pairs, auto-detects the language | Keeps the speaker's intonation, pacing and pitch; voice choice to check | Reported $0.023/min; token-based listings differ and preview pricing can change | Candidate paid engine with wider output coverage than OpenAI. One review says it has no transcript mode, which would cost us captions; check before building on it |
 | **Soniox** (STT + in-stream translation) | Self-serve | 60+ any-to-any (vendor claim) | Text only, pair with any TTS | ~$0.10–0.12/hr (vendor claim) | Candidate second engine for wider language coverage; benchmark claims come from Soniox's own pages |
 | **Kyutai Hibiki-Zero** (open source, MIT) | Self-host | fr, es, pt, de → en only | Voice transfer built in | GPU cost | 3B params; NVIDIA GPU, 8 GB VRAM should work, 12 GB safe. Run with `uvx -p 3.13 hibiki-zero serve` |
 | Kyutai Hibiki (original, open source) | Self-host | fr → en | Voice transfer; a guidance setting trades voice closeness against accent strength | — | 1B version runs on-device; Mac demo via `moshi_mlx` |
@@ -35,7 +37,11 @@ What was checked before starting, so it doesn't need re-researching. Checked 202
 ## 4. Voices
 
 - **ElevenLabs Voice Design API:** create a voice from a description plus `gender`, `age` (young / middle_aged / old), `accent` and `accent_strength`. Each generation returns three options; saving one uses a voice slot on the plan.
-- **ElevenLabs streaming TTS:** WebSocket input for text that arrives in pieces; Flash and Turbo models use about 0.5–1 credit per character (Deepgram's write-up).
+- **ElevenLabs streaming TTS:** WebSocket input for text that arrives in pieces.
+  - **Eleven v4 Turbo** (2026-09-28): 90+ languages, about 100 ms median inference and 150 ms to first speech, bidirectional streaming, listed at about $0.04 per minute. The current choice for the paid path.
+  - **Flash v2.5:** still the lowest latency (~75 ms) but 32 languages. Fallback.
+  - **Eleven v3** (now a previous model): 74 languages, including Urdu, Somali, Swahili, Pashto, Punjabi and Telugu; not Haitian Creole or Hmong.
+  - **Voice slots** (saved custom voices): 3 on Free, 10 on Starter ($6/month), 30 on Creator ($22/month).
 - **Qwen3-TTS** (open source, Apache 2.0, Jan 2026): 0.6B and 1.7B models, 10 languages, voice design from a text description, 3-second cloning, ~97 ms first audio when streaming. The open-source replacement for ElevenLabs.
 
 ## 5. Guessing the speaker's sex and age
@@ -49,7 +55,7 @@ All Apache 2.0, open weights on Hugging Face and ModelScope.
 
 | Model | Released | What it does | Speed notes |
 | --- | --- | --- | --- |
-| **Qwen3-ASR** 0.6B / 1.7B | 2026-01-29 | Speech-to-text and language ID for 30 languages + 22 Chinese dialects (incl. en, es, ar, fr, de, pt, it, ko, ru, vi, ja, th, id). Streaming and offline in one model. The 1.7B is state of the art among open ASR models per Qwen; the 0.6B trades a little accuracy for speed (average time-to-first-token ~92 ms). `pip install qwen-asr` | MLX port: 30–36× real time on an M5 Pro (soniqo benchmark) |
+| **Qwen3-ASR** 0.6B / 1.7B | 2026-01-29 | Speech-to-text and language ID for 30 languages + 22 Chinese dialects (incl. en, es, ar, fr, de, pt, it, ko, ru, vi, ja, th, id). Streaming and offline in one model, but streaming needs the vLLM backend (NVIDIA GPUs); the Mac (MLX) ports transcribe finished clips, so the free path works phrase by phrase. The 1.7B is state of the art among open ASR models per Qwen; the 0.6B trades a little accuracy for speed (average time-to-first-token ~92 ms). `pip install qwen-asr` | MLX port: 30–36× real time on an M5 Pro (soniqo benchmark) |
 | **Qwen3.5** small: 0.8B, 2B, 4B, 9B | 2026-03-02 | General LLMs, used here as a prompted text translator. The family covers 201 languages. 9B is the strongest small model; 4B targets 6–8 GB machines | To be measured on the M4 |
 | **Qwen3-TTS** 0.6B / 1.7B (Base, CustomVoice, VoiceDesign) | 2026-01 | 10 languages (zh, en, ja, ko, de, fr, ru, pt, es, it; Spanish includes Latin American). VoiceDesign makes voices from a description; Base clones from 3 s of audio; documented "voice design then clone" flow. Streaming, ~97 ms first audio on GPU | Apple Silicon MLX: RTF ~0.55 (M2 Max) to ~0.7–0.8, peak memory ~4–6 GB. CPU only: about 3× slower than real time on a shared 4-vCPU box, ~1.28 RTF on Neoverse-N1-class Arm cores |
 | Qwen3.8-LiveTranslate (hosted) | 2026-09-19 | Simultaneous interpretation: 60 languages in, 29 spoken out, keeps the speaker's voice. **API only, no weights** | — |
@@ -74,12 +80,34 @@ Earlier generation, for reference: SenseVoice (Alibaba FunAudioLLM) is a fast mu
 | Qwen3-ASR (free) | Hears | All 8 (es, ar, zh, vi, pt, ru, hi, fil) | Urdu, Haitian Creole, Hmong, Somali, Swahili not listed |
 | Qwen3.5 (free) | Translates text | All 8 (family covers 201 languages) | Quality per language to test |
 | Qwen3-TTS (free) | Speaks | es, zh, pt, ru | ar, vi, hi, fil |
-| Chatterbox Multilingual (free, MIT, 23 languages) | Speaks, zero-shot cloning | ar, zh, hi, pt, ru, es, vi | fil |
-| OmniVoice (free, Apache 2.0, 600+ languages, 2026-03-31) | Speaks, zero-shot cloning | Claims all | Quality per language unknown |
+| Chatterbox Multilingual (free, MIT, 23 languages claimed, 21 listed) | Speaks, zero-shot cloning | ar, zh, hi, pt, ru, es, vi | fil; Apple Silicon support not stated |
+| OmniVoice (free, Apache 2.0, 600+ languages, 2026-03-31) | Speaks, zero-shot cloning, voice design from attributes; runs on Apple Silicon (MPS) | Claims all (its language list still to read) | Quality per language unknown; speed on an M4 unknown (40× real time claimed on a GPU) |
 | ElevenLabs Flash v2.5 (paid, 32 languages, ~75 ms) | Speaks | All 8 | No Urdu, Haitian Creole or Hmong |
+| ElevenLabs Eleven v4 Turbo (paid, 90+ languages, ~100 ms) | Speaks | Expected all 8 (confirm its list) | Haitian Creole and Hmong to check |
+| Gemini 3.5 Live Translate (paid, preview, 70+ languages) | Hears + translates + speaks | To check | To check |
 | OpenAI `gpt-realtime-translate` (paid) | Hears + translates + speaks | es, zh, vi, pt, ru, hi | ar, fil |
 | Qwen3.8-LiveTranslate (paid, hosted) | Hears + translates + speaks, keeps the speaker's voice | All 8, plus Urdu (29 spoken languages) | Haitian Creole, Hmong |
 | Meta Omnilingual ASR (free, 1,600+ languages) | Hears | — | Candidate for next-wave languages |
+
+## 9. Re-check on 2026-11-19
+
+What changed or was corrected a week after the first pass:
+
+- **ElevenLabs Eleven v4 / v4 Turbo** (released 2026-09-28) replace Flash v2.5 as the paid voice choice: 90+ languages at about 100 ms. Missed in the first pass.
+- **ElevenLabs Realtime Translation** is still an enterprise alpha. No self-serve access.
+- **Google Gemini 3.5 Live Translate** (2026-06-09) was missing from the engine list. Added as a candidate paid engine.
+- **Qwen3-ASR streaming** needs the vLLM backend (NVIDIA). On the Mac the free path is phrase by phrase, not word by word.
+- **Chatterbox Multilingual** lists 21 languages on its page (23 claimed); no Tagalog.
+- **ElevenLabs v3** speaks Urdu, Somali and Swahili (next-wave languages), but not Haitian Creole or Hmong.
+- **OpenAI `gpt-realtime-translate`:** no change found (still 70+ in, 13 out, $0.034/min).
+- **Not yet read:** OmniVoice's full language list (`docs/languages.md` in its repo) and Eleven v4 Turbo's language list.
+
+## 10. Twilio trial and prices (checked 2026-11-19)
+
+- **Trial:** 30 days. 75 voice minutes, 30 Media Streams minutes, 10 minutes per call, 5 concurrent calls. Calls only to verified numbers (up to 5 recipients) and only within your own country. Some TwiML verbs are blocked. One Twilio number.
+- **After upgrading (pay as you go, US):** about $0.014/min for outbound calls, $0.0085/min inbound on a local number, $0.004/min for Media Streams, $1.15/month for a local number.
+- **A bridged call** is two outbound legs, each with a media stream: about 2 × ($0.014 + $0.004) = $0.036 per call minute.
+- **Consent:** the FCC ruled on 2024-02-08 that AI-generated voices on calls count as "artificial" voices under the TCPA, which requires the called person's prior consent. Keep the spoken disclosure and call only people who expect it. (Not legal advice.)
 
 ## Sources
 
@@ -138,3 +166,18 @@ Earlier generation, for reference: SenseVoice (Alibaba FunAudioLLM) is a fast mu
 - [Qwen3.8-LiveTranslate speech output languages (DataLearner, Chinese)](https://www.datalearner.com/ai-models/pretrained-models/1093)
 - [Qwen speech-to-speech models and language table (Qwen docs)](https://docs.platform.qianwenai.com/developer-guides/speech/s2s-models)
 - [Omnilingual ASR on Apple Silicon (soniqo benchmarks)](https://soniqo.audio/benchmarks)
+- [ElevenLabs: Eleven v4 announcement](https://elevenlabs.io/blog/eleven-v4)
+- [ElevenLabs: text-to-speech API (v4 Turbo latency and price)](https://elevenlabs.io/text-to-speech-api)
+- [ElevenLabs: v3 page with plan table (voice slots)](https://elevenlabs.io/v3)
+- [ElevenLabs changelog 2026-10-19 (Realtime Translation for enterprise workspaces)](https://elevenlabs.io/docs/changelog/2026/10/19)
+- [TechCrunch: ElevenLabs v4 supports 90 languages](https://techcrunch.com/?p=3170480)
+- [Google Cloud: Gemini 3.5 Live Translate](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-5-live-translate)
+- [Enterprise DNA: Gemini 3.5 Live Translate (price, language pairs)](https://enterprisedna.co/resources/news/google-gemini-35-live-translate-enterprise-multilingual-2026)
+- [AnIntent: Gemini 3.5 Live Translate launch (transcript-mode caveat)](https://anintent.pages.dev/blog/google-gemini-3-5-live-translate-launch/)
+- [qwen-asr on PyPI (streaming needs the vLLM backend)](https://pypi.org/project/qwen-asr/)
+- [OmniVoice on Hugging Face](https://huggingface.co/k2-fsa/OmniVoice)
+- [OmniVoice on a Mac (walkthrough)](https://pasqualepillitteri.it/en/news/15636/omnivoice-clone-voice-locally-mac)
+- [Twilio: trial account](https://www.twilio.com/docs/usage/trials) and [trying out Voice](https://www.twilio.com/docs/usage/trials/try-out-voice)
+- [Twilio: US voice pricing](https://www.twilio.com/voice/pricing/us)
+- [Quiq: Twilio voice pricing summary](https://quiq.com/blog/twilio-voice-pricing/)
+- [Mayer Brown: FCC ruling on AI-generated calls under the TCPA](https://www.mayerbrown.com/en/insights/publications/2024/02/fcc-declares-authority-and-intent-to-regulate-ai-generated-calls-under-the-tcpa)

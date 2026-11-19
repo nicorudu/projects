@@ -14,14 +14,15 @@ Both sides want the conversation to happen. This project is my attempt to make i
 
 | Area | State |
 |---|---|
+| Plan | Version 1: milestones M0–M8, decision gates, schedule and budget ([plan](docs/plan.md)) |
 | Spec | v0 written ([spec](docs/spec.md)) |
-| Research | Engines, phone-call access, voices and costs checked 2026-11-12 ([research](docs/research.md)) |
-| Code | Not started. Next: M1, a one-way Spanish → English pipe on the Mac, free path first, with latency measured |
+| Research | Engines, phone-call access, voices and costs, re-checked 2026-11-19 ([research](docs/research.md)) |
+| Code | Not started. Next: M0, the scaffold and automated tests; then M1, a one-way Spanish → English pipe on the Mac with latency measured |
 | Accounts | None for the free path. OpenAI API and ElevenLabs for the paid path, Twilio for phone calls, Oracle Cloud for hosting (see [handoff](HANDOFF.md) §6) |
 
 **Picking the project up?** Start with the [handoff](HANDOFF.md): current step, next step, rules and key facts.
 
-**Follow along:** [Build log](BUILDLOG.md) · [Decision log](docs/decisions.md) · [Spec](docs/spec.md) · [Use cases](docs/use-cases.md) · [Research](docs/research.md)
+**Follow along:** [Plan](docs/plan.md) · [Build log](BUILDLOG.md) · [Decision log](docs/decisions.md) · [Spec](docs/spec.md) · [Use cases](docs/use-cases.md) · [Research](docs/research.md)
 
 ## How it will work
 
@@ -34,9 +35,9 @@ They speak English ─► server ─► live translation ─► matched voice (S
 - **Web room:** share a link or QR code; each person talks through a browser. Good for in-person meetings with two devices.
 - **In person:** one phone, you in earbuds, them on the speaker.
 - **Two engines, same app:**
-  - **Free path:** open Qwen models on a Mac mini. Qwen3-ASR hears, Qwen3.5 translates, Qwen3-TTS speaks. A free Oracle Cloud VM is the public server.
-  - **Paid path:** OpenAI `gpt-realtime-translate` with ElevenLabs voices.
-  - Both sit behind adapters, so ElevenLabs Realtime Translation, Qwen LiveTranslate or Hibiki-Zero can be swapped in later.
+  - **Free path:** open Qwen models on a Mac mini. Qwen3-ASR hears, Qwen3.5 translates, Qwen3-TTS speaks. It translates phrase by phrase, after each short pause. A free Oracle Cloud VM is the public server.
+  - **Paid path:** OpenAI `gpt-realtime-translate` with ElevenLabs voices. It translates while the person is still talking.
+  - Both sit behind adapters, so ElevenLabs Realtime Translation, Gemini Live Translate, Qwen LiveTranslate or Hibiki-Zero can be swapped in later.
 - **Voice:** a small model guesses the speaker's sex and age in the first seconds; the app picks a pre-designed voice of the same kind, with a light accent from the speaker's language.
 - **Languages:** built with English ↔ Spanish first, then the launch set: Spanish, Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi and Filipino. Next: Haitian Creole, Hmong, Urdu, Swahili and Somali.
 
@@ -49,11 +50,12 @@ live-interpreter/
 ├── BUILDLOG.md        dated progress entries, newest first
 ├── showcase.json      short summary for the portfolio site (nicorudu.com)
 ├── docs/
-│   ├── spec.md        the v0 plan: modes, architecture, voice matching, milestones, tests
+│   ├── plan.md        the project plan: scope, milestones, decision gates, schedule, budget, risks
+│   ├── spec.md        the technical design: modes, architecture, voice matching, languages, tests
 │   ├── use-cases.md   who it's for and the requirements that come from that
 │   ├── research.md    what exists, engines, phone access, voices, costs (with sources)
 │   └── decisions.md   every decision and why
-├── server/            Node + TypeScript: transports, engines, TTS, session control (M1+)
+├── server/            Node + TypeScript: transports, engines, TTS, session control (M0+)
 ├── modelserver/       Python + MLX on the Mac mini: Qwen3-ASR, Qwen3.5, Qwen3-TTS for the free path (M1)
 ├── client/            Vite + TypeScript PWA (M4+)
 ├── profiler/          Python sidecar: speaker sex/age estimate (M3)

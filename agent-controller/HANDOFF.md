@@ -20,8 +20,10 @@ Last updated: 2026-11-18 · by Claude (cloud session)
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
   - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
+  - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and five tight spots are in blueprint §4.7.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
-- **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`. Branch `agent-controller-m1b` is the next working branch.
+- **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
+- **PR #10** (branch `agent-controller-m1b`) holds the concept model and its renders. M1b code work continues on the same branch or a new one after it merges.
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
@@ -189,9 +191,15 @@ The full list is in blueprint §13. The main ones:
 - Whether docked sensing and 1 A charging through the dock behave on the breadboard.
 - Whether the key plates need the rear hinge, and whether the controller ends up 22 or 24 mm tall.
 - What the reference's green button and four contacts really do (check their source code when it's published).
+- The five tight spots from the concept model (blueprint §4.7). First: does the display's pin header come off, or does the lid get thicker?
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Rev 3 concept model:
+  - `hardware/cad/rev3-pivot/concept.py` builds the device with every part placed, runs an overlap check (passes) and renders eight views.
+  - Renders in `hardware/renders/2026-11-18-rev3-concept/`, web copies in `media/web/rev3-02…08`.
+  - Blueprint §4.7 added: where each part goes and five tight spots. `showcase.json` hero and timeline updated.
+  - Rerun with `xvfb-run -a python3 concept.py` (needs cadquery, trimesh, vtk, manifold3d, Pillow).
 - 2026-11-18 — PR #9 merged to `main` at Nico's request (PR #7 closed with it). Started branch `agent-controller-m1b`.
 - 2026-11-18 — Shopping list and second parts audit:
   - Wrote `hardware/bom/shopping-list-2026-11-18.md`.

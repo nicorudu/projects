@@ -2,7 +2,9 @@
 
 A desk dock with a 4" screen plus a detachable controller with keys, a thumbstick and mics. It lets you watch, approve and talk to AI coding agents (Claude Code first) without switching windows. A Python companion app on the computer bridges it to your tools over USB or Wi-Fi. Inspired by SlashVibe.
 
-![Rev 3 layout](media/web/rev3-01-layout.webp)
+![Rev 3 concept: docked, screen open](media/web/rev3-02-device-open.webp)
+
+![Rev 3 x-ray: where everything sits](media/web/rev3-05-xray.webp)
 
 ## Status: in build
 

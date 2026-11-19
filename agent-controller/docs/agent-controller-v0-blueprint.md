@@ -34,7 +34,13 @@ Three bodies, like the reference:
   - **Joystick block:** a wide flat stick cap in a round dish, the green button, and two mics on the end face.
   - The block pivots 90° at the front corner of the joint.
 
+![Rev 3 concept: docked, screen open](../hardware/renders/2026-11-18-rev3-concept/01-device-open.png)
+
+![Rev 3 concept: joystick block swung out](../hardware/renders/2026-11-18-rev3-concept/02-block-swung-out.png)
+
 ![Rev 3 layout: in line, block swung out, and side view](../hardware/renders/2026-11-18-rev3-layout/rev3-layout.png)
+
+More views, including the x-ray and exploded ones: [renders](../hardware/renders/2026-11-18-rev3-concept/).
 
 Three ways to use the controller:
 
@@ -181,6 +187,44 @@ BOM IDs in brackets. Order status is in the BOM, not here.
   3. The stick cap and dish.
   4. One lid hinge knuckle with its stop.
 - The rev 2 concept script and renders stay in the repo as history. Rev 3 gets a new CAD folder.
+
+### 4.7 Concept model: what it settled and what it found
+The model is `hardware/cad/rev3-pivot/concept.py`. It places every part and checks that no two parts occupy the same space, with the lid closed, with the block in line, and with the block swung out. The check passes.
+
+![X-ray: where everything sits](../hardware/renders/2026-11-18-rev3-concept/05-xray.png)
+
+![X-ray from above](../hardware/renders/2026-11-18-rev3-concept/06-xray-top.png)
+
+**Where things go**
+
+| Part | Place |
+|---|---|
+| Dock board | Right side of the base, behind the joystick block. USB-C sockets at the back wall; its radio end is next to the controller. Pins point down. |
+| Speaker | Centre-left of the base, face up under the open slots |
+| Amplifier | Back left corner of the base |
+| Dock status light | Base top, front right corner, under a small window |
+| Lid magnets | Left side frame of the lid, and the base top below it |
+| Charge contacts, docking magnets | Centred on the key section; one magnet 25 mm to each side |
+| XIAO | Left end of the key section, under the Cancel switch, with its USB-C through the end wall |
+| Charger | Behind the XIAO |
+| Slide switch | Left end wall, above the charger |
+| Battery | Under the Send and Voice switches |
+| Key switches | Toward the front of each plate, because the plates hinge at the rear |
+| Pivot | 4 mm in from the front face. Its 12 mm knuckle stands 2 mm proud of the front. The Voice plate has a notch around it. |
+| Thumbstick | Centre of the block |
+| Green button | Front outer corner of the block, with the light window beside it |
+| Mics | Low on the block's end face, to clear the green button |
+| Pivot sensor, joint magnets | In the joint wall between the key section and the block |
+
+**Tight spots.** Each one is decided when the real parts are measured (M7a).
+
+| # | Where | Numbers | If it doesn't fit |
+|---|---|---|---|
+| 1 | Display in the lid | The lid has 1.3 mm behind the display. The display's pin header is about 8 mm tall. | The header comes off and the wires are soldered to its pads. Otherwise the lid grows from 10 to about 13 mm. |
+| 2 | Battery under the switches | 1.0 mm between the battery and the switch pins, with the pins trimmed to 1.5 mm and a 0.6 mm printed guard sheet between them | If the battery measures over 8.2 mm, the controller and the base grow from 22 to 24 mm |
+| 3 | Dock board in the base | The board is 69 mm long; the base is 67.6 mm deep inside. The board's front end sits in a pocket that leaves 0.8 mm of wall. | The base grows 2 mm deeper |
+| 4 | Dock board pins | They end 0.3 mm above the bottom plate | Wires are soldered to the sides of the pins. Plug-on connectors don't fit. |
+| 5 | Controller status light | The light sits 2 mm to one side of its window | A short piece of clear filament carries the light up |
 
 ---
 
@@ -374,6 +418,7 @@ Breadboard tips:
 4. Whether the key plates need the rear hinge.
 5. Whether the controller ends up 22 or 24 mm tall.
 6. What SlashVibe's green button and four contacts really do. Check their source code when it's published.
+7. The five tight spots in §4.7. The first one matters most: whether the display's pin header comes off, or the lid gets thicker.
 
 ## 14. After v0
 - To-dos by voice and the meeting assistant.

@@ -220,7 +220,7 @@ The model is `hardware/cad/rev3-pivot/concept.py`. It places every part and chec
 
 | # | Where | Numbers | If it doesn't fit |
 |---|---|---|---|
-| 1 | Display in the lid | The lid has 1.3 mm behind the display. The display's pin header is about 8 mm tall. | The header comes off and the wires are soldered to its pads. Otherwise the lid grows from 10 to about 13 mm. |
+| 1 | Display in the lid | The lid has 1.3 mm behind the display. The display's pin header is about 8 mm tall. | The header comes off and the wires are soldered to its pads. Otherwise the pins are bent flat and the lid grows from 10 to about 13 mm. |
 | 2 | Battery under the switches | 1.0 mm between the battery and the switch pins, with the pins trimmed to 1.5 mm and a 0.6 mm printed guard sheet between them | If the battery measures over 8.2 mm, the controller and the base grow from 22 to 24 mm |
 | 3 | Dock board in the base | The board is 69 mm long; the base is 67.6 mm deep inside. The board's front end sits in a pocket that leaves 0.8 mm of wall. | The base grows 2 mm deeper |
 | 4 | Dock board pins | They end 0.3 mm above the bottom plate | Wires are soldered to the sides of the pins. Plug-on connectors don't fit. |

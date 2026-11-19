@@ -21,7 +21,7 @@ Last updated: 2026-11-19 · by Claude (cloud session)
 |---|---|---|---|
 | M0 | Scaffold: layout, adapter interfaces, chunker, resampler, pause detection, timing logger, fake engines, end-to-end test | Nothing | **next** |
 | M1 | One-way pipe on the Mac, free Qwen path then OpenAI path; latency + memory log; gate G1 picks the default path | Mac mini; OpenAI key for the paid half | planned |
-| M2 | Matched voice on both paths: phrase chunker → ElevenLabs TTS and Qwen3-TTS (vs. OmniVoice); 12-voice matrix each; manual profiles | ElevenLabs Creator plan for the paid half | planned |
+| M2 | Matched voice on both paths: phrase chunker → ElevenLabs TTS and Qwen3-TTS (OmniVoice only if the accent fails); 12-voice matrix each; manual profiles | ElevenLabs Creator plan for the paid half | planned |
 | M3 | Automatic voice profiling (audeering sidecar), voice picker, lock-in + 15 s re-check | — | planned |
 | M4 | Web room, two-way: rooms, link + QR, captions, barge-in | — | planned |
 | M6 | Phone bridge: server on the Oracle VM + Tailscale to the Mac mini; Twilio number, outbound flow, two legs, disclosure, barge-in | Twilio, Oracle VM | planned |
@@ -73,7 +73,7 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
   - **OmniVoice** (k2-fsa, Apache 2.0, 2026-03-31): 600+ languages, cloning from 3–10 s, voice design from attributes, runs on Apple Silicon (MPS). Candidate single free voice model; compare with Qwen3-TTS in M2.
 - **Gemini 3.5 Live Translate** (Google, 2026-06-09, public preview): 70+ languages in and out, keeps intonation, reported $0.023/min. Candidate paid engine; check voice options and whether it returns a transcript.
 - **Languages after v0 (M5) and coverage** (details: [spec "Languages"](docs/spec.md), [research §8](docs/research.md)):
-  - Launch set: Spanish, Arabic, Chinese (Mandarin), Vietnamese, Portuguese, Russian, Hindi, Filipino (Tagalog). Picked from NCES fall 2021 English-learner home languages plus Nico's picks.
+  - v0 is Spanish only. M5 set: Spanish, Arabic, Chinese (Mandarin), Vietnamese, Portuguese, Russian, Hindi, Filipino (Tagalog). Picked from NCES fall 2021 English-learner home languages plus Nico's picks.
   - Qwen3-ASR hears all 8. Qwen3.5 translates all 8 as text.
   - Free voice: Qwen3-TTS speaks es / zh / pt / ru only. Chatterbox Multilingual (MIT, 21 languages listed) adds ar / hi / vi; OmniVoice (Apache 2.0, 600+ languages) is the candidate for fil. Quality to test.
   - Paid voice: ElevenLabs speaks all 8 (confirmed for Flash v2.5; Eleven v4 Turbo's 90+ list still to confirm). OpenAI `gpt-realtime-translate` outputs 6 of 8 (no ar, no fil). Qwen3.8-LiveTranslate speaks all 8 plus Urdu.

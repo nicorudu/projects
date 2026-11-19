@@ -85,7 +85,7 @@ The goal is "sounds like the same kind of person," decided in the first few seco
 | Spanish | Light Latin American Spanish | 2 × 3 | 6 | English (and any other output language) |
 | English | Light American English | 2 × 3 | 6 | Spanish (and any other output language) |
 
-12 voices for the first pair; the launch set grows this by speaker language (see "Languages"). Store their IDs in `voices.json`, with the prompt used for each so they can be regenerated.
+12 voices for the first pair, which is all v0 needs; M5's languages grow this by speaker language (see "Languages"). Store their IDs in `voices.json`, with the prompt used for each so they can be regenerated.
 
 **Accent strength is a setting** (subtle / noticeable / off). Default: subtle.
 
@@ -124,7 +124,7 @@ Phone (Twilio) / browser ──► Oracle Cloud Always Free VM
 
 **Limits to test:**
 - **Speed.** Three models in a row may be slower than one streaming API. Measured in M1 against the OpenAI path. If it's too slow: smaller models, or a rented GPU by the hour (Oracle's A10 is about $2/hour, so not free).
-- **Languages.** Qwen3-TTS speaks 10 languages, so four of the eight launch languages need another voice (see "Languages").
+- **Languages.** Qwen3-TTS speaks 10 languages, so four of M5's languages need another voice (see "Languages").
 - **One voice model instead of several?** OmniVoice (Apache 2.0, 600+ languages, runs on Apple Silicon, designs voices from attributes such as "male, British accent") might cover every language with a single model. M5 compares it with Qwen3-TTS (earlier, in M2, if Qwen3-TTS can't produce the light accent).
 - **Accent.** Whether VoiceDesign can produce a believable light Colombian accent in English.
 
@@ -321,7 +321,7 @@ Each one is working and logged before the next. **Build order for v0: 0, 1, 2, 3
 - **Phrase-by-phrase delay on the free path.** Waiting for a pause adds time, and three models run in a row. If it feels too slow in M1, try smaller models and shorter pauses before falling back to the paid path as the default.
 - **The Mac mini is a single point of failure on the free path.** If it's asleep or offline, calls fall back to the paid path (or fail with a clear message).
 - **Language coverage.** `gpt-realtime-translate` outputs 13 languages (no Arabic or Filipino) and Qwen3-TTS speaks 10, so the language router has to mix engines. Haitian Creole and Hmong aren't covered yet. See "Languages".
-- **Translation quality varies by language.** Benchmarks lean toward big languages. Every launch language needs a native-speaker check before it's offered.
+- **Translation quality varies by language.** Benchmarks lean toward big languages. Every added language needs a native-speaker check before it's offered.
 - **Accuracy on what matters.** A wrong date, time or amount is worse than a slow translation. Captions on both sides are the v0 safety net; a "repeat that" control and read-back of numbers are candidates for v1.
 - **Disclosure and privacy.** On the paid path the other person's speech goes to third-party APIs; on the free path it stays on your own machines. Play the disclosure, store no audio, and don't use it for anything sensitive. Schools have their own student-privacy rules (in the US, FERPA) and often contracted interpreters; v0 is a personal prototype, not a school-approved tool. (Not legal advice.)
 - **Model license.** The audeering age/gender model is CC-BY-NC-SA (non-commercial). Fine for a portfolio; swap it out if this ever becomes a product.

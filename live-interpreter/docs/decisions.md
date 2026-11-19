@@ -4,6 +4,10 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-19 | Free path starts with the smallest models: Qwen3-ASR 0.6B, Qwen3.5 4B (4-bit), Qwen3-TTS 0.6B. Fallback is a hybrid path (hear and translate on the Mac, ElevenLabs voice) | The Mac mini has 16 GB; the estimate with macOS is 12–15 GB, and the 9B translator doesn't fit alongside | "4B or 9B", sizes undecided |
+| 2026-11-19 | Build cap of $150 approved; pace is 3–4 sessions a week | Nico's answers to the plan's open questions | Proposed cap; 2 sessions a week assumed |
+| 2026-11-19 | Phone bridge (M6) is built before more languages (M5) | Nico's call; the phone call is the headline demo | M5 and M6 in either order |
+| 2026-11-19 | v0 is English ↔ Spanish only; the other seven languages (M5) come right after v0 | Nico: Spanish is the largest language gap in America, so start there | Eight launch languages inside v0 |
 | 2026-11-19 | A formal plan ([plan.md](plan.md)) is the plan of record: milestones M0–M8, gates G1–G6, a $150 build cap (proposed) | Nico asked for a formal plan; the spec stays the technical design | Milestone list in the spec only |
 | 2026-11-19 | New M0: scaffold, interfaces, fake engines and an automated end-to-end test before any model work | Needs no hardware or accounts, so work can start in a cloud session; later milestones plug real engines into tested plumbing | Starting at M1 |
 | 2026-11-19 | M5 (languages) and M6 (phone bridge) can swap or overlap | M5 depends on native-speaker testers; the phone call is the headline demo and shouldn't wait on them | Strict M5 → M6 order |

@@ -9,6 +9,7 @@ Last updated: 2026-11-19 · by Claude (cloud session)
 ## 1. Where we are right now
 - **Done:** research, use cases, v0 spec, decision log, free open-source path, launch languages. PR #8 (kickoff) merged to `main` on 2026-11-18.
 - **Done 2026-11-19:** full audit of the docs against current facts, and a formal [plan](docs/plan.md) (scope, milestones M0–M8, decision gates G1–G6, schedule, budget, risks). Branch `live-interpreter-plan`, PR #11.
+- **Nico's answers (2026-11-19), now in plan version 1.1:** the Mac mini has 16 GB; pace is 3–4 sessions a week; the $150 cap is approved; v0 is English ↔ Spanish only; the phone bridge (M6) comes before more languages (M5), and M5 moves to right after v0.
 - **No code yet.**
 - **Next step: M0, the scaffold**, in a cloud session once Nico says go: repo layout, adapter interfaces, phrase chunker, resampler and μ-law codec, pause detection, timing logger, fake engines, a keychain script for API keys, and an automated end-to-end test with fake engines. Needs no hardware and no accounts.
 - **Then M1, one-way pipe on the Mac, free path first.** Mic → pause detection → Qwen3-ASR → Qwen3.5 → Qwen3-TTS (one stock voice) → speakers, all via MLX, phrase by phrase, with a timestamp at every stage. Then the same with `gpt-realtime-translate` once the OpenAI key exists, and compare (gate G1).
@@ -23,13 +24,13 @@ Last updated: 2026-11-19 · by Claude (cloud session)
 | M2 | Matched voice on both paths: phrase chunker → ElevenLabs TTS and Qwen3-TTS (vs. OmniVoice); 12-voice matrix each; manual profiles | ElevenLabs Creator plan for the paid half | planned |
 | M3 | Automatic voice profiling (audeering sidecar), voice picker, lock-in + 15 s re-check | — | planned |
 | M4 | Web room, two-way: rooms, link + QR, captions, barge-in | — | planned |
-| M5 | Launch languages: language router, 8 languages (es, ar, zh, vi, pt, ru, hi, fil), voices per speaker language, native-speaker checks | ElevenLabs for ar / vi / hi / fil unless an open voice passes | planned |
 | M6 | Phone bridge: server on the Oracle VM + Tailscale to the Mac mini; Twilio number, outbound flow, two legs, disclosure, barge-in | Twilio, Oracle VM | planned |
 | M7 | In-person mode: PWA screen, earbuds routing, half-duplex gate | — | planned |
 | M8 | Portfolio polish: README diagram, latency chart, 60 s demo of a real call, showcase update | — | planned |
-| v1 | Next-wave languages (Haitian Creole, Hmong, Urdu, Somali, Swahili), meeting recap (opt-in), glossary, inbound calls | — | after v0 |
+| M5 | More languages, after v0: language router, 7 added languages (ar, zh, vi, pt, ru, hi, fil) one at a time, voices per speaker language, native-speaker checks | Native-speaker testers; ElevenLabs for ar / vi / hi / fil unless an open voice passes | after v0 |
+| v1 | Next-wave languages (Haitian Creole, Hmong, Urdu, Somali, Swahili), meeting recap (opt-in), glossary, inbound calls | — | later |
 
-M5 and M6 can swap or overlap. Deliverables, exit tests, gates, estimates and budget: [plan](docs/plan.md). Technical detail: [spec](docs/spec.md) "Build milestones".
+**Build order: M0–M4, M6, M7, M8 = v0 (English ↔ Spanish only), then M5.** v0 is estimated at 15–22 sessions, 4–7 weeks at 3–4 sessions a week. Deliverables, exit tests, gates, estimates and budget: [plan](docs/plan.md). Technical detail: [spec](docs/spec.md) "Build milestones".
 
 ## 3. Standing rules (from Nico)
 1. **Document everything in GitHub after every step**, and update this handoff, so nothing is lost when the chat compacts.
@@ -37,7 +38,7 @@ M5 and M6 can swap or overlap. Deliverables, exit tests, gates, estimates and bu
 3. **Git:** branch first, never commit to `main`. Commit author `nicorudu <nicorudu@users.noreply.github.com>`. Never put Nico's personal email in commits or external requests.
 4. **Secrets** (OpenAI, ElevenLabs, Twilio) go in the OS keychain locally and the host's secret store when deployed. Never in the repo.
 5. **No audio, transcripts or call logs in the repo**, ever (`.gitignore` covers them).
-6. Nico uses an **M4 Mac mini** (main) and an **HP OmniBook X Flip (Windows)**. Code must run on both, except the free-path model server, which uses MLX (Apple Silicon only) in v0.
+6. Nico uses an **M4 Mac mini with 16 GB of memory** (main) and an **HP OmniBook X Flip (Windows)**. Code must run on both, except the free-path model server, which uses MLX (Apple Silicon only) in v0.
 7. **Voice cloning** is only ever opt-in, and only for the account owner's own voice. Never clone the other person on a call.
 
 ## 4. Design in one paragraph
@@ -66,11 +67,12 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
 - **Free path (all Apache 2.0, details in [research.md §6](docs/research.md)):**
   - **Qwen3-ASR** 0.6B / 1.7B (2026-01-29): 30 languages + 22 Chinese dialects incl. en / es / ar, language ID. `pip install qwen-asr`. Streaming needs the vLLM backend (NVIDIA), so on the Mac it runs phrase by phrase. MLX port 30–36× real time (M5 Pro).
   - **Qwen3.5** small 0.8B / 2B / 4B / 9B (2026-03-02): prompted translator; glossary can go in the prompt.
+  - **Memory plan for 16 GB (estimates, measure in M1):** ASR 0.6B ~2 GB + Qwen3.5 4B 4-bit ~3 GB + TTS 0.6B 2–5 GB + macOS/server ~5 GB = 12–15 GB. The 9B translator doesn't fit alongside. Close other model-holding apps (e.g. Wispr Faux) during calls. Fallbacks: compressed TTS, then a hybrid path (local hear + translate, ElevenLabs voice).
   - **Qwen3-TTS** 0.6B / 1.7B (2026-01): 10 languages (zh, en, ja, ko, de, fr, ru, pt, es, it); VoiceDesign from a description, Base clones from 3 s; "design then clone" for a fixed voice matrix. MLX RTF ~0.55–0.8, peak ~4–6 GB. On CPU it's slower than real time.
   - **Qwen3.8-LiveTranslate** (2026-09-19): hosted only, no weights. 60 languages in, 29 spoken, keeps the speaker's voice.
   - **OmniVoice** (k2-fsa, Apache 2.0, 2026-03-31): 600+ languages, cloning from 3–10 s, voice design from attributes, runs on Apple Silicon (MPS). Candidate single free voice model; compare with Qwen3-TTS in M2.
 - **Gemini 3.5 Live Translate** (Google, 2026-06-09, public preview): 70+ languages in and out, keeps intonation, reported $0.023/min. Candidate paid engine; check voice options and whether it returns a transcript.
-- **Launch languages and coverage** (details: [spec "Languages"](docs/spec.md), [research §8](docs/research.md)):
+- **Languages after v0 (M5) and coverage** (details: [spec "Languages"](docs/spec.md), [research §8](docs/research.md)):
   - Launch set: Spanish, Arabic, Chinese (Mandarin), Vietnamese, Portuguese, Russian, Hindi, Filipino (Tagalog). Picked from NCES fall 2021 English-learner home languages plus Nico's picks.
   - Qwen3-ASR hears all 8. Qwen3.5 translates all 8 as text.
   - Free voice: Qwen3-TTS speaks es / zh / pt / ru only. Chatterbox Multilingual (MIT, 21 languages listed) adds ar / hi / vi; OmniVoice (Apache 2.0, 600+ languages) is the candidate for fil. Quality to test.
@@ -82,25 +84,25 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and `git branch -u`. Otherwise the stop hook reports "unpushed commits".
 
 ## 6. What Nico needs to do
-- **Answer the plan's open questions** ([plan §16](docs/plan.md)): the Mac mini's memory (RAM), sessions per week, the $150 cap, the languages at your wife's school, and whether phone comes before languages.
-- **Say go on M0** (the scaffold) and merge the plan PR (#11).
+- **Merge the plan PR (#11) and say go on M0** (the scaffold).
+- **Line up two or three Spanish-speaking testers** for M4 (web room) and M6 (phone call).
 - **The `projects` repo is public**, so everything here, including your story in the README, is visible.
 - **Accounts, in the order they're needed** (the free path needs none of them until M6):
   1. **OpenAI API** key with Realtime API access (paid half of M1). Set a monthly spend limit.
-  2. **ElevenLabs** Creator plan, $22/month, 30 voice slots (paid half of M2; also the voice for Arabic, Vietnamese, Hindi and Filipino in M5 if no open voice is good enough). Starter's 10 slots aren't enough for the first 12 voices. Cancel after gate G2 if the open voices win.
+  2. **ElevenLabs** Creator plan, $22/month, 30 voice slots (paid half of M2; later the voice for Arabic, Vietnamese, Hindi and Filipino in M5 if no open voice is good enough). Starter's 10 slots aren't enough for the first 12 voices. Cancel after gate G2 if the open voices win.
   3. **Oracle Cloud** account (M6). Create one Arm VM (`VM.Standard.A1.Flex`) at **no more than 2 OCPUs and 12 GB**, so it stays free when the trial ends.
   4. **Tailscale** (free for personal use) on the Mac mini and the Oracle VM (M6).
   5. **Twilio** account and one phone number (M6). Don't start the 30-day trial early; it only calls verified numbers, 10 minutes at a time. Upgrade (about $20) for real tests.
 - **Don't paste keys into chat or files.** M0 adds a `keys:set` script that asks for each key and stores it in the keychain.
-- **Test speakers:** line up a few friends or family (Spanish and English speakers, different ages) who agree to be test callers for M2–M6. For M5, find one native speaker per launch language to judge the translation and voice.
-- **Ask your wife** which languages her students' families actually speak, and which Indian language(s) matter (Hindi is assumed; Urdu, Gujarati, Punjabi or Telugu are also possible).
+- **Test speakers:** a few friends or family (Spanish and English speakers, different ages) for M2–M6.
+- **Later, before M5:** ask your wife which languages her students' families speak, and which Indian language(s) matter (Hindi is assumed; Urdu, Gujarati, Punjabi or Telugu are also possible). Find one native speaker per added language.
 
 ## 7. Open questions
 - Final name.
 - Does ElevenLabs Voice Design produce a convincing light Colombian accent, or only a general Latin American one?
 - Is ElevenLabs TTS after `gpt-realtime-translate` fast enough, or does "fast mode" (OpenAI's voice) need to be the phone default?
-- Is the free Qwen path fast enough on the M4 for live calls, phrase by phrase, and which model sizes fit in its memory? (gate G1)
-- Can one voice model (OmniVoice) replace Qwen3-TTS plus Chatterbox on the free path? (gate G2)
+- Is the free Qwen path fast enough on the M4 for live calls, phrase by phrase, and do the three smallest models fit in 16 GB without swapping? (gate G1)
+- Can one voice model (OmniVoice) replace Qwen3-TTS plus Chatterbox on the free path? (M5)
 - Is Gemini 3.5 Live Translate a better paid engine than OpenAI for Arabic and Filipino?
 - Can Qwen3-TTS VoiceDesign do a believable light Colombian accent in English?
 - Are the open voices (Chatterbox Multilingual for ar / hi / vi, OmniVoice for fil) good enough to keep those languages free, or do they need ElevenLabs?
@@ -108,6 +110,7 @@ Checked 2026-11-12, re-checked 2026-11-19. Sources are in [research.md](docs/res
 - License for the code (the repo is public, so this matters once code lands).
 
 ## 8. Step log (newest first)
+- 2026-11-19 — Plan version 1.1 from Nico's answers: 16 GB Mac mini (starting model sizes fixed, hybrid path as fallback), 3–4 sessions a week (v0 in an estimated 4–7 weeks), $150 cap approved, v0 is English ↔ Spanish only, M6 before M5 and M5 after v0. Same branch and PR (#11).
 - 2026-11-19 — Audit and formal plan. PR #8 merged. Corrected: paid voice is Eleven v4 Turbo; Qwen3-ASR can't stream on the Mac, so the free path is phrase by phrase; Gemini 3.5 Live Translate and OmniVoice added as candidates; Twilio trial limits, prices and consent note; voice-slot counts. Added M0 (scaffold) and [docs/plan.md](docs/plan.md). Branch `live-interpreter-plan`, PR #11.
 - 2026-11-12 — Chose the launch languages (es, ar, zh, vi, pt, ru, hi, fil) from NCES data and Nico's picks; mapped coverage per engine; added a language router and new milestone M5 (old M5–M7 are now M6–M8).
 - 2026-11-12 — Added the free path (Qwen3-ASR → Qwen3.5 → Qwen3-TTS on the Mac mini) and Oracle Always Free hosting to the spec, research, decisions and this handoff. M1 now starts with the free path.

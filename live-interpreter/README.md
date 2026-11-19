@@ -14,7 +14,7 @@ Both sides want the conversation to happen. This project is my attempt to make i
 
 | Area | State |
 |---|---|
-| Plan | Version 1: milestones M0–M8, decision gates, schedule and budget ([plan](docs/plan.md)) |
+| Plan | Version 1.1: v0 is English ↔ Spanish; milestones, decision gates, schedule and budget ([plan](docs/plan.md)) |
 | Spec | v0 written ([spec](docs/spec.md)) |
 | Research | Engines, phone-call access, voices and costs, re-checked 2026-11-19 ([research](docs/research.md)) |
 | Code | Not started. Next: M0, the scaffold and automated tests; then M1, a one-way Spanish → English pipe on the Mac with latency measured |
@@ -39,7 +39,7 @@ They speak English ─► server ─► live translation ─► matched voice (S
   - **Paid path:** OpenAI `gpt-realtime-translate` with ElevenLabs voices. It translates while the person is still talking.
   - Both sit behind adapters, so ElevenLabs Realtime Translation, Gemini Live Translate, Qwen LiveTranslate or Hibiki-Zero can be swapped in later.
 - **Voice:** a small model guesses the speaker's sex and age in the first seconds; the app picks a pre-designed voice of the same kind, with a light accent from the speaker's language.
-- **Languages:** built with English ↔ Spanish first, then the launch set: Spanish, Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi and Filipino. Next: Haitian Creole, Hmong, Urdu, Swahili and Somali.
+- **Languages:** v0 is English ↔ Spanish, the largest language gap in US schools. Next: Arabic, Chinese, Vietnamese, Portuguese, Russian, Hindi and Filipino. After that: Haitian Creole, Hmong, Urdu, Swahili and Somali.
 
 ## Layout
 

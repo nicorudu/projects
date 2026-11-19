@@ -4,6 +4,14 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-19 — Plan version 1.1: Spanish first, phone before languages
+- Nico answered the plan's open questions.
+- **v0 is English ↔ Spanish only.** Spanish is the largest language gap in US schools. The other seven languages (M5) come right after v0.
+- **The phone call comes first.** Build order is now M0–M4, M6 (phone bridge), M7, M8, then M5.
+- **The Mac mini has 16 GB**, so the free path starts with the smallest model of each kind (an estimated 12–15 GB in total). If that doesn't fit, the fallback is a hybrid: hear and translate on the Mac, speak with ElevenLabs.
+- **Pace and budget:** 3–4 sessions a week puts v0 at an estimated 4–7 weeks. The $150 cap is approved.
+- Details: [plan](docs/plan.md).
+
 ## 2026-11-19 — Audit and formal plan
 - **Kickoff merged.** PR #8 is on `main`.
 - **Went through every doc and re-checked the facts a week later.** What changed:

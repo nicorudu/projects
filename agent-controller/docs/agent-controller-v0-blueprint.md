@@ -221,7 +221,7 @@ The model is `hardware/cad/rev3-pivot/concept.py`. It places every part and chec
 
 | # | Where | Numbers | If it doesn't fit |
 |---|---|---|---|
-| 1 | Display in the lid | **Decided 2026-11-18:** the lid is 13 mm thick and the display's pins are bent flat. That leaves 4.3 mm behind the display; the bent pins and their plugs need about 3.2 mm. | If the plugs don't fit, solder the wires to the pins instead |
+| 1 | Display in the lid | **Decided 2026-11-18:** the lid is 13 mm thick and the display's pins are bent flat. That leaves 4.3 mm behind the display; the bent pins with plug-on wires need about 4.1 mm, so it is close. | If the plugs don't fit, solder the wires to the bent pins instead (about 3 mm) |
 | 2 | Battery under the switches | 1.0 mm between the battery and the switch pins, with the pins trimmed to 1.5 mm and a 0.6 mm printed guard sheet between them | If the battery measures over 8.2 mm, the controller and the base grow from 22 to 24 mm |
 | 3 | Dock board in the base | The board is 69 mm long; the base is 67.6 mm deep inside. The board's front end sits in a pocket that leaves 0.8 mm of wall. | The base grows 2 mm deeper |
 | 4 | Dock board pins | They end 0.3 mm above the bottom plate | Wires are soldered to the sides of the pins. Plug-on connectors don't fit. |

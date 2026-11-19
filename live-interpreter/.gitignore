@@ -1,0 +1,41 @@
+# Secrets (keys live in the OS keychain; never commit these)
+.env
+.env.*
+*.pem
+*.key
+
+# Audio, transcripts and call logs (privacy: never commit)
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.pcm
+*.raw
+*.ulaw
+recordings/
+transcripts/
+logs/
+sessions/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Python (profiler sidecar)
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Model weights downloaded locally
+models/
+*.safetensors
+*.bin
+*.onnx
+
+# OS
+.DS_Store
+Thumbs.db

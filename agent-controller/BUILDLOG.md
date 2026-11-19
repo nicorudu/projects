@@ -16,6 +16,8 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 - New [complete plan](docs/plan.md) and [blueprint rev 3](docs/agent-controller-v0-blueprint.md): the pivot on a hollow pin, hinged key plates, position sensing so stick directions are always right, and a controller that only talks to the dock.
 - Nothing already bought is wasted. One new part: small tactile buttons.
 
+- **Shopping list:** [what to buy now](hardware/bom/shopping-list-2026-11-18.md). A second audit of the build steps added six things earlier lists missed: battery lead connectors, a capacitor kit, a full jumper kit, a USB-C power meter, extra breadboards, and a second data cable.
+
 ![rev 3 layout](media/web/rev3-01-layout.webp)
 
 ## 2026-11-11 — Fixes from the Mac Mini test

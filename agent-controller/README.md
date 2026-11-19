@@ -9,7 +9,7 @@ A desk dock with a 4" screen plus a detachable controller with keys, a thumbstic
 | Area | State |
 |---|---|
 | Design | **Rev 3** (pivoting joystick block, large key plates) is the current design: [plan](docs/plan.md) and [blueprint](docs/agent-controller-v0-blueprint.md). Print CAD waits for caliper measurements. |
-| Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv). |
+| Parts | Mostly ordered. See [BOM](hardware/bom/BOM.csv) and the [shopping list](hardware/bom/shopping-list-2026-11-18.md). |
 | Companion app | M0 + M1 done: live Claude Code status, and approvals answered from the fake device (tested against real Claude Code) |
 | Software architecture | Written ([architecture](docs/architecture.md)); next is M2 voice on the Mac mic |
 | Firmware | Not started |

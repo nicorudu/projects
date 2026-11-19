@@ -4,6 +4,8 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-18 | The battery connects through a JST-PH pigtail, and a 0.1 µF capacitor sits on the battery-reading pin | Nothing is soldered to a live battery; the high-resistance divider reads steadily | Soldering the battery leads; no capacitor |
+| 2026-11-18 | The controller gets its own breadboard, and the dock's current is measured with a USB-C power meter | The dock stays wired while the controller is built; charging current through the dock must be measured, not guessed | Sharing the kit breadboards; multimeter only |
 | 2026-11-18 | The joystick block pivots 90° on a hollow printed pin, with the wires through the pin | The reference does this (Nico's photo, brand film, teardown). The Nov 11 "no swivel" decision was wrong. | Rigid bar |
 | 2026-11-18 | Key order is Cancel / Send / Voice, with Voice beside the joystick | Photos of real units | Cancel / Voice / Send |
 | 2026-11-18 | Keys are large printed plates on Choc switches, hinged at the rear edge | Matches the reference's look; a big plate on one switch would tilt otherwise | 1u keycaps |

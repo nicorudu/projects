@@ -18,9 +18,11 @@ Last updated: 2026-11-18 · by Claude (cloud session)
     - The controller attaches to the base's front face (no tray).
     - The controller only talks to the dock.
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
+  - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
-- **PR #9** holds rev 3 (docs only). It includes PR #7, so merging #9 covers both.
+- **PR #9** holds rev 3 and the shopping list (docs only). It includes PR #7, so merging #9 covers both.
+- **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
@@ -147,12 +149,13 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
 
 ## 6. What Nico needs to do
 - **Answer the four decisions in [plan §8](docs/plan.md):** parts status, the new and missing items, voice, and finish.
-- **Parts to confirm** (plan §6):
-  - Marked "to order" on Nov 11: C1 XIAO ×2, C2 thumbstick ×2, C7 TP4056, C9 resistor kit (now needs 10k, 22k, 100k, 150k), D7 magnets, S4 header strip.
-  - New: C10 tactile buttons, 6 × 6 mm.
-  - Check you have: T6 calipers, T7 1.5 mm hex key, S6 female-to-male jumpers, S7 super glue, S8 foam tape, S9 rubber feet.
+- **Buy the parts on the [shopping list](hardware/bom/shopping-list-2026-11-18.md):**
+  - New: C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, S6 jumper kit, T8 USB-C power meter, T9 breadboards.
+  - From Nov 11, if not ordered yet: C1 XIAO ×2, C2 thumbstick ×2, C7 TP4056, C9 resistor kit (10k, 22k, 100k, 150k), D7 magnets, S4 header strip.
+  - Check you have: T6 calipers, T7 1.5 mm hex key, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+- **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
-- **Repo is private.** Make it public when you want the website to link to it and load its images.
+- **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
   1. **Get the code** (after merging the PR):
      - If the repo isn't on the Mac yet: `gh repo clone nicorudu/projects ~/projects` (run `gh auth login` first if needed).
@@ -189,6 +192,11 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-18 — Shopping list and second parts audit:
+  - Wrote `hardware/bom/shopping-list-2026-11-18.md`.
+  - BOM: added C11, C12, T8–T11; S6 moved to "to order"; C10 became an assortment.
+  - Blueprint: a 0.1 µF capacitor on D2, the battery on a JST-PH pigtail, breadboard tips.
+  - Checked nicorudu.com: the project isn't listed there yet. Nico's website chat handles it.
 - 2026-11-18 — Opened PR #9 (rev 3 docs; includes PR #7).
 - 2026-11-18 — Rev 3:
   - Re-checked every image dropped into the chat (92 files) and re-researched SlashVibe (site, Kickstarter, four demo videos, press).

@@ -112,6 +112,8 @@ Work is split three ways: **Cloud** (Claude in this chat), **Mac** (Claude Code 
 
 ## 6. Parts: what to check and what to add
 
+**The list to shop from is [shopping-list-2026-11-18.md](../hardware/bom/shopping-list-2026-11-18.md).** It has the spec to match, where to buy and a rough price for every item below, plus the items a second audit added (see E).
+
 The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The repo's order statuses are from Nov 11, so **please confirm what you actually ordered and what has arrived.**
 
 ### A. Still marked "to order" on Nov 11. Confirm each.
@@ -134,16 +136,28 @@ The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The re
 |---|---|---|
 | T6 | Digital calipers, 150 mm | Every "measure it" step depends on them |
 | T7 | 1.5 mm hex key | For the M2 socket-cap screws. Check whether the screw kit includes one. |
-| S6 | Female-to-male jumper wires, 20 cm, 20 or more | The display's pins are male; the breadboard kit's jumpers may all be male-to-male |
 | S7 | Super glue (gel) | Fixing magnets in their pockets |
 | S8 | Double-sided foam tape | Holding the battery and the speaker |
 | S9 | Stick-on rubber feet, 4 or more | So the dock doesn't slide. Optional but cheap. |
+| T10 | A second USB-C data cable | The dock and the controller board are both plugged in during flashing |
+| T11 | Flush cutters | Trimming leads. Check whether the soldering kit includes a pair. |
 
 ### D. Not needed
 - A 4-pin connector. Ours stays 2-pin for v0.
 - New switches. The Choc V1 switches stay.
 - A different battery. See the option in §7.
 - The plain keycaps are still used on the breadboard.
+
+### E. Added by the second audit (2026-11-18, evening)
+| ID | Part | Why |
+|---|---|---|
+| C11 | JST-PH 2.0 mm 2-pin pigtails | The battery plugs into the charger instead of being soldered live |
+| C12 | Ceramic capacitor kit that includes 0.1 µF | Steadies the battery reading |
+| S6 | Jumper kit with male-male, male-female and female-female wires | Moved from "check" to "buy". The display and dock board both have male pins. |
+| T8 | USB-C power meter | Measures the dock's current while the controller charges |
+| T9 | Two more 830-point breadboards | The controller needs its own while the dock stays wired |
+
+C10 also changed: buy an assortment of heights, so the right one can be picked after measuring.
 
 ---
 

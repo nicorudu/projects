@@ -113,6 +113,8 @@ BOM IDs in brackets. Order status is in the BOM, not here.
 - SS12D00G3 slide switch [C8]
 - Resistors: 2 × 100 kΩ, 1 × 150 kΩ, 1 × 10 kΩ, 1 × 22 kΩ [C9]
 - 2 × 6 × 6 mm tactile buttons: the green button and the pivot sensor [C10, new]
+- JST-PH 2.0 mm pigtail, so the battery plugs into the charger [C11, new]
+- 1 × 0.1 µF ceramic capacitor on the battery-reading pin [C12, new]
 - WS2812B LED [D5], the spring connector's pin half [D6], magnets [D7]
 
 **Printed:** lid frame, base, base bottom plate, key section, joystick block, three key plates, stick cap, green button cap, pivot pin and retainer.
@@ -226,9 +228,11 @@ Use the 28 AWG silicone wire, one color per signal, and leave 25 mm of slack on 
 contacts + / − ─► TP4056 IN+ / IN−
 LiPo ───────────► TP4056 B+ / B−
 TP4056 OUT+ ────► slide switch ─► XIAO BAT+ ─► 100k ─┬─► 100k ─► GND
-TP4056 OUT− ────────────────────► XIAO BAT−          ├─► D2
+TP4056 OUT− ────────────────────► XIAO BAT−          ├─► D2 ─► 0.1 µF ─► GND
 contacts + ─────────────────────► 150k ──────────────┘
 ```
+- **Battery lead:** the battery plugs into a JST-PH socket pigtail [C11] soldered to B+ / B−. Check with the multimeter which pin is + before the first plug-in; sellers wire these plugs both ways.
+- **Capacitor:** the 0.1 µF [C12] sits right at D2. The divider's resistors are large, and the board's analog input reads them unsteadily without it.
 - **Undocked:** D2 reads half the battery voltage (1.65–2.1 V).
 - **Docked:** the 5 V from the contacts lifts D2 above 2.3 V (about 2.5–2.8 V). That reading means "docked and charging".
 - **To prove on the breadboard (M5):** that the unpowered charger input doesn't disturb the battery reading. If it does, drop the 150 kΩ; "docked" then becomes a long press of the green button.
@@ -250,7 +254,7 @@ contacts + ─────────────────────► 15
 ### 5.6 Power notes
 - **USB power budget.** The dock itself should stay under 500 mA at normal volume. A docked controller charging at 1 A adds to that, so the total can pass 1 A.
   - Plug the dock straight into a USB-C port on the computer, not into an unpowered hub.
-  - Measure the current in M4 and M5.
+  - Measure the current in M4 and M5 with the USB-C power meter [T8].
   - If the dock resets or the dev board's 5 V pin sags, lower the charge current: swap the TP4056's 1.2 kΩ PROG resistor for 2.4 kΩ (about 500 mA).
 - The mics stay powered while the controller is awake, with a 300 ms rolling buffer, so the first word is never clipped.
 - The controller sleeps after 60 s without input and wakes on any key.
@@ -337,7 +341,9 @@ One PlatformIO project with three targets (`dock`, `controller`, and `sim` for t
 5. **Test prints, full print, assembly (M7b, M7c).**
 
 Breadboard tips:
-- The dock board is wide. Straddle it across the two breadboards.
+- The dock board is wide. If it leaves no free holes on one breadboard, straddle it across two.
+- The controller gets its own breadboard [T9], because the dock stays wired while the controller is built.
+- The display and the dock board both have male pins. Join them with female-to-female jumpers [S6].
 - The thumbstick's pins are 2 mm apart and don't fit a breadboard. Solder wires to them.
 
 ---

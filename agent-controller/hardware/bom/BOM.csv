@@ -15,13 +15,15 @@ C6,controller,Battery,"LiPo 3.7 V 1000 mAh 803040 (8 x 30 x 40 mm), JST-PH 2.0, 
 C7,controller,Charger,TP4056 USB-C Li-ion charger module with DW01A protection (1 A),1,7.00,Amazon,,check,Confirm it was ordered
 C8,controller,Power switch,"SS12D00G3 mini slide switch SPDT, 3 mm handle (pack of 10)",1,,AliExpress,,ordered,
 C9,controller,Battery-sense resistors,"Resistor kit, 1/4 W metal film 1%, must include 10 kOhm, 22 kOhm, 100 kOhm and 150 kOhm",1,8.00,Amazon,,ordering,2 x 100k + 1 x 150k for battery and docked sense; 10k + 22k for the AUX input
-C10,controller,Tactile push buttons,"6 x 6 mm, through-hole, 5 mm tall (pack of 10 or more)",1,,Amazon,,to order,"New in rev 3: 1 = green button on the joystick block, 1 = pivot sensor"
+C10,controller,Tactile push buttons,6 x 6 mm through-hole tactile switch assortment with several button heights (must include 5 mm),1,7.00,Amazon,,to order,"New in rev 3: 1 = green button on the joystick block, 1 = pivot sensor. An assortment lets us pick the height after measuring"
+C11,controller,Battery lead connectors,"JST-PH 2.0 mm 2-pin pigtails, plug + socket pairs (10 pairs)",1,7.00,Amazon,,to order,Added 2026-11-18. The socket half is soldered to the charger so the battery plugs in and out. Check polarity with the multimeter first: red is not always +
+C12,controller,Capacitors,Ceramic capacitor assortment that includes 0.1 uF (100 nF),1,8.00,Amazon,,to order,Added 2026-11-18. One 0.1 uF from D2 to GND steadies the battery reading (the divider is high resistance)
 S1,shared,Hook-up wire,"28 AWG silicone wire, 10 colors",1,5.69,AliExpress (Auto DIY),,ordered,
 S2,shared,Fasteners,M2 brass heat-set inserts + M2 socket cap screws kit (BT-M2),1,8.33,AliExpress (YMAX),,ordered,
 S3,shared,Heat-shrink tubing,Assortment,1,,,,ordered,
-S4,shared,Pin headers,"2.54 mm male breakaway header, 40-pin",1,,DigiKey,,to order,For the breadboard XIAO
+S4,shared,Pin headers,"2.54 mm male breakaway header, 40-pin",1,6.00,Amazon or DigiKey,,to order,"For the breadboard XIAO, which ships without headers installed. Also covers the mic, amp and charger boards"
 S5,shared,Filament,PETG,1,,,,on hand,
-S6,shared,Jumper wires,"Female-to-male Dupont, 20 cm, 20 or more",1,,Amazon,,check,The display's pins are male. Check whether the breadboard kit's jumpers include female ends
+S6,shared,Jumper wires,"Dupont jumper kit, 120 pcs, 20 cm: 40 male-male, 40 male-female, 40 female-female",1,7.00,Amazon,,to order,"The display and the dock board both have male pins, so female-female wires join them directly. The breadboard kit only lists 40 jumpers"
 S7,shared,Super glue,Gel type,1,,,,check,Fixes magnets in their pockets
 S8,shared,Foam tape,"Double-sided, about 1 mm thick",1,,,,check,Holds the battery and seals the speaker
 S9,shared,Rubber feet,"Stick-on, about 8 mm, 4 or more",1,,,,check,Optional; stops the dock sliding
@@ -32,6 +34,10 @@ T4,tools,Wire strippers,,1,,,,on hand,
 T5,tools,USB-C data cable,USB-C to USB-C (data),1,,,,on hand,Mac to dock native USB port
 T6,tools,Digital calipers,150 mm,1,,,,check,Every measure-it step depends on them. Earlier lists missed this
 T7,tools,Hex key,1.5 mm,1,,,,check,For the M2 socket-cap screws. Check whether the screw kit includes one
+T8,tools,USB-C power meter,"Inline USB-C voltage and current tester, 5 V, reads to 0.01 A",1,12.00,Amazon,,to order,Added 2026-11-18. Blueprint 5.6 needs the dock current measured with and without the controller charging
+T9,tools,Extra breadboards,830-point solderless breadboard (pack of 2 or 3),1,8.00,Amazon,,to order,"Added 2026-11-18. The dock board may fill or straddle the kit breadboards, and the controller needs its own while the dock stays wired"
+T10,tools,Second USB-C data cable,"USB-C to USB-C, data (not charge-only)",1,,,,check,Added 2026-11-18. The dock and the XIAO are both plugged into the Mac while flashing the controller
+T11,tools,Flush cutters,Small side cutters for trimming leads,1,,,,check,Added 2026-11-18. Check whether the soldering kit includes a pair. Also check the wire strippers have a 28 AWG notch
 X1,unused,PS2 joystick module,KY-023 style,2,,AliExpress,,spare,Replaced by C2 (too tall)
 X2,unused,Rotary encoder,"EC11, 20 mm half shaft (5-pack)",1,4.00,AliExpress,,spare,No dial in rev 2
 X3,unused,Hinges,Mini metal hinges 10 mm (25 pcs),1,1.88,AliExpress,,spare,No clamshell in rev 2

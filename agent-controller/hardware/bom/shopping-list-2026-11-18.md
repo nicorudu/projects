@@ -1,5 +1,7 @@
 # Shopping list — 2026-11-18 (rev 3)
 
+> **Replaced on 2026-11-19** by [shopping-list-2026-11-19.md](shopping-list-2026-11-19.md), which is checked against the actual orders. This file is kept as history.
+
 What to buy now. It covers the rev 3 design and a second audit of everything the build steps need. The full parts list with every status is [BOM.csv](BOM.csv).
 
 - Prices are estimates, not quotes.

@@ -9,3 +9,5 @@
 - **To shop:** use the newest `shopping-list-*.md` in this folder. It lists only what still needs buying, with the spec to match.
 
 Order statuses were last confirmed on 2026-11-11. Rev 3 (2026-11-18) added C10, S6–S9, T6 and T7; items marked `check` need Nico to confirm he has them. A second audit the same day added C11, C12 and T8–T11, and moved S6 to `to order`.
+
+**2026-11-19:** statuses were checked against Nico's AliExpress and Amazon order screenshots. Rows that say "Order seen 2026-11-19" are confirmed ordered. Nothing has been confirmed as arrived yet.

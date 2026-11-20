@@ -112,7 +112,7 @@ Work is split three ways: **Cloud** (Claude in this chat), **Mac** (Claude Code 
 
 ## 6. Parts: what to check and what to add
 
-**The list to shop from is [shopping-list-2026-11-18.md](../hardware/bom/shopping-list-2026-11-18.md).** It has the spec to match, where to buy and a rough price for every item below, plus the items a second audit added (see E).
+**The list to shop from is [shopping-list-2026-11-19.md](../hardware/bom/shopping-list-2026-11-19.md).** It was checked against the real orders on 2026-11-19 and replaces the tables below, which are kept as history.
 
 The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The repo's order statuses are from Nov 11, so **please confirm what you actually ordered and what has arrived.**
 

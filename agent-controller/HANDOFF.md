@@ -2,7 +2,7 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-18 · by Claude (cloud session)
+Last updated: 2026-11-19 · by Claude (cloud session)
 
 ---
 
@@ -18,12 +18,12 @@ Last updated: 2026-11-18 · by Claude (cloud session)
     - The controller attaches to the base's front face (no tray).
     - The controller only talks to the dock.
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
-  - **Shopping list:** [hardware/bom/shopping-list-2026-11-18.md](hardware/bom/shopping-list-2026-11-18.md). A second audit added C11 (battery lead connectors), C12 (capacitors), T8 (USB-C power meter), T9 (breadboards), T10 and T11.
+  - **Shopping list (current): [hardware/bom/shopping-list-2026-11-19.md](hardware/bom/shopping-list-2026-11-19.md).** It is checked against Nico's order screenshots. Still to buy: 2 thumbsticks (C2), a second XIAO (C1), resistor kit (C9), tactile buttons (C10), JST-PH pigtails (C11), capacitor kit (C12), jumper kit (S6), breadboards (T9), USB-C power meter (T8). Nothing is confirmed as arrived yet.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
   - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and the tight spots are in blueprint §4.7. The lid is 13 mm thick (decided), so the device is about 35 mm tall closed.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
 - **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
-- **PR #10** (branch `agent-controller-m1b`) holds the concept model and its renders. M1b code work continues on the same branch or a new one after it merges.
+- **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
 - **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
@@ -152,10 +152,10 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
 
 ## 6. What Nico needs to do
 - **Answer the four decisions in [plan §8](docs/plan.md):** parts status, the new and missing items, voice, and finish.
-- **Buy the parts on the [shopping list](hardware/bom/shopping-list-2026-11-18.md):**
-  - New: C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, S6 jumper kit, T8 USB-C power meter, T9 breadboards.
-  - From Nov 11, if not ordered yet: C1 XIAO ×2, C2 thumbstick ×2, C7 TP4056, C9 resistor kit (10k, 22k, 100k, 150k), D7 magnets, S4 header strip.
-  - Check you have: T6 calipers, T7 1.5 mm hex key, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+- **Buy the parts on the [shopping list](hardware/bom/shopping-list-2026-11-19.md)** (checked against the real orders on 2026-11-19):
+  - Not ordered yet: C2 thumbstick ×2, C1 a second XIAO, C9 resistor kit (10k, 22k, 100k, 150k), C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, S6 jumper kit, T9 breadboards, T8 USB-C power meter.
+  - Only if not owned: T6 calipers, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+  - On arrival, check: the chargers have six pads (protected kind); the screwdriver set has an H1.5 bit; measure both ESP32-S3 boards.
 - **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
@@ -196,6 +196,11 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-19 — Parts check against Nico's order screenshots (AliExpress + Amazon):
+  - BOM statuses updated; rows marked "Order seen 2026-11-19" are confirmed ordered.
+  - Found: only one XIAO was ordered (two are needed); the thumbsticks, resistor kit and breadboards were never ordered; the header strip is no longer needed.
+  - New list: `hardware/bom/shopping-list-2026-11-19.md`. PR #10 (concept models) was merged by Nico.
+  - Still open: the screen angle for his standing desk (waiting on two measurements) and folding lid vs fixed tilt.
 - 2026-11-18 — Fixed-tilt option (rev 3b) mocked up at Nico's request: model, seven renders, overlap check passes, comparison doc `docs/option-fixed-tilt.md`. Not chosen yet.
 - 2026-11-18 — Nico chose the thicker lid: 13 mm, display pins bent flat. Model, renders, layout drawing, blueprint §4.1/§4.3/§4.7 and plan updated. Closed size is now about 124 × 112 × 35 mm.
 - 2026-11-18 — Rev 3 concept model:

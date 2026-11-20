@@ -110,7 +110,7 @@ BOM IDs in brackets. Order status is in the BOM, not here.
 - 6 × 2 mm magnets [D7]
 
 **Controller**
-- Seeed XIAO ESP32S3, plain [C1]
+- Seeed XIAO ESP32S3, plain, one board [C1]. The spare ESP32-S3 board [X7] stands in for it on the breadboard.
 - Adafruit #5628 Joy-Con-style thumbstick. Its click is left unconnected. [C2]
 - 3 × Kailh Choc V1 Red switches [C3]
 - 2 × INMP441 I2S mics [C5]
@@ -387,7 +387,8 @@ One PlatformIO project with three targets (`dock`, `controller`, and `sim` for t
 
 Breadboard tips:
 - The dock board is wide. If it leaves no free holes on one breadboard, straddle it across two.
-- The controller gets its own breadboard [T9], because the dock stays wired while the controller is built.
+- The dock board sits on the expansion board that comes with it [D1], which leaves the breadboards free for the controller.
+- **The controller is first built on the spare ESP32-S3 board [X7], not on the XIAO.** It is the same chip, so the same firmware runs with a different pin table. The one XIAO stays bare and goes into the finished controller. Before it is soldered in, flash it over USB and check that it boots and pairs with the dock.
 - The display and the dock board both have male pins. Join them with female-to-female jumpers [S6].
 - The thumbstick's pins are 2 mm apart and don't fit a breadboard. Solder wires to them.
 

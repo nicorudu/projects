@@ -18,7 +18,7 @@ Last updated: 2026-11-19 · by Claude (cloud session)
     - The controller attaches to the base's front face (no tray).
     - The controller only talks to the dock.
   - **No hardware is wasted.** One new part (C10 tactile buttons) and a few "check you have it" items; see plan §6.
-  - **Shopping list (current): [hardware/bom/shopping-list-2026-11-19.md](hardware/bom/shopping-list-2026-11-19.md).** It is checked against Nico's order screenshots. Still to buy: 2 thumbsticks (C2), a second XIAO (C1), resistor kit (C9), tactile buttons (C10), JST-PH pigtails (C11), capacitor kit (C12), jumper kit (S6), breadboards (T9), USB-C power meter (T8). Nothing is confirmed as arrived yet.
+  - **Shopping list (current): [hardware/bom/shopping-list-2026-11-19.md](hardware/bom/shopping-list-2026-11-19.md).** It is checked against Nico's order screenshots. Still to buy: resistor kit (C9), tactile buttons (C10), JST-PH pigtails (C11), capacitor kit (C12), USB-C power meter (T8). Nico confirmed in chat that the thumbstick and breadboards with jumpers are ordered. **One XIAO is enough:** the spare ESP32-S3 board (X7) stands in for the controller on the breadboard. Nothing is confirmed as arrived yet.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
   - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and the tight spots are in blueprint §4.7. The lid is 13 mm thick (decided), so the device is about 35 mm tall closed.
   - **The code has not changed.** It still uses the older key map until milestone M1b.
@@ -153,8 +153,9 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
 ## 6. What Nico needs to do
 - **Answer the four decisions in [plan §8](docs/plan.md):** parts status, the new and missing items, voice, and finish.
 - **Buy the parts on the [shopping list](hardware/bom/shopping-list-2026-11-19.md)** (checked against the real orders on 2026-11-19):
-  - Not ordered yet: C2 thumbstick ×2, C1 a second XIAO, C9 resistor kit (10k, 22k, 100k, 150k), C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, S6 jumper kit, T9 breadboards, T8 USB-C power meter.
-  - Only if not owned: T6 calipers, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+  - Not ordered yet: C9 resistor kit (10k, 22k, 100k, 150k), C10 tactile buttons, C11 JST-PH pigtails, C12 capacitor kit, T8 USB-C power meter.
+  - Only if needed: S6 jumpers with female ends (if the breadboard kit's are all male-to-male), a spare XIAO, T6 calipers, T10 second USB-C data cable, T11 flush cutters, S7 super glue, S8 foam tape, S9 rubber feet.
+  - Confirm with Nico: how many thumbsticks he has (the list asked for two).
   - On arrival, check: the chargers have six pads (protected kind); the screwdriver set has an H1.5 bit; measure both ESP32-S3 boards.
 - **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
@@ -196,6 +197,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-19 — Nico confirmed the thumbstick and breadboards with jumpers are ordered, and pointed out his second ESP32-S3 board. Decision: one XIAO is enough; the spare board (X7) stands in for the controller on the breadboard. BOM, shopping list, blueprint §3 and §11 updated.
 - 2026-11-19 — Parts check against Nico's order screenshots (AliExpress + Amazon):
   - BOM statuses updated; rows marked "Order seen 2026-11-19" are confirmed ordered.
   - Found: only one XIAO was ordered (two are needed); the thumbsticks, resistor kit and breadboards were never ordered; the header strip is no longer needed.

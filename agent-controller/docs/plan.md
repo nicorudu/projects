@@ -137,7 +137,7 @@ The full list with order status is in [BOM.csv](../hardware/bom/BOM.csv). The re
 | T6 | Digital calipers, 150 mm | Every "measure it" step depends on them |
 | T7 | 1.5 mm hex key | For the M2 socket-cap screws. Check whether the screw kit includes one. |
 | S7 | Super glue (gel) | Fixing magnets in their pockets |
-| S8 | Double-sided foam tape | Holding the battery and the speaker |
+| S8 | Double-sided foam tape | Speaker and mic gaskets. Not under the battery: there is no room for it. |
 | S9 | Stick-on rubber feet, 4 or more | So the dock doesn't slide. Optional but cheap. |
 | T10 | A second USB-C data cable | The dock and the controller board are both plugged in during flashing |
 | T11 | Flush cutters | Trimming leads. Check whether the soldering kit includes a pair. |

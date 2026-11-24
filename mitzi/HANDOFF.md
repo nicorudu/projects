@@ -44,6 +44,7 @@ Details: [plan](docs/plan.md).
 10. **After planning each build step, plan its content too** (for new builders, inventors and AI fans).
 11. **Wispr Faux is never edited from this project.** It's Nico's daily dictation app. Any reuse works from a copy inside `mitzi/`.
 12. **Not a wrapper.** Every AI model sits behind an adapter and must be swappable between cloud and self-hosted.
+13. **Outcome first.** "Do whatever is best for the outcome of the device." Choose every model and part by measured results for the learner, not by a preference for local or cloud. Phase 1 starts on the best available cloud models; a self-hosted model takes over a job only when it meets the same bar in testing.
 
 ## 4. Design in one paragraph
 Mitzi is a pair of glasses that only sees, hears, speaks and shows; a phone does the AI. The camera's view goes to a vision model that names the object in front of the learner. Each object becomes a card with the learner's own photo, scheduled with FSRS. A label for the object appears at that word's current rung of a ladder: English and romaji, then kana, then no label and a spoken quiz, then use in a phrase. Confirmed objects are pinned so their labels stay consistent. Suki, a voice conversation partner with a fixed character, sees the same view and knows which words are due, and works them into casual conversation, mixing in English when the learner is stuck and correcting by repeating the sentence the right way. Modes change the situation: Friend, Obaachan (rehearsing talk with an elder), Drill, Quiet (public) and later Work. Topic packs choose the words. Vision, listening, conversation and voice models each sit behind an adapter. Everything is logged so the method can be compared against plain flashcards.
@@ -87,6 +88,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - Whether family members want to appear in any content.
 
 ## 8. Step log (newest first)
+- **2026-11-24:** Nico set the rule for model choices: whatever is best for the outcome of the device (standing rule 13).
 - **2026-11-24:** Checked the "Kimi K3 in 8 GB" claim: real but about 33 seconds per token. Ruled out for live use; small open models go into the Phase 1 model test.
 - **2026-11-24:** Architecture rule (models behind adapters, not a wrapper), listening test added to Phase 1, Wispr Faux left untouched, Suki voice test instructions, brainstorm log, handoff rewritten.
 - **2026-11-24:** Project started. Brainstorm → idea → research → plan → Phase 0 write-up → repo folder and kickoff PR #13.

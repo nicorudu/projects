@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-24 | Mitzi's speech recognition is picked by a listening test in Phase 1; the Wispr Faux app stays untouched (any reuse works from a copy) | A tutor must hear beginner speech as spoken and handle mixed languages, the opposite of dictation cleanup; a bigger model costs speed, and speed matters most in conversation | Upgrading Wispr Faux to a larger model for the prototype |
+| 2026-11-24 | Every model sits behind an adapter; cloud and self-hosted are interchangeable | Mitzi is not a wrapper around one chat app. The model is a replaceable part; the eyes, deck, ladder, Suki's memory, modes and measurements are the product | One fixed AI provider |
+| 2026-11-24 | The Phase 0 Suki test runs in an existing AI voice app | A no-build way to learn whether a beginner can learn from a character like Suki; it is a test, not the product | Building the voice loop first |
 | 2026-11-24 | Topic packs: word sets by interest or industry. First pack "Talking with Grandma," then lifting; industry packs in Phase 4 | People stick with a language when they can talk about what they care about; the first learner's goal is family conversation | One general word list |
 | 2026-11-24 | Suki stays one person across topic packs; a separate work mode handles job role-play | A character who changes jobs per learner stops feeling real; work also needs formal speech | Suki takes on the learner's industry |
 | 2026-11-24 | Public project, with family privacy: the README story only; no names, ages, places, photos or recordings of family | The story is the reason for the project, and family members didn't sign up to be public | — |

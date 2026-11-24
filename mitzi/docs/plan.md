@@ -41,7 +41,9 @@ Software only. The phone stands in for the glasses: its camera sees, earbuds spe
 - **First topic pack:** "Talking with Grandma" (family, food, simple talk about work and home, questions about her life).
 - **Japanese extras:** counters, taught on real objects in view.
 - **Log everything:** labels shown, wrong labels, reviews, recall, minutes spoken.
-- **Model test:** the same 50 photos and one 5-minute chat through a cloud model and through a self-hosted open model on the Mac mini. Compare accuracy and delay. Models are chosen at the start of this phase.
+- **Models behind adapters:** vision, listening, conversation and voice each sit behind their own adapter, so a cloud model and a self-hosted model can be swapped without touching the rest. Mitzi is not a wrapper around one chat app: the model is a replaceable part, and the eyes, the deck, the ladder, Suki's memory, the modes and the measurements are ours.
+- **Model test:** the same 50 photos and one 5-minute chat through a cloud model and through a self-hosted open model on the Mac mini. Compare accuracy and delay. Models are chosen at the start of this phase, with a fresh check of what's current.
+- **Listening test:** Mitzi has to hear beginner Japanese exactly as spoken, mistakes included, and cope with Japanese and English in one sentence. Run the same recordings of Nico's Japanese through several speech recognizers and compare accuracy and delay. Candidates: a copy of the Wispr Faux engine (Whisper large-v3 turbo) with its cleanup turned off, Qwen3-ASR, and any newer compressed full-size model that fits the Mac mini. The Wispr Faux app itself is not changed.
 
 **Self-experiment (2–4 weeks):** split a word list in half. Learn one half through labels and Suki, the other half through plain Anki. Test recall at 4 days and at 2 weeks.
 

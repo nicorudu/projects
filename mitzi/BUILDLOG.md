@@ -4,6 +4,13 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-24 — Architecture rule, listening test, brainstorm log
+- **Not a wrapper.** Every model (vision, listening, conversation, voice) sits behind an adapter, so cloud and self-hosted models can be swapped. What's ours: the eyes and the sticker map, the self-building deck, the label ladder, Suki's memory and due-word steering, the modes, the topic packs, the measurements and the glasses.
+- **Suki test this week** runs in an existing AI voice app with the [Suki prompt](prompts/suki-v0.md). It's a no-build test of whether a beginner can learn from her.
+- **Listening test added to Phase 1.** Mitzi must hear beginner Japanese as spoken and handle mixed Japanese and English. Candidates: a copy of the Wispr Faux engine with cleanup off, Qwen3-ASR, and newer compressed full-size models. Wispr Faux itself is not changed.
+- **Brainstorm log** written: every idea considered and why this one won ([brainstorm](docs/brainstorm.md)).
+- Details: [plan, Phase 1](docs/plan.md), [decisions](docs/decisions.md).
+
 ## 2026-11-24 — Phase 0 written; topic packs added
 - **Brief and goal:** a 10-minute, mostly-Japanese conversation by 2027-05-24, starting from zero. Speaking and understanding first; kanji optional.
 - **Success measures** set before any testing: conversation milestones by month, plus product measures (recall vs. plain Anki, minutes spoken, wrong labels, label delay, days used).

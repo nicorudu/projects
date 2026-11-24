@@ -23,7 +23,7 @@ There's a bigger reason too. I grew up with Spanish and English, and I believe l
 
 **Picking the project up?** Start with the [handoff](HANDOFF.md): current step, next step, rules and key facts.
 
-**Follow along:** [Build log](BUILDLOG.md) · [Decision log](docs/decisions.md) · [Plan](docs/plan.md) · [Phase 0](docs/phase0.md) · [Research](docs/research.md)
+**Follow along:** [Build log](BUILDLOG.md) · [Decision log](docs/decisions.md) · [Plan](docs/plan.md) · [Phase 0](docs/phase0.md) · [Research](docs/research.md) · [Brainstorm](docs/brainstorm.md)
 
 ## How it will work
 
@@ -42,6 +42,7 @@ Rehearse  "Obaachan mode"               ─► practise the conversations that m
 - **Obaachan mode.** Suki plays a grandmother so you can rehearse real family conversations, including the warmer, more polite speech used with elders.
 - **Topic packs.** Word sets for what you care about: family, food, lifting, your job. Later, the glasses can switch packs by where you are.
 - **Split brain.** The glasses only see, hear, speak and show. The phone does the AI. A self-hosted open model on a home computer is a goal to test.
+- **Not a wrapper.** Every AI model sits behind an adapter and can be swapped. The eyes, the deck, the ladder, Suki's memory, the modes and the measurements are what's being built.
 
 ## What already exists
 
@@ -71,6 +72,7 @@ mitzi/
 │   ├── plan.md        the five phases and their gates
 │   ├── phase0.md      brief, success measures, risks, label ladder, Suki's profile
 │   ├── research.md    what exists already (with sources)
+│   ├── brainstorm.md  every idea considered and why this one won
 │   └── decisions.md   every decision and why
 ├── prompts/
 │   └── suki-v0.md     the prompt for testing Suki in any AI voice app

@@ -4,6 +4,27 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-19 — Plan version 1.1: Spanish first, phone before languages
+- Nico answered the plan's open questions.
+- **v0 is English ↔ Spanish only.** Spanish is the largest language gap in US schools. The other seven languages (M5) come right after v0.
+- **The phone call comes first.** Build order is now M0–M4, M6 (phone bridge), M7, M8, then M5.
+- **The Mac mini has 16 GB**, so the free path starts with the smallest model of each kind (an estimated 12–15 GB in total). If that doesn't fit, the fallback is a hybrid: hear and translate on the Mac, speak with ElevenLabs.
+- **Pace and budget:** 3–4 sessions a week puts v0 at an estimated 4–7 weeks. The $150 cap is approved.
+- Details: [plan](docs/plan.md).
+
+## 2026-11-19 — Audit and formal plan
+- **Kickoff merged.** PR #8 is on `main`.
+- **Went through every doc and re-checked the facts a week later.** What changed:
+  - ElevenLabs released Eleven v4 Turbo (90+ languages, about 100 ms). It replaces Flash v2.5 as the paid voice.
+  - Qwen3-ASR can't stream on a Mac, so the free path translates phrase by phrase after each short pause. The paid path still translates while you talk.
+  - Google's Gemini 3.5 Live Translate (70+ languages) was missing from the research. It's now a candidate paid engine.
+  - OmniVoice (600+ languages, runs on Apple Silicon) might replace two free voice models with one. It joins the M2 comparison.
+  - Twilio's trial is tighter than assumed: 30 days, verified numbers only, 10 minutes a call. Start it only at M6.
+  - ElevenLabs voice slots: 30 on the $22 Creator plan, which the first 12 voices need.
+- **New first milestone, M0:** the scaffold and an automated test with fake engines. No hardware or accounts needed.
+- **Formal plan written** ([plan](docs/plan.md)): what v0 means, scope, who does what, milestones with exit tests, six decision gates, schedule (18–26 sessions), budget (about $20 free-path only, about $110 with both paths, $150 cap proposed) and risks.
+- Next: Nico answers the plan's open questions, then M0.
+
 ## 2026-11-12 — Launch languages chosen
 - **Launch set:** Spanish, Arabic, Chinese (Mandarin), Vietnamese, Portuguese, Russian, Hindi and Filipino (Tagalog). Nico picked Spanish, Hindi, Vietnamese and Filipino; Arabic, Chinese, Portuguese and Russian are among the most common home languages of US English learners (NCES, fall 2021).
 - **Coverage:** the free path hears and translates all 8. Its voice (Qwen3-TTS) speaks only Spanish, Chinese, Portuguese and Russian, so Arabic, Vietnamese, Hindi and Filipino will try open voices first (Chatterbox Multilingual, OmniVoice) and fall back to ElevenLabs.

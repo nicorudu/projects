@@ -1,0 +1,26 @@
+{
+  "slug": "mitzi",
+  "title": "Mitzi",
+  "tagline": "Glasses with a language tutor inside: they label your world, build your flashcards, and give you a friend to talk to who sees what you see.",
+  "status": "planning",
+  "status_text": "Planning: idea, research and Phase 0 done; phone prototype next",
+  "updated": "2026-11-24",
+  "tags": "AR glasses, Language learning, Japanese, Computer vision, Voice AI, Spaced repetition (FSRS), 3D printing",
+  "hero": "",
+  "hero_alt": "",
+  "repo": "https://github.com/nicorudu/projects/tree/main/mitzi",
+  "timeline": [
+    {
+      "date": "2026-11-24",
+      "title": "Why I'm building glasses that teach me Japanese",
+      "summary": "My wife's grandmother speaks Japanese, and her English is limited. I'm learning Japanese from zero so I can talk with her in her own language, and I'm building the glasses that teach me. The project is named after her.",
+      "images": []
+    },
+    {
+      "date": "2026-11-24",
+      "title": "The plan: prove the learning before building the hardware",
+      "summary": "Research shows labels on real objects beat flashcards. Mitzi adds labels that fade as you learn, a deck that builds itself from your own home, and Suki, a conversation partner who uses the words you're due to review. Step one is a phone prototype; the glasses come after the method works.",
+      "images": []
+    }
+  ]
+}

@@ -7,7 +7,7 @@ Last updated: 2026-11-24 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** idea chosen, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log. Project folder on branch `mitzi-kickoff`, PR to `main`.
+- **Done:** idea chosen, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log. Project folder on branch `mitzi-kickoff`, PR #13 to `main`.
 - **No code and no hardware yet.**
 - **We are in Phase 0.** What's left is Nico's side (section 6): a week of talking with Suki in an AI voice app, starting kana, and planning the first real hello.
 - **Next step for Claude: the Phase 1 spec** (`docs/phase1-spec.md`): the phone prototype's screens, data model, model choices (cloud and self-hosted) with sources, milestones and tests. Write it once Nico has a few days of Suki notes, so the spec uses what he learned.
@@ -55,7 +55,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and `git branch -u`.
 
 ## 6. What Nico needs to do
-- **Merge the kickoff PR.**
+- **Merge the kickoff PR (#13).**
 - **Talk with Suki 10 minutes a day for 7 days.** Paste [prompts/suki-v0.md](prompts/suki-v0.md) into an AI voice app. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
 - **Start hiragana now,** katakana the week after.
 - **Plan the first hello** for week 2–3: a greeting and a short self-introduction.

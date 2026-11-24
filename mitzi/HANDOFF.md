@@ -61,7 +61,8 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - **Goal date:** 2027-05-24, a 10-minute, mostly-Japanese conversation.
 - **Learner:** native Spanish and English, zero Japanese. Spanish vowels and the soft r carry over to Japanese.
 - **Models are not chosen yet.** Pick vision, listening, conversation and voice models at the start of Phase 1, with a fresh check of what's current. Test a self-hosted open model on the Mac mini (16 GB) against a cloud model. Nico is interested in Qwen- and Kimi-class open models.
-- **Listening test candidates:** a copy of the Wispr Faux engine (Whisper large-v3 turbo) with cleanup off; Qwen3-ASR (already researched for Live Interpreter); a newer compressed full-size model Nico has seen running in 8 GB (name to confirm). Things to test: beginner Japanese with mistakes, and Japanese mixed with English in one sentence.
+- **Listening test candidates:** a copy of the Wispr Faux engine (Whisper large-v3 turbo) with cleanup off; Qwen3-ASR (already researched for Live Interpreter); other current open speech models. Things to test: beginner Japanese with mistakes, and Japanese mixed with English in one sentence.
+- **Kimi K3 in 8 GB (checked 2026-11-24):** real, via kimi-k3-in-c, but about 33 seconds per token and 1.56 TB on disk. Ruled out for live conversation. Self-hosted candidates are small open models that fit in 16 GB; first to test is Kimi-Linear 48B through a streaming engine (reported about 9 tokens per second in 8 GB; measure on the Mac mini). Bar: first words within a second or two, then faster than talking pace. Sources in [research §4](docs/research.md).
 - **Why not upgrade Wispr Faux for this:** a bigger model costs memory and time per sentence; conversation needs speed; and dictation cleanup is the opposite of what a tutor needs.
 - **Suki test in the Claude app:** voice mode holds a full spoken conversation and is available on all plans; non-English voice is in beta; the voice language is set under Settings > General > Voice > Language ([help article](https://support.claude.com/en/articles/11101966-use-voice-mode), checked 2026-11-24). Any AI app with a spoken conversation mode works too.
 - **Workflow quirks in cloud sessions** (same repo as the other projects):
@@ -76,7 +77,6 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 5. **Ask the family:** who can spot-check Suki's Japanese (30 phrases and one transcript), what style of speech feels right, and whether practice calls can be recorded for private use.
 6. **Plan the first hello** for week 2–3 (the second week of December 2026): a greeting and a short self-introduction.
 7. **Website:** give your website chat this: "Add Mitzi to the Lab section. Use `mitzi/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text and timeline. Status text: Planning: idea, research and Phase 0 done; phone prototype next. Use the story exactly as written in showcase.json and don't add family details."
-8. **Send Claude the name** of the compressed full-size speech model, so it joins the listening test.
 
 ## 7. Open questions
 - Which AI voice app works best for the Suki test (decide after trying one).
@@ -87,5 +87,6 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - Whether family members want to appear in any content.
 
 ## 8. Step log (newest first)
+- **2026-11-24:** Checked the "Kimi K3 in 8 GB" claim: real but about 33 seconds per token. Ruled out for live use; small open models go into the Phase 1 model test.
 - **2026-11-24:** Architecture rule (models behind adapters, not a wrapper), listening test added to Phase 1, Wispr Faux left untouched, Suki voice test instructions, brainstorm log, handoff rewritten.
 - **2026-11-24:** Project started. Brainstorm → idea → research → plan → Phase 0 write-up → repo folder and kickoff PR #13.

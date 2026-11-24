@@ -4,6 +4,7 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-24 | The full Kimi K3 is ruled out as Suki's self-hosted brain; test small open models that fit in 16 GB instead | It runs in 8 GB only by streaming 1.56 TB from disk, at about 33 seconds per token; a short reply would take many minutes. It is also a text model, so it was never a candidate for speech recognition | Running the full compressed model on the Mac mini |
 | 2026-11-24 | Mitzi's speech recognition is picked by a listening test in Phase 1; the Wispr Faux app stays untouched (any reuse works from a copy) | A tutor must hear beginner speech as spoken and handle mixed languages, the opposite of dictation cleanup; a bigger model costs speed, and speed matters most in conversation | Upgrading Wispr Faux to a larger model for the prototype |
 | 2026-11-24 | Every model sits behind an adapter; cloud and self-hosted are interchangeable | Mitzi is not a wrapper around one chat app. The model is a replaceable part; the eyes, deck, ladder, Suki's memory, modes and measurements are the product | One fixed AI provider |
 | 2026-11-24 | The Phase 0 Suki test runs in an existing AI voice app | A no-build way to learn whether a beginner can learn from a character like Suki; it is a test, not the product | Building the voice loop first |

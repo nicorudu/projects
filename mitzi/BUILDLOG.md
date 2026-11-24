@@ -4,6 +4,12 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-24 — Checked the "Kimi K3 in 8 GB" claim
+- **Real, and far too slow for us.** kimi-k3-in-c runs the full 2.8-trillion-parameter model in 8.24 GB of RAM by streaming 1.56 TB of weights from disk, at about 33 seconds per token. A short reply from Suki would take many minutes.
+- **Ruled out** as a self-hosted brain for live conversation. It's a text model, so it also leaves the listening-test list.
+- **Kept:** the idea behind it. Small open models that fit in 16 GB go into the Phase 1 model test, starting with Kimi-Linear 48B through a streaming engine.
+- Details and sources: [research §4](docs/research.md).
+
 ## 2026-11-24 — Architecture rule, listening test, brainstorm log
 - **Not a wrapper.** Every model (vision, listening, conversation, voice) sits behind an adapter, so cloud and self-hosted models can be swapped. What's ours: the eyes and the sticker map, the self-building deck, the label ladder, Suki's memory and due-word steering, the modes, the topic packs, the measurements and the glasses.
 - **Suki test this week** runs in an existing AI voice app with the [Suki prompt](prompts/suki-v0.md). It's a no-build test of whether a beginner can learn from her.

@@ -78,7 +78,7 @@ Word counts are starting targets, to be adjusted after the first 2 weeks of real
 | 5 | Labels help before I know kana | A zero-level learner can't read the labels | Week 1: labels with romaji and sound, plus a kana sprint in parallel | Hiragana in 1 week, katakana in 2 |
 | 6 | Recognition is accurate and consistent at home | A wrong label teaches a wrong word | Walk the house with the phone: 100 objects, count errors. Fix: confirm an object once and pin its label | Under 5 wrong before pinning, 0 after |
 | 7 | A self-hosted model is good and fast enough | Decides cloud vs. home computer | Same 50 photos and one 5-minute chat through both. Compare accuracy and delay | Local within reach of cloud on both |
-| 8 | A home-built display can show the labels clearly | Optics are the hardest hardware part | Bench test with kana only. Fallback: audio-first glasses that whisper the word | Kana readable at a glance indoors |
+| 8 | A home-built display can show the labels clearly | Optics are the hardest hardware part | Bench test with kana only. The display is required: if a home-built one falls short, buy a module. An audio-only rig is only an interim step | Kana readable at a glance indoors |
 | 9 | I'll wear them daily, including in public | Comfort, battery, other people's reactions | Phase 3 wear trial, with the public rules below | 5+ days a week for 2 weeks |
 | 10 | The build won't eat the learning time | Building is more fun than studying | The daily-practice rule. Log practice minutes and build hours | Practice never skipped for building |
 

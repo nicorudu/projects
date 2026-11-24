@@ -4,6 +4,7 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-24 | Mitzi has both a display and audio. Audio-only is allowed as an interim prototype, never as the final design | Nico wants the words seen and heard; seeing the label on the object is the heart of the idea | Audio-first glasses as an acceptable fallback |
 | 2026-11-24 | Outcome first: every model and part is chosen by measured results for the learner. Phase 1 starts on the best available cloud models; a self-hosted model replaces one only when it meets the same bar | The thing under test is the learning method, and a weak model would make a good method look bad. Self-hosting stays a goal, earned by test results | Preferring self-hosted by default |
 | 2026-11-24 | The full Kimi K3 is ruled out as Suki's self-hosted brain; test small open models that fit in 16 GB instead | It runs in 8 GB only by streaming 1.56 TB from disk, at about 33 seconds per token; a short reply would take many minutes. It is also a text model, so it was never a candidate for speech recognition | Running the full compressed model on the Mac mini |
 | 2026-11-24 | Mitzi's speech recognition is picked by a listening test in Phase 1; the Wispr Faux app stays untouched (any reuse works from a copy) | A tutor must hear beginner speech as spoken and handle mixed languages, the opposite of dictation cleanup; a bigger model costs speed, and speed matters most in conversation | Upgrading Wispr Faux to a larger model for the prototype |

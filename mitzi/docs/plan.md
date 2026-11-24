@@ -66,7 +66,7 @@ Understand how smart glasses are built and choose an architecture. No final part
 - Audio: Suki is clear to the wearer and quiet to people nearby.
 - Wireless: delay from camera frame to label on the display.
 
-**Fallback:** audio-first glasses that whisper the word, if the display proves too hard.
+**Audio and visual, both.** Mitzi has a display and audio; that is a firm requirement. If the display takes longer than the rest, an audio-only rig is allowed as an interim prototype, never as the final design. If a home-built display falls short, buy a display module.
 
 **Targets to set:** weight, battery life (a 1–2 hour session), brightness limits, battery protection, nothing hot against the face. No prescription lenses in v1.
 

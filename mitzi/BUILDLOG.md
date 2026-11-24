@@ -4,6 +4,12 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-24 — Two rules set; Phase 0 week begins
+- **Outcome first:** every model and part is chosen by measured results. Phase 1 starts on the best cloud models; a self-hosted model takes over a job only when it meets the same bar.
+- **Audio and visual, both:** the glasses have a display and audio. Audio-only is allowed only as an interim prototype.
+- **Nico starts his Phase 0 week:** daily sessions with Suki, hiragana, a day-zero video.
+- Details: [decisions](docs/decisions.md), [handoff](HANDOFF.md).
+
 ## 2026-11-24 — Checked the "Kimi K3 in 8 GB" claim
 - **Real, and far too slow for us.** kimi-k3-in-c runs the full 2.8-trillion-parameter model in 8.24 GB of RAM by streaming 1.56 TB of weights from disk, at about 33 seconds per token. A short reply from Suki would take many minutes.
 - **Ruled out** as a self-hosted brain for live conversation. It's a text model, so it also leaves the listening-test list.

@@ -1,0 +1,55 @@
+# Secrets (keys live in the OS keychain; never commit these)
+.env
+.env.*
+*.pem
+*.key
+
+# Camera captures, audio, transcripts and session logs (privacy: never commit)
+captures/
+recordings/
+transcripts/
+sessions/
+logs/
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.pcm
+*.raw
+*.mov
+*.mp4
+
+# Learner data (decks, pinned labels, review history stay local)
+data/
+*.sqlite
+*.db
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Model weights downloaded locally
+models/
+*.safetensors
+*.bin
+*.onnx
+*.gguf
+
+# OS
+.DS_Store
+Thumbs.db

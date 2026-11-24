@@ -73,9 +73,11 @@ mitzi/
 │   ├── phase0.md      brief, success measures, risks, label ladder, Suki's profile
 │   ├── research.md    what exists already (with sources)
 │   ├── brainstorm.md  every idea considered and why this one won
+│   ├── suki-log.md    findings from each test session with Suki
 │   └── decisions.md   every decision and why
 ├── prompts/
-│   └── suki-v0.md     the prompt for testing Suki in any AI voice app
+│   ├── suki-v0.md     the first prompt for testing Suki in any AI voice app
+│   └── suki-v1.md     the current prompt, revised after session 1
 ├── app/               phone prototype (Phase 1)
 ├── hardware/          optics tests, 3D models, parts lists (Phase 2+)
 ├── firmware/          code that runs on the glasses (Phase 3)

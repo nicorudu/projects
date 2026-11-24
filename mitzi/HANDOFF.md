@@ -65,6 +65,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - **Models are not chosen yet.** Pick vision, listening, conversation and voice models at the start of Phase 1, with a fresh check of what's current. Test a self-hosted open model on the Mac mini (16 GB) against a cloud model. Nico is interested in Qwen- and Kimi-class open models.
 - **Listening test candidates:** a copy of the Wispr Faux engine (Whisper large-v3 turbo) with cleanup off; Qwen3-ASR (already researched for Live Interpreter); other current open speech models. Things to test: beginner Japanese with mistakes, and Japanese mixed with English in one sentence.
 - **Kimi K3 in 8 GB (checked 2026-11-24):** real, via kimi-k3-in-c, but about 33 seconds per token and 1.56 TB on disk. Ruled out for live conversation. Self-hosted candidates are small open models that fit in 16 GB; first to test is Kimi-Linear 48B through a streaming engine (reported about 9 tokens per second in 8 GB; measure on the Mac mini). Bar: first words within a second or two, then faster than talking pace. Sources in [research §4](docs/research.md).
+- **Suki session 1 (2026-11-24):** full sentences in ten minutes from one object, so objects can lead to sentences. Problems: 13 new items (too many), and she reads a transcript, so her pronunciation feedback can't be trusted. **Requirement for Phase 1: pronunciation feedback from the audio itself** (a model that hears sound, or a scoring step on the recording); the listening test must also record how each recognizer spells beginner Japanese. Findings in [suki-log](docs/suki-log.md); current prompt is [suki-v1](prompts/suki-v1.md).
 - **Why not upgrade Wispr Faux for this:** a bigger model costs memory and time per sentence; conversation needs speed; and dictation cleanup is the opposite of what a tutor needs.
 - **Suki test in the Claude app:** voice mode holds a full spoken conversation and is available on all plans; non-English voice is in beta; the voice language is set under Settings > General > Voice > Language ([help article](https://support.claude.com/en/articles/11101966-use-voice-mode), checked 2026-11-24). Any AI app with a spoken conversation mode works too.
 - **Workflow quirks in cloud sessions** (same repo as the other projects):
@@ -73,7 +74,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 
 ## 6. What Nico needs to do
 1. **Merge the kickoff PR (#13).**
-2. **Talk with Suki 10 minutes a day for 7 days.** Start a new chat in an AI voice app, paste [prompts/suki-v0.md](prompts/suki-v0.md) as the first message, and switch to voice. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
+2. **Talk with Suki 10 minutes a day for 7 days.** Session 1 is done (2026-11-24). Keep using the same chat so she remembers; paste the update message from [prompts/suki-v1.md](prompts/suki-v1.md) before session 2. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
 3. **Start hiragana now,** katakana the week after.
 4. **Record a "day zero" video** before any Japanese is learned.
 5. **Ask the family:** who can spot-check Suki's Japanese (30 phrases and one transcript), what style of speech feels right, and whether practice calls can be recorded for private use.
@@ -89,6 +90,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - Whether family members want to appear in any content.
 
 ## 8. Step log (newest first)
+- **2026-11-24:** Suki session 1 reviewed. Prompt v1 and the Suki log written. New requirement: pronunciation feedback from audio, not transcripts.
 - **2026-11-24:** Nico confirmed the glasses need both audio and a display (standing rule 14). Project docs now live in his Claude project named "Mitzi". Nico starts the Phase 0 week.
 - **2026-11-24:** Nico set the rule for model choices: whatever is best for the outcome of the device (standing rule 13).
 - **2026-11-24:** Checked the "Kimi K3 in 8 GB" claim: real but about 33 seconds per token. Ruled out for live use; small open models go into the Phase 1 model test.

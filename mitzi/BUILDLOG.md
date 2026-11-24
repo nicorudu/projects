@@ -4,6 +4,13 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-24 — First Suki session
+- **Ten minutes, total beginner, full sentences.** Starting from one object (the car), Nico said "my car is blue," "her car is blue too" and "lots of cars." Objects led to sentences on day one, which is early evidence against the biggest risk.
+- **Too much, too fast:** 13 new items; the last, longest sentence didn't stick.
+- **The big finding:** Suki reads a transcript, so she can't hear pronunciation. She corrected and praised sounds that text can't show. New requirement: pronunciation feedback comes from the audio itself.
+- **Prompt v1** written: review first, at most 5 new items, honesty about what she can't hear, a polite "Grandma version" at the end.
+- Details: [Suki log](docs/suki-log.md), [prompt v1](prompts/suki-v1.md).
+
 ## 2026-11-24 — Two rules set; Phase 0 week begins
 - **Outcome first:** every model and part is chosen by measured results. Phase 1 starts on the best cloud models; a self-hosted model takes over a job only when it meets the same bar.
 - **Audio and visual, both:** the glasses have a display and audio. Audio-only is allowed only as an interim prototype.

@@ -4,6 +4,15 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-24 — Speaking only: kana dropped from the path, Read mode added
+- **Nico's call:** these are glasses for learning to speak, so he won't study kana (the Japanese sound characters). Kana is for reading; the goal is a conversation.
+- **Label ladder is now four rungs:** English and romaji → romaji only → say it → use it. Kana and kanji are optional switches, off by default.
+- **Why romaji is enough here:** read with Spanish vowels it lands close to the real sound, and every label comes with audio. A new test checks this: 20 words read from romaji labels alone, scored from the audio.
+- **Read mode (later):** look at a sign, a menu or a package and the glasses show how to say it and what it means, the same way they label an object. Reading becomes the glasses' job.
+- **Phase 0 gate** is now a week with Suki and a planned first hello.
+- **Also today:** the kickoff PR (#13) is merged, and the Suki v1 update is pasted into the Suki chat for session 2.
+- Details: [phase 0](docs/phase0.md), [plan](docs/plan.md), [decisions](docs/decisions.md).
+
 ## 2026-11-24 — First Suki session
 - **Ten minutes, total beginner, full sentences.** Starting from one object (the car), Nico said "my car is blue," "her car is blue too" and "lots of cars." Objects led to sentences on day one, which is early evidence against the biggest risk.
 - **Too much, too fast:** 13 new items; the last, longest sentence didn't stick.

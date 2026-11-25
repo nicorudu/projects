@@ -1,6 +1,6 @@
 # Phase 0 — Define and de-risk
 
-Written 2026-11-24. What we're building, how we'll know it works, what could sink it, and the two designs that everything else hangs on: the label ladder and Suki.
+Written 2026-11-24; updated the same day (speaking only: kana optional, Read mode added). What we're building, how we'll know it works, what could sink it, and the two designs that everything else hangs on: the label ladder and Suki.
 
 ---
 
@@ -10,7 +10,7 @@ Written 2026-11-24. What we're building, how we'll know it works, what could sin
 
 **The product.** Glasses with a tutor inside. They label the things around you in Japanese, turn each one into a flashcard that schedules itself, and give you a friend to talk to who can see what you see and steers the chat toward the words you need to practise.
 
-**The promise.** "The tutor that gets you speaking." Speaking and understanding come first. Reading and writing are optional extras.
+**The promise.** "The tutor that gets you speaking." Speaking and understanding come first. Reading and writing are optional extras. The learner never has to study Japanese script: labels use romaji (Japanese written in Latin letters), and when real Japanese text shows up, the glasses read it for them (Read mode, section 6).
 
 **First learner.** Nico: native in Spanish and English, zero Japanese, wants casual, natural speech.
 
@@ -27,7 +27,7 @@ Written 2026-11-24. What we're building, how we'll know it works, what could sin
 
 **In scope for v1.** Japanese only. One learner. Home first, then public in quiet mode. The phone does the AI; the glasses see, hear, speak and show.
 
-**Out of scope for v1.** Kanji and writing practice, other languages, other learners, a custom circuit board, AI running on the glasses themselves.
+**Out of scope for v1.** Learning to read or write Japanese script (kana and kanji are optional switches, off by default), other languages, other learners, a custom circuit board, AI running on the glasses themselves.
 
 **The rule that protects the goal.** The learning does not wait for the build. Japanese practice happens every day from day 1, with whatever tools exist that day.
 
@@ -46,7 +46,7 @@ Written 2026-11-24. What we're building, how we'll know it works, what could sin
 | When | Target |
 |---|---|
 | Week 2–3 | Greet her and introduce myself in Japanese (about 30 seconds) |
-| Month 1 | 2 minutes: greetings, how are you, food, a few questions. Kana learned. About 150 words |
+| Month 1 | 2 minutes: greetings, how are you, food, a few questions. About 150 words |
 | Month 2 | 3–5 minutes with Suki on daily life. About 400 words |
 | Month 3 | 5 minutes with her on family and food, with some help. About 700 words |
 | Month 6 | 10+ minutes with her, mostly Japanese. About 1,500 words |
@@ -75,10 +75,10 @@ Word counts are starting targets, to be adjusted after the first 2 weeks of real
 | 2 | An AI partner works for a total beginner | She may overwhelm, or speech recognition may not understand beginner Japanese | Needs no build: paste the [Suki prompt](../prompts/suki-v0.md) into an AI voice app, 10 minutes a day for a week | I look forward to it, and she understands me most of the time |
 | 3 | The AI teaches correct, natural casual Japanese | Mistakes or stiff phrasing would be learned as truth | A native speaker spot-checks 30 phrases and one transcript | Fewer than 2 problems in 30 |
 | 4 | Friend-style Japanese transfers to an elderly speaker | Older speakers may use older words, regional words and a different pace | An early real hello (week 2–3); tune Obaachan mode to what I hear | I catch the gist of simple questions by month 2 |
-| 5 | Labels help before I know kana | A zero-level learner can't read the labels | Week 1: labels with romaji and sound, plus a kana sprint in parallel | Hiragana in 1 week, katakana in 2 |
+| 5 | Romaji labels give good pronunciation without learning kana | Japanese read from Latin letters can pick up the wrong sounds | Every label comes with sound. In Phase 1, read 20 new words aloud from romaji labels alone; score them with the audio-based pronunciation check or a native speaker | 18 of 20 heard as the right word |
 | 6 | Recognition is accurate and consistent at home | A wrong label teaches a wrong word | Walk the house with the phone: 100 objects, count errors. Fix: confirm an object once and pin its label | Under 5 wrong before pinning, 0 after |
 | 7 | A self-hosted model is good and fast enough | Decides cloud vs. home computer | Same 50 photos and one 5-minute chat through both. Compare accuracy and delay | Local within reach of cloud on both |
-| 8 | A home-built display can show the labels clearly | Optics are the hardest hardware part | Bench test with kana only. The display is required: if a home-built one falls short, buy a module. An audio-only rig is only an interim step | Kana readable at a glance indoors |
+| 8 | A home-built display can show the labels clearly | Optics are the hardest hardware part | Bench test with a short romaji label and its English. The display is required: if a home-built one falls short, buy a module. An audio-only rig is only an interim step | Label readable at a glance indoors |
 | 9 | I'll wear them daily, including in public | Comfort, battery, other people's reactions | Phase 3 wear trial, with the public rules below | 5+ days a week for 2 weeks |
 | 10 | The build won't eat the learning time | Building is more fun than studying | The daily-practice rule. Log practice minutes and build hours | Practice never skipped for building |
 
@@ -93,19 +93,19 @@ Built for speaking. Each word climbs on its own, based on how well it's recalled
 | Rung | What you get | Example |
 |---|---|---|
 | 0. Meet | English, romaji and sound | cup · *koppu* 🔊 |
-| 1. Kana | Kana, small romaji, sound | コップ *koppu* 🔊 |
-| 2. Kana only | Kana; sound on request | コップ |
-| 3. Say it | No label. The glasses ask, you answer aloud | 「これ、何？」 (*Kore, nani?* "What's this?") |
-| 4. Use it | A short phrase with a verb; then Suki asks about it and you answer in a sentence | コーヒーを飲む (*kōhī o nomu*, "drink coffee") |
-| Optional | Kanji with small reading hints, off by default | 水 (みず, water) |
+| 1. Romaji only | The English is gone; sound on request | *koppu* |
+| 2. Say it | No label. The glasses ask, you answer aloud | *Kore, nani?* ("What's this?") |
+| 3. Use it | A short phrase with a verb; then Suki asks about it and you answer in a sentence | *kōhī o nomu* ("drink coffee") |
+| Optional | Kana, or kanji with small reading hints, shown beside the romaji. Off by default | コップ · 水 (みず, water) |
 
 **How words move.** Up after correct recalls spaced further apart; down a rung after a miss. Scheduling uses FSRS, the open-source scheduler that modern Anki uses.
 
 **Design notes**
+- **No script to learn.** The goal is speaking, so labels stay in romaji. Read with Spanish vowels, romaji lands close to the real sound. Two traps: *h* is always pronounced, and *j* sounds like the English j in *jeans*. A line over a vowel (*ō*) means hold it twice as long; a doubled consonant (*pp*) means a tiny pause before it. Every label also comes with sound.
 - **The Spanish advantage.** Japanese vowels (a, i, u, e, o) sound almost like Spanish vowels, and the Japanese "r" is close to the soft Spanish r in *pero*. Pronunciation hints lean on Spanish sounds, not English ones.
-- **Easy early wins.** Many household words came from English and are written in katakana: テレビ (*terebi*, TV), テーブル (*tēburu*, table), ドア (*doa*, door), ベッド (*beddo*, bed), スプーン (*supūn*, spoon). The house starts with these.
-- **Length matters.** Long vowels and doubled consonants change meaning. おばさん (*obasan*) is "aunt"; おばあさん (*obaasan*) is "grandmother." Suki corrects length from day 1.
-- **Counters come at rung 4.** Counting uses different words for long things, flat things and small things, shown on real objects in view.
+- **Easy early wins.** Many household words came from English: *terebi* (TV), *tēburu* (table), *doa* (door), *beddo* (bed), *supūn* (spoon). The house starts with these.
+- **Length matters.** Long vowels and doubled consonants change meaning. *obasan* is "aunt"; *obaasan* is "grandmother." Suki corrects length from day 1.
+- **Counters come at the "Use it" rung.** Counting uses different words for long things, flat things and small things, shown on real objects in view.
 
 ---
 
@@ -135,6 +135,7 @@ Built for speaking. Each word climbs on its own, based on how well it's recalled
 | Drill | Quick spoken quizzes on due words |
 | Quiet | For public: labels and whispered audio only |
 | Work (later) | She plays a coworker or client, with the formal speech work needs |
+| Read (later) | Look at Japanese text (a sign, a menu, a package) and the glasses show how to say it and what it means, and can speak it, the same way they label an object. Words worth keeping become cards |
 
 **Why Obaachan mode matters.** Japanese changes with who you're talking to. Friends use casual speech. Toward an elder in-law, warm polite speech (the です/ます style) is the usual choice, and the elder will often answer casually. So the learner needs to **understand casual** and **speak polite to elders**. Plan: casual core from day 1, family phrases in polite form from week 2. Each family knows what feels right for them.
 
@@ -157,11 +158,10 @@ Word sets built around what the learner cares about.
 
 ## 8. Phase 0 to-do list
 
-- [ ] Start hiragana; katakana the week after.
 - [ ] Run the Suki prompt 10 minutes a day for 7 days. Note what works and what annoys.
 - [ ] Find a native speaker to spot-check Suki's Japanese.
 - [ ] Plan the first hello (week 2–3).
 - [ ] Record a "day zero" video for the content series.
 - [x] Project folder, README and handoff in the repo.
 
-**Gate to Phase 1:** Suki tested for a week, kana under way, first hello planned.
+**Gate to Phase 1:** Suki tested for a week, first hello planned.

@@ -7,10 +7,10 @@ Last updated: 2026-11-24 · by Claude (cloud session)
 ---
 
 ## 1. Where we are right now
-- **Done:** idea chosen from a wide brainstorm, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log, brainstorm log. Project folder on branch `mitzi-kickoff`, PR #13 to `main`.
+- **Done:** idea chosen from a wide brainstorm, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log, brainstorm log. Project folder is on `main` (kickoff PR #13 merged by Nico, 2026-11-24). The speaking-only update is on branch `mitzi-speaking-only`, waiting for Nico to merge.
 - **No code and no hardware yet.**
-- **We are in Phase 0.** What's left is Nico's side (section 6): a week of talking with Suki in an AI voice app, starting kana, and planning the first real hello.
-- **Next step for Claude: the Phase 1 spec** (`docs/phase1-spec.md`): the phone prototype's screens, data model, adapters, model choices (cloud and self-hosted) with sources, the listening test, milestones and tests. Write it once Nico has a few days of Suki notes, so the spec uses what he learned.
+- **We are in Phase 0.** What's left is Nico's side (section 6): a week of talking with Suki in an AI voice app and planning the first real hello.
+- **Next step for Claude: the Phase 1 spec** (`docs/phase1-spec.md`): the phone prototype's screens, data model, adapters, model choices (cloud and self-hosted) with sources, the listening test, milestones and tests. Write it once Nico has about 4 Suki sessions of notes, so the spec uses what he learned.
 - **Then:** start the hardware research notes (`docs/hardware-research.md`): displays, optics, cameras and audio parts that can be bought in single units.
 
 ## 2. Phases
@@ -24,7 +24,7 @@ Last updated: 2026-11-24 · by Claude (cloud session)
 | 4 | Validate with 3–5 learners, open-source release, second language, industry topic packs, family version | Phase 3 gate | after v1 |
 
 **Gates**
-- **0 → 1:** Suki tested for a week, kana under way, first hello planned.
+- **0 → 1:** Suki tested for a week, first hello planned.
 - **1 → 3:** label-and-Suki words recalled better than Anki-only words, and Nico still wants to use it after 2 weeks.
 - **2 → 3:** architecture chosen; display, camera and audio each pass a bench test.
 - **3 → 4:** worn most days for 2 weeks, and the learning results hold up.
@@ -46,9 +46,10 @@ Details: [plan](docs/plan.md).
 12. **Not a wrapper.** Every AI model sits behind an adapter and must be swappable between cloud and self-hosted.
 13. **Outcome first.** "Do whatever is best for the outcome of the device." Choose every model and part by measured results for the learner, not by a preference for local or cloud. Phase 1 starts on the best available cloud models; a self-hosted model takes over a job only when it meets the same bar in testing.
 14. **Audio and visual, both.** The glasses have a display and audio. An audio-only rig can be an interim prototype, never the final design. If a home-built display falls short, buy a module.
+15. **Speaking only; no script study.** Nico does not learn kana or kanji. Labels and anything he reads use romaji (Japanese in Latin letters), always with sound. When Japanese text needs reading, the glasses show how to say it and what it means (Read mode, later). Kana and kanji are optional switches, off by default. Don't put script study back into his to-do list.
 
 ## 4. Design in one paragraph
-Mitzi is a pair of glasses that only sees, hears, speaks and shows; a phone does the AI. The camera's view goes to a vision model that names the object in front of the learner. Each object becomes a card with the learner's own photo, scheduled with FSRS. A label for the object appears at that word's current rung of a ladder: English and romaji, then kana, then no label and a spoken quiz, then use in a phrase. Confirmed objects are pinned so their labels stay consistent. Suki, a voice conversation partner with a fixed character, sees the same view and knows which words are due, and works them into casual conversation, mixing in English when the learner is stuck and correcting by repeating the sentence the right way. Modes change the situation: Friend, Obaachan (rehearsing talk with an elder), Drill, Quiet (public) and later Work. Topic packs choose the words. Vision, listening, conversation and voice models each sit behind an adapter. Everything is logged so the method can be compared against plain flashcards.
+Mitzi is a pair of glasses that only sees, hears, speaks and shows; a phone does the AI. The camera's view goes to a vision model that names the object in front of the learner. Each object becomes a card with the learner's own photo, scheduled with FSRS. A label for the object appears at that word's current rung of a ladder: English and romaji, then romaji only, then no label and a spoken quiz, then use in a phrase. Labels never require reading Japanese script. Confirmed objects are pinned so their labels stay consistent. Suki, a voice conversation partner with a fixed character, sees the same view and knows which words are due, and works them into casual conversation, mixing in English when the learner is stuck and correcting by repeating the sentence the right way. Modes change the situation: Friend, Obaachan (rehearsing talk with an elder), Drill, Quiet (public) and later Work and Read (look at Japanese text and get how to say it and what it means). Topic packs choose the words. Vision, listening, conversation and voice models each sit behind an adapter. Everything is logged so the method can be compared against plain flashcards.
 
 **What's ours (the product):** the eyes and the sticker map, the self-building deck, the label ladder, Suki's memory and due-word steering, the modes, the topic packs, the measurements, the glasses. **What's replaceable:** the AI models.
 
@@ -73,13 +74,15 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
   - After pushing a new branch, run `git config --add remote.origin.fetch '+refs/heads/<b>:refs/remotes/origin/<b>'`, then fetch and `git branch -u`.
 
 ## 6. What Nico needs to do
-1. **Merge the kickoff PR (#13).**
-2. **Talk with Suki 10 minutes a day for 7 days.** Session 1 is done (2026-11-24). Keep using the same chat so she remembers; paste the update message from [prompts/suki-v1.md](prompts/suki-v1.md) before session 2. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
-3. **Start hiragana now,** katakana the week after.
-4. **Record a "day zero" video** before any Japanese is learned.
-5. **Ask the family:** who can spot-check Suki's Japanese (30 phrases and one transcript), what style of speech feels right, and whether practice calls can be recorded for private use.
+1. ~~Merge the kickoff PR (#13).~~ **Done 2026-11-24.**
+2. **Merge the speaking-only PR** (branch `mitzi-speaking-only`).
+3. **Talk with Suki 10 minutes a day for 7 days.** Session 1 is done (2026-11-24). The v1 update message from [prompts/suki-v1.md](prompts/suki-v1.md) is already pasted into the same Suki chat; session 2 is planned for 2026-11-25. Keep using that chat so she remembers. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
+4. **Record a "day zero" video** before any more Japanese is learned.
+5. **Native-speaker check:** book one short session with a native Japanese tutor to spot-check Suki's Japanese (30 phrases and one transcript with personal details removed). Claude prepares the check sheet after Suki session 4. **Ask the family** what style of speech feels right and whether practice calls can be recorded for private use.
 6. **Plan the first hello** for week 2–3 (the second week of December 2026): a greeting and a short self-introduction.
 7. **Website:** give your website chat this: "Add Mitzi to the Lab section. Use `mitzi/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text and timeline. Status text: Planning: idea, research and Phase 0 done; phone prototype next. Use the story exactly as written in showcase.json and don't add family details."
+
+No kana study (standing rule 15).
 
 ## 7. Open questions
 - Which AI voice app works best for the Suki test (decide after trying one).
@@ -88,8 +91,12 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - Which speech recognizer (decided by the listening test).
 - Display type for the glasses (decided by the Phase 2 bench tests).
 - Whether family members want to appear in any content.
+- When Read mode gets built (planned for Phase 4; earlier if a Japan trip comes first).
 
 ## 8. Step log (newest first)
+- **2026-11-24:** The native-speaker spot-check (risk 3) goes to a paid native tutor in one short session. Claude prepares the check sheet after Suki session 4.
+- **2026-11-24:** Nico decided Mitzi teaches speaking only: no kana study (standing rule 15). The ladder is now English and romaji → romaji only → say it → use it; kana and kanji are optional switches, off by default. Read mode added for later: the glasses read Japanese text for the wearer. "Kana under way" removed from the Phase 0 gate. New test for risk 5: 20 words read from romaji labels, scored from the audio.
+- **2026-11-24:** Nico merged kickoff PR #13 and pasted the Suki v1 update message; session 2 planned for 2026-11-25. Phase 1 spec to be written after about 4 Suki sessions.
 - **2026-11-24:** Suki session 1 reviewed. Prompt v1 and the Suki log written. New requirement: pronunciation feedback from audio, not transcripts.
 - **2026-11-24:** Nico confirmed the glasses need both audio and a display (standing rule 14). Project docs now live in his Claude project named "Mitzi". Nico starts the Phase 0 week.
 - **2026-11-24:** Nico set the rule for model choices: whatever is best for the outcome of the device (standing rule 13).

@@ -4,6 +4,8 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-24 | Read mode (later): when the wearer looks at Japanese text, the glasses show how to say it and what it means, like an object label | Reading is still needed for signs and menus in Japan; the glasses can do it, so the learner doesn't have to study the script | Learning kana in order to read |
+| 2026-11-24 | Speaking only: no kana study. Labels use romaji; the ladder is English and romaji → romaji only → say it → use it. Kana and kanji are optional switches, off by default | The goal is a spoken conversation. Kana is for reading. The first learner speaks Spanish, and romaji read with Spanish vowels lands close to the real sound; every label also comes with sound | Kana rungs on the ladder, a kana sprint in Phase 0, "kana under way" in the Phase 0 gate |
 | 2026-11-24 | Pronunciation feedback must come from the audio itself, never from a transcript | In Suki session 1 she read a transcript and corrected or praised sounds she could not hear; a wrong sound and a wrong transcription look the same in text | Pronunciation tips from the conversation model alone |
 | 2026-11-24 | Suki prompt v1: review first, at most 5 new items a session, short sentences, a polite "Grandma version" at the end | Session 1 taught 13 items and the last sentence didn't stick; family talk needs the polite form | Prompt v0 |
 | 2026-11-24 | Mitzi has both a display and audio. Audio-only is allowed as an interim prototype, never as the final design | Nico wants the words seen and heard; seeing the label on the object is the heart of the idea | Audio-first glasses as an acceptable fallback |

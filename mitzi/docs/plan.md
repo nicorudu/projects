@@ -24,7 +24,7 @@ Decide exactly what we're building and what could sink it, before spending on pa
 5. Suki's profile and a test prompt.
 6. Repo folder, README, handoff, content plan.
 
-**Gate to Phase 1:** Suki tested in an AI voice app for a week, kana under way, first real hello planned.
+**Gate to Phase 1:** Suki tested in an AI voice app for a week, first real hello planned.
 
 ---
 
@@ -32,7 +32,7 @@ Decide exactly what we're building and what could sink it, before spending on pa
 Software only. The phone stands in for the glasses: its camera sees, earbuds speak.
 
 **Build**
-- **See:** phone camera → object recognition → a label at the word's current ladder rung, plus spoken audio.
+- **See:** phone camera → object recognition → a label at the word's current ladder rung, plus spoken audio. Labels use romaji (Japanese written in Latin letters). Kana and kanji are optional switches, off by default: the goal is speaking, and the learner never has to study the script.
 - **Keep:** every new object becomes a card automatically, using the photo of *your* object. Scheduling with FSRS. An evening review screen, like Anki.
 - **Pin:** confirm an object once and its label is fixed (a "sticker map" of the home), so labels stay consistent.
 - **Recall:** when a due word's object is in view, quiz on the spot. Answer out loud; speech-to-text checks the answer.
@@ -61,7 +61,7 @@ Understand how smart glasses are built and choose an architecture. No final part
 **Starting architecture: split brain.** The glasses see, hear, speak and show (camera, mic, speaker, small display, wireless chip, battery). The phone does the AI. This keeps the glasses light, cheap and cool.
 
 **Bench tests**
-- Display: kana readable at a glance, indoors and in daylight. Kana have simpler shapes than kanji, which lowers the bar.
+- Display: a short romaji label and its English readable at a glance, indoors and in daylight. Labels are a word or two in Latin letters, which keeps the bar low. If kana is ever switched on, repeat the test with kana.
 - Camera: frames good enough for recognition through the phone.
 - Audio: Suki is clear to the wearer and quiet to people nearby.
 - Wireless: delay from camera frame to label on the display.
@@ -89,6 +89,7 @@ Understand how smart glasses are built and choose an architecture. No final part
 ## Phase 4 — Validate, share, expand
 - **Small study:** 3–5 other beginners, the same split-word design, written up like a science fair paper.
 - **Open-source release:** code, 3D files, parts list, build guide.
+- **Read mode:** look at Japanese text (a sign, a menu, a package) and the glasses show how to say it and what it means, and can speak it, the same way they label an object. Words worth keeping become cards. Reading is the glasses' job, so the learner never has to study the script. Build it before a trip to Japan; it can move earlier if a trip comes first.
 - **Second language** to prove the method generalizes.
 - **Topic packs:** word sets by interest or industry (business, engineering, lifting, cooking, travel). Suki stays one person and gets curious about your world; a **work mode** lets her play a coworker or client for rehearsing, with the formal speech work needs. Packs also change which objects get labeled first, and can switch by location.
 - **Family version:** a shared sticker map of a home, for families keeping a heritage language alive.

@@ -4,6 +4,14 @@ Newest first. Each entry covers what changed, why, and links to its docs.
 
 ---
 
+## 2026-11-25 — Second Suki session
+- **Prompt v1 worked:** review first, a short list of new items, an Okinawan hello, a polite "Grandma version" at the end.
+- **Recall after one day:** all four review words came back, three of them with help or a one-sound slip.
+- **First grammar by contrast:** one verb in two forms, "write" and "don't write," and Nico chose between them in his own sentences.
+- **The weak link is hearing.** The transcript turns his Japanese into English-looking fragments, and Suki still confirmed three words whose only difference is length, which text can't show.
+- **Prompt v1.1:** for length-only differences she says the word slowly and moves on without judging; she gives the casual and the polite word when they differ; new sentences stay at four words.
+- Details: [Suki log](docs/suki-log.md), [prompt](prompts/suki-v1.md).
+
 ## 2026-11-24 — Speaking only: kana dropped from the path, Read mode added
 - **Nico's call:** these are glasses for learning to speak, so he won't study kana (the Japanese sound characters). Kana is for reading; the goal is a conversation.
 - **Label ladder is now four rungs:** English and romaji → romaji only → say it → use it. Kana and kanji are optional switches, off by default.

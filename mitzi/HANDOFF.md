@@ -78,7 +78,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 2. **Merge the speaking-only PR** (branch `mitzi-speaking-only`).
 3. **Talk with Suki 10 minutes a day for 7 days.** Session 1 is done (2026-11-24). The v1 update message from [prompts/suki-v1.md](prompts/suki-v1.md) is already pasted into the same Suki chat; session 2 is planned for 2026-11-25. Keep using that chat so she remembers. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
 4. **Record a "day zero" video** before any more Japanese is learned.
-5. **Ask the family:** who can spot-check Suki's Japanese (30 phrases and one transcript), what style of speech feels right, and whether practice calls can be recorded for private use.
+5. **Native-speaker check:** book one short session with a native Japanese tutor to spot-check Suki's Japanese (30 phrases and one transcript with personal details removed). Claude prepares the check sheet after Suki session 4. **Ask the family** what style of speech feels right and whether practice calls can be recorded for private use.
 6. **Plan the first hello** for week 2–3 (the second week of December 2026): a greeting and a short self-introduction.
 7. **Website:** give your website chat this: "Add Mitzi to the Lab section. Use `mitzi/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text and timeline. Status text: Planning: idea, research and Phase 0 done; phone prototype next. Use the story exactly as written in showcase.json and don't add family details."
 
@@ -94,6 +94,7 @@ No kana study (standing rule 15).
 - When Read mode gets built (planned for Phase 4; earlier if a Japan trip comes first).
 
 ## 8. Step log (newest first)
+- **2026-11-24:** The native-speaker spot-check (risk 3) goes to a paid native tutor in one short session. Claude prepares the check sheet after Suki session 4.
 - **2026-11-24:** Nico decided Mitzi teaches speaking only: no kana study (standing rule 15). The ladder is now English and romaji → romaji only → say it → use it; kana and kanji are optional switches, off by default. Read mode added for later: the glasses read Japanese text for the wearer. "Kana under way" removed from the Phase 0 gate. New test for risk 5: 20 words read from romaji labels, scored from the audio.
 - **2026-11-24:** Nico merged kickoff PR #13 and pasted the Suki v1 update message; session 2 planned for 2026-11-25. Phase 1 spec to be written after about 4 Suki sessions.
 - **2026-11-24:** Suki session 1 reviewed. Prompt v1 and the Suki log written. New requirement: pronunciation feedback from audio, not transcripts.

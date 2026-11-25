@@ -21,7 +21,7 @@ Phase 0 test of risk 2: can a total beginner learn from a character like Suki? S
 2. **Length is invisible, and she confirmed it anyway.** Three corrections turned on a long vowel or a doubled consonant (*dorobō*, *ippai*, *iie*). When his retry still came through short, she accepted it as right. Short *ie* is a different word ("house"). A transcript can't settle this, so she shouldn't call it right.
 3. **"No" was taught as *iie* only.** It is correct, and right for polite speech, but between friends the usual word is *uun*. A casual partner should give both.
 4. **A little over the limits.** One question ran to five words (the limit is four). Counting both verb forms and the polite form, new material was closer to six items than four.
-5. **Not recorded:** which voice language setting was used, and Nico's four notes.
+5. **The voice language was set to English** (confirmed after the session), which fits the English-looking fragments. Session 3 switches it to Japanese to compare. Nico's four notes weren't recorded.
 
 **What this changes**
 - **Prompt v1.1** (three lines, in [prompts/suki-v1.md](../prompts/suki-v1.md)): for words that differ only in length, say it slowly once and move on without judging; give the casual and the polite word when they differ; hold new sentences to four words, questions included.

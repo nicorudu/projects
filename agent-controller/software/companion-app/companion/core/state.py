@@ -80,6 +80,7 @@ class Focus:
     sel_id: str | None = None  # the selected session; the highlight stays on it when rows reorder
     detail_id: str | None = None
     scroll: int = 0
+    scroll_max: int | None = None  # the device's limit for the detail page showing; None = not told yet
     approval_sel: int = 0
     return_to: Screen = Screen.HOME  # where to go after the approval queue empties
 

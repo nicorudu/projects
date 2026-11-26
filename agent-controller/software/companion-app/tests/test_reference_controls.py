@@ -6,6 +6,7 @@ import time
 
 from companion.core.app import App
 from companion.core.state import Screen, Status
+from companion.protocol.messages import encode, msg
 from fake_device import FakeDevice, detail_window, worked_line
 
 
@@ -159,6 +160,36 @@ async def test_fake_device_shows_the_reference_screens(running):
     await dev.wait_for(lambda d: d.view["scroll"] == 3)
     assert detail_window(dev.view["text"], 3)[1] == 3
     assert detail_window(dev.view["text"], 10_000)[1] == total - len(shown)  # scrolling stops at the end
+    await dev.close()
+
+
+async def test_detail_scroll_stops_where_the_device_says(running):
+    app, url = running
+    dev = FakeDevice(url)
+    await dev.connect()
+    app.upsert_session("claude_code", "s1", cwd="/p/alpha", status="done", text="long text")
+    await dev.wait_for(lambda d: d.view["rows"])
+    await dev.send_input("right")
+    await dev.wait_for(lambda d: d.view["screen"] == "detail")
+    f = app.state.focus
+    for _ in range(5):  # nobody has said where the end is yet, so it just counts
+        await dev.send_input("down")
+    await dev.wait_for(lambda d: d.view["scroll"] == 5)
+
+    await dev.ws.send(encode(msg("layout", screen="detail", id="other", max_scroll=0)))  # a page we left
+    await dev.ws.send(encode(msg("layout", screen="detail", id="s1", max_scroll=2)))
+    await dev.wait_for(lambda d: d.view["scroll"] == 2)  # pulled back to the end
+    seq = await dev.send_input("down")
+    await dev.wait_for(lambda d: seq in d.acks)
+    assert f.scroll == 2 and f.scroll_max == 2
+
+    await dev.send_input("left")
+    await dev.send_input("right")  # opening a page forgets the old limit
+    await dev.wait_for(lambda d: d.view["screen"] == "detail" and d.view["scroll"] == 0)
+    assert f.scroll_max is None
+    await dev.ws.send(encode(msg("layout", screen="detail", id="s1", max_scroll=-1)))  # nonsense is dropped
+    await asyncio.sleep(0.05)
+    assert f.scroll_max is None
     await dev.close()
 
 

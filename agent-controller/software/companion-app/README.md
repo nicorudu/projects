@@ -37,6 +37,8 @@ Fake device keys (the reference's controls, since M1b):
 
 The stick has no click, so Enter does nothing. Only Send confirms an approval.
 
+For the real screens instead of the terminal stand-in, use the simulator: `python ../../tools/sim_bridge.py` (see `firmware/sim/README.md`).
+
 Settings in `~/.agent-controller/config.toml`: `focus_follows_selection = false` stops windows coming forward as you move the selection; `focus_follow_delay_s` (0.6) and `idle_after_s` (600) set the two timings.
 
 ## Test

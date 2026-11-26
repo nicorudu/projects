@@ -34,7 +34,15 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
   - Status words READY and IDLE added (meanings are ours; see docs/decisions.md). The detail page has "Worked for 6m 24s" and the whole last message, scrollable.
   - Fake device keys: arrows, `s` Send, `c` Cancel, `v` Voice, `g` green. **Enter no longer does anything.**
   - **Nico's check on the Mac Mini passed** with real Claude Code sessions (all five steps; §8). Focus-follow stays on.
-- **Next step: M3** (screens in the simulator), and the display test on the bench. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
+- **M3 is built (2026-11-26, branch `agent-controller-m3-screens`).** The screens are one LVGL library, `firmware/lib/AgentUI`, compiled by both the simulator and the dock.
+  - Simulator: `cd firmware/sim && make`, then `python tools/sim_bridge.py` with the app running. Pictures of every screen: `make snapshots` → `firmware/sim/snapshots/`.
+  - Screens: Agents, Detail, Approval, Voice (layout only), Connecting, plus a toast and a Disconnected banner.
+  - The same library compiles for the dock board (`firmware/bench/dock_ui`, 665 kB). **Not run on the real display yet.**
+  - **Toolchain decision (Nico): arduino-cli for the boards, a Makefile for the simulator.** PlatformIO is dropped.
+  - New protocol message from screen devices: `layout` (how far the detail page scrolls). 67 tests.
+  - **Open: Nico's look-over in the simulator** (§6, "M3 look-over"), including whether the look is close enough to the reference.
+  - Known limits: fonts are ASCII only (accents dropped, emoji shown as `?`); Voice has no engine until M2; the READY color is still a proposal.
+- **Next step:** Nico's M3 look-over, then the display test on the bench when the jumpers arrive (about 2026-11-28), then `dock_ui` on the real display. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -105,7 +113,7 @@ Full table with pass conditions: [plan §5](docs/plan.md).
 | M1 | Claude Code hooks: live status + approvals from the fake device | No | **done** (2026-11-11), tested on the Mac Mini |
 | M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **done** (2026-11-26), checked on the Mac Mini |
 | M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
-| M3 | Screens in the desktop simulator, styled like the reference | No | can start with M1b |
+| M3 | Screens in the desktop simulator, styled like the reference | No | **built** (2026-11-26); Nico's look-over open |
 | M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | **started** (2026-11-26): board check passed; display next |
 | M5 | Controller on the breadboard: keys, stick, AUX input, mics, ESP-NOW | Yes | after M4 |
 | M6 | USB vs Wi-Fi speed test, battery test | Yes | after M5 |
@@ -183,6 +191,13 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
      - First the multimeter check there (touch pins must sit at about 3.3 V, not 5 V, with only power connected).
      - Then wire the 12 wires, flash `dock_display`, and go through its pass table. Nico judges the picture by eye; serial reports touch.
      - Four things are unconfirmed until it runs: color inversion, which way up the picture is, touch direction, backlight polarity. Each has a one-line setting at the top of the sketch.
+  7. **Real screens on the display (after step 6 passes).** Follow [`firmware/bench/dock_ui/README.md`](firmware/bench/dock_ui/README.md): copy the working settings over, flash `dock_ui`, and compare the demo screens with `firmware/sim/snapshots/`.
+- **M3 look-over (about 5 minutes).**
+  1. Terminal A: `cd ~/projects/agent-controller/software/companion-app && source .venv/bin/activate && python -m companion`
+  2. Terminal B (same folder and venv): `python ../../tools/sim_bridge.py`. A window opens. Click it.
+  3. With two Claude Code sessions running, try: ↑ ↓ (select; the window comes forward after a pause), → (detail), ↑ ↓ (scroll; it should stop at the end), ← (back), and an approval with `s` / `c`.
+  4. Say what looks wrong or unlike the reference: sizes, colors, what each row shows.
+  - If `make` is needed again: `cd ~/projects/agent-controller/firmware/sim && make`.
 - **M1b check on the Mac Mini (about 5 minutes).** **Done 2026-11-26, all passed** (§8); the steps stay here for re-runs. No hook reinstall is needed.
   1. Three windows as in the Mac Mini test below: A `python -m companion`, B `python ../../tools/fake_device.py`, and two or more Claude Code sessions in other tabs.
   2. In B, press ↓ and wait. **After about half a second that session's tab should come to the front.** Flick ↓ ↓ quickly: only the last one should come forward.
@@ -228,6 +243,14 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — M3 built (Claude Code on the Mac Mini, branch `agent-controller-m3-screens`):
+  - Nico chose arduino-cli + Makefile over PlatformIO, and approved installing LVGL 9.6.0, ArduinoJson 7.4.3 (arduino-cli libraries) and SDL2 (Homebrew, as `sdl2-compat`).
+  - `firmware/lib/AgentUI`: the screens, with no hardware code. It keeps the last view as JSON and updates objects in place.
+  - `firmware/sim`: SDL window, keyboard to protocol inputs, heartbeat, and a headless mode that writes a picture of every screen. `tools/sim_bridge.py` connects it to the app; `tools/sim_fixtures.py` makes the fixtures from the app's own view builder.
+  - Checked: 12 snapshots look right (in `firmware/sim/snapshots/`); the window connected to the app on a spare port, stayed connected past the 2 s heartbeat limit, and reported its scroll limit, which the app then enforced. **Not checked: the keyboard in the window** (needs a person).
+  - `firmware/bench/dock_ui`: AgentUI with an ST7796S driver; compiles for the dock board. Not flashed.
+  - App: `layout` message added; detail scrolling stops at the device's limit. 67 tests.
+  - LVGL 9.6 notes: public headers moved to `include/`; `lv_obj_add_flag` is deprecated in favor of `lv_obj_set_hidden` / `lv_obj_set_scrollable`; `LV_COLOR_DEPTH` is replaced by `LV_COLOR_FORMAT_DEFAULT`. LVGL picks up `lv_conf.h` from the AgentUI library by name.
 - 2026-11-26 — M1b check on the Mac Mini with real Claude Code sessions (Nico, with Claude Code walking through it). **All passed:**
   - Two sessions appeared and went WORKING → DONE.
   - Focus follows selection: the right Terminal tab came forward each time; with two quick flicks only the last session came forward.

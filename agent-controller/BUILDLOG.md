@@ -4,6 +4,16 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-26 — M3: the screens, in a simulator and ready for the dock
+- Built the dock's screens with LVGL: the agent list, the detail page, approvals, a voice screen, toasts and a "Disconnected" banner. → [pictures](firmware/sim/snapshots/)
+- They run in a window on the Mac, driven by the real companion app, so they can be tried with real sessions before the display is wired. → [simulator](firmware/sim/README.md)
+- The screens are one library that the simulator and the dock both compile, so the simulator shows what the display will draw. It already compiles for the dock board.
+- Not yet run on the real display; that follows the display test.
+
+![agent list](firmware/sim/snapshots/02-agents.png)
+
+![approval](firmware/sim/snapshots/07-approval.png)
+
 ## 2026-11-26 — M1b: the app's controls match the reference
 - Stick right opens a session, stick left goes back, and only Send confirms an approval. The stick click and the Home filters are gone. → [controls table](docs/agent-controller-v0-blueprint.md)
 - Resting the stick on a session brings its window to the front after about half a second.

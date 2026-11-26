@@ -44,14 +44,12 @@ flowchart LR
 
 ```
 agent-controller/
-├── firmware/                       PlatformIO project (one config, several targets)
-│   ├── platformio.ini              envs: dock, controller, sim (runs the UI on the Mac)
+├── firmware/                       arduino-cli for the boards, a Makefile for the simulator
 │   ├── lib/
-│   │   ├── protocol/               message types + framing, shared by every target
-│   │   └── ui/                     LVGL screens, shared by dock and sim
-│   ├── src/dock/                   transports, ESP-NOW relay, audio out, LED, display driver
-│   ├── src/controller/             input, mic, battery, sleep, transports
-│   └── src/sim/                    SDL window + keyboard → same UI and protocol
+│   │   └── AgentUI/                LVGL screens, compiled by both the dock and the simulator
+│   ├── sim/                        SDL window + keyboard → same UI and protocol; PNG snapshots
+│   ├── bench/                      small test sketches (board check, display test, UI on the display)
+│   └── (to come) dock/, controller/, lib/protocol/
 ├── software/companion-app/
 │   ├── pyproject.toml
 │   ├── companion/
@@ -120,7 +118,7 @@ inputs (keys, stick, audio, hooks, platform events)
 
 **Screen updates.** The Mac sends `view` messages that name a screen template plus its data (e.g. `{"t":"view","screen":"home","rows":[…],"sel":2}`), and small `patch` messages for single changes (status color, LED, transcript text). The dock never builds screens from logic, only from these.
 
-The full message list lives in `firmware/lib/protocol/messages.h` and `companion/protocol/messages.py`. The two are kept in sync by a shared test that encodes and decodes every message on both sides.
+A screen device may also send `layout` (`{screen:"detail", id, max_scroll}`): how far the page it is showing can scroll, so the app stops the stick at the end. The full message list lives in `firmware/lib/protocol/messages.h` (to come) and `companion/protocol/messages.py`. The two are kept in sync by a shared test that encodes and decodes every message on both sides.
 
 ## 6. Screens and controls
 
@@ -240,7 +238,7 @@ The frame buffers go in PSRAM; SPI to the display runs over DMA at 20 MHz first,
 |---|---|---|
 | Unit | Protocol encode/decode (Python and C++, same fixtures), intents table, flick detection, state reducers, cleanup prompt contract | `pytest`, PlatformIO `native` tests, on every push (GitHub Actions) |
 | Fake device | `tools/fake_device.py` speaks the protocol from the terminal: arrow keys = stick, `c`/`v`/`s` = Cancel/Voice/Send, Mac mic = controller mic | By hand, before hardware |
-| UI simulator | `pio run -e sim`: the real LVGL screens in a desktop window on the Mac | By hand |
+| UI simulator | `cd firmware/sim && make`, then `python tools/sim_bridge.py`: the real LVGL screens in a desktop window on the Mac. `make snapshots` writes a picture of every screen | By hand |
 | Hardware | Test plan in blueprint §10, results in `tests/` | When parts arrive |
 
 ## 12. Build order (most of it before parts arrive)
@@ -259,7 +257,7 @@ The frame buffers go in PSRAM; SPI to the display runs over DMA at 20 MHz first,
 
 | Decision | Choice | Why |
 |---|---|---|
-| Firmware toolchain | **PlatformIO** (VS Code or command line) instead of Arduino IDE | Two boards plus a simulator in one project, pinned library versions, buildable from Claude Code |
+| Firmware toolchain | **arduino-cli** for the boards and a Makefile for the simulator (changed from PlatformIO on 2026-11-26) | The bench work already runs on arduino-cli with ESP32 core 4.0.0; the screens are an Arduino-format library both builds share |
 | UI library | LVGL 9 | Built-in ST7796 driver; runs in the desktop simulator |
 | Screens | Fixed templates filled by `view` messages | Fast and simple; SlashVibe-style streamed custom screens can come later |
 | Claude Code integration | HTTP hooks + `PermissionRequest` | Approvals without wrapping the terminal; falls back safely |

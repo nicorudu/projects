@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-26 | Firmware is built with arduino-cli; the simulator with a Makefile; the screens are one Arduino-format library (`firmware/lib/AgentUI`) both compile (Nico's choice) | The bench work already uses arduino-cli with ESP32 core 4.0.0, and one library guarantees the simulator shows what the dock draws | PlatformIO for everything |
+| 2026-11-26 | Screen devices report how far the detail page can scroll (`layout` message) | Only the device knows how the text wraps; without it the stick keeps counting past the end | Wrap the text in the app |
+| 2026-11-26 | Built-in LVGL fonts for now: accents are dropped and emoji become `?` | No extra font tooling needed to get the screens running | A custom font with accents (planned for M8) |
 | 2026-11-26 | READY = a session open at its prompt with nothing asked yet; IDLE = DONE or READY with no activity for 10 minutes | The reference shows both words without explaining them; this keeps the list honest about what is fresh | Drop READY and keep only IDLE |
 | 2026-11-26 | The Home selection follows its session, not a row number | With focus-follows-selection on, the highlight must not slide onto another session when rows reorder | Row-number selection |
 | 2026-11-26 | Protocol input `click` removed, `green` added (M1b) | The reference's stick has no click; only Send confirms an approval | Keep `click` as an alias |

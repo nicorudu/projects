@@ -102,7 +102,19 @@ class App:
             link.send(msg("ack", seq=m["seq"]))
             if not link.is_duplicate(m["seq"]):
                 self.handle_input(m["in"])
+        elif t == "layout":
+            self._on_layout(m)
         # "hello" after the handshake and "audio_end" are ignored until M2.
+
+    def _on_layout(self, m: dict) -> None:
+        """A screen device says how far the detail page it is showing can scroll."""
+        f = self.state.focus
+        if m.get("screen") != "detail" or f.screen != Screen.DETAIL or m.get("id") != f.detail_id:
+            return  # about a page we've already left
+        f.scroll_max = m["max_scroll"]
+        if f.scroll > f.scroll_max:
+            f.scroll = f.scroll_max
+            self.mark_dirty()
 
     async def _watchdog(self) -> None:
         while True:
@@ -268,7 +280,7 @@ class App:
         s = self.state.selected_session()
         if s:
             f = self.state.focus
-            f.screen, f.detail_id, f.scroll = Screen.DETAIL, s.id, 0
+            f.screen, f.detail_id, f.scroll, f.scroll_max = Screen.DETAIL, s.id, 0, None
             f.sel_id = s.id  # going back lands on the same row
 
     def _do_go_home(self):
@@ -278,7 +290,9 @@ class App:
         self.state.focus.scroll = max(0, self.state.focus.scroll - 1)
 
     def _do_scroll_down(self):
-        self.state.focus.scroll += 1
+        f = self.state.focus
+        if f.scroll_max is None or f.scroll < f.scroll_max:  # stop at the end once the device said where it is
+            f.scroll += 1
 
     def _do_option_prev(self):
         self.state.focus.approval_sel = (self.state.focus.approval_sel - 1) % len(APPROVAL_OPTIONS)

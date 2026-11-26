@@ -114,7 +114,7 @@ async def answer(stack_make, *keys, **cfg_changes):
 
 
 async def test_approve(stack):
-    result, app, dev = await answer(stack, "click")
+    result, app, dev = await answer(stack, "send")
     assert result == {"hookSpecificOutput": {"hookEventName": "PermissionRequest",
                                              "decision": {"behavior": "allow"}}}
     assert "Approved" in dev.toasts
@@ -134,7 +134,7 @@ async def test_reject_with_cancel_key(stack):
 
 
 async def test_ask_in_terminal_returns_no_decision(stack):
-    result, *_ = await answer(stack, "up", "click")  # wraps from Approve to "Ask in terminal"
+    result, *_ = await answer(stack, "up", "send")  # wraps from Approve to "Ask in terminal"
     assert result == {}
 
 
@@ -171,7 +171,7 @@ async def test_two_requests_queue_in_order(stack):
     second = asyncio.create_task(post(hook_url, perm_request(sid="other", cmd="second")))
     await dev.wait_for(lambda d: d.view.get("queue") == 2)
     assert dev.view["summary"] == "first"
-    await dev.send_input("click")
+    await dev.send_input("send")
     assert (await asyncio.wait_for(first, 3))["hookSpecificOutput"]["decision"]["behavior"] == "allow"
     await dev.wait_for(lambda d: d.view.get("summary") == "second")
     await dev.send_input("cancel")
@@ -210,7 +210,7 @@ async def test_session_start_report_script_adds_terminal_info(stack, monkeypatch
     assert await asyncio.to_thread(report.main, ["--url", hook_url], io.StringIO(json.dumps(payload))) == 0
     s = app.state.sessions[SID]
     assert s.term["term_program"] == "Apple_Terminal" and s.term["bundle_id"] == "com.apple.Terminal"
-    assert s.status.value == "idle"
+    assert s.status.value == "ready"  # a new session sits at its prompt
 
 
 async def test_report_wait_prints_the_decision(stack):
@@ -220,7 +220,7 @@ async def test_report_wait_prints_the_decision(stack):
     run = asyncio.create_task(asyncio.to_thread(report.main, ["--url", hook_url, "--wait"],
                                                 io.StringIO(json.dumps(perm_request())), out))
     await dev.wait_for(lambda d: d.view["screen"] == "approval")
-    await dev.send_input("click")
+    await dev.send_input("send")
     assert await asyncio.wait_for(run, 5) == 0
     assert json.loads(out.getvalue())["hookSpecificOutput"]["decision"] == {"behavior": "allow"}
     await dev.close()
@@ -245,7 +245,7 @@ async def test_approve_for_session_never_changes_the_mode(stack):
     pending = asyncio.create_task(post(hook_url, {**perm_request(), "permission_suggestions": suggestions}))
     await dev.wait_for(lambda d: d.view["screen"] == "approval")
     await dev.send_input("down")
-    await dev.send_input("click")
+    await dev.send_input("send")
     d = (await asyncio.wait_for(pending, 3))["hookSpecificOutput"]["decision"]
     assert [u["type"] for u in d["updatedPermissions"]] == ["addDirectories", "addRules"]
     assert all(u["destination"] == "session" for u in d["updatedPermissions"])
@@ -299,7 +299,7 @@ async def test_late_events_from_before_the_question_dont_clear_it(stack):
     await post(hook_url, {**req, "hook_event_name": "PostToolUse", "tool_input": {"command": "ls"}, "_ts": 103.0})
     await asyncio.sleep(0.1)
     assert dev.view["screen"] == "approval"
-    await dev.send_input("click")
+    await dev.send_input("send")
     assert (await asyncio.wait_for(pending, 3))["hookSpecificOutput"]["decision"]["behavior"] == "allow"
     await dev.close()
 

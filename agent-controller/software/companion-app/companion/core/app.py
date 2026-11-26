@@ -16,7 +16,7 @@ from ..devices.link import DeviceLink
 from ..protocol.messages import ProtocolError, msg, validate_from_device
 from ..view import builder
 from . import intents
-from .state import APPROVAL_OPTIONS, HOME_FILTERS, Approval, Choice, Screen, Session, State, Status
+from .state import APPROVAL_OPTIONS, IN_TURN, Approval, Choice, Screen, Session, State, Status
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +36,7 @@ class App:
         self.platforms: dict = {}
         self._dirty = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
+        self._follow_task: asyncio.Task | None = None  # pending "focus follows selection"
 
     # ---- lifecycle -----------------------------------------------------------
     async def start(self) -> None:
@@ -49,6 +50,8 @@ class App:
     async def stop(self) -> None:
         for a in list(self.state.approvals):
             self._settle(a, None)
+        if self._follow_task:
+            self._tasks.append(self._follow_task)
         for t in self._tasks:
             t.cancel()
         await asyncio.gather(*self._tasks, return_exceptions=True)
@@ -109,6 +112,15 @@ class App:
                 if now - link.last_seen > self.cfg.heartbeat_timeout_s:
                     self.detach(link, "heartbeat timeout")
                     asyncio.create_task(link.close())
+            self._age_sessions()
+
+    def _age_sessions(self) -> None:
+        """A finished or never-used session that has sat quiet long enough is shown as IDLE."""
+        cutoff = time.time() - self.cfg.idle_after_s
+        for s in self.state.sessions.values():
+            if s.status in (Status.DONE, Status.READY) and s.since < cutoff:
+                self._set_status(s, Status.IDLE)
+                self.mark_dirty()
 
     # ---- sessions (called by platform plug-ins) -------------------------------
     def upsert_session(self, platform: str, sid: str, cwd: str | None = None, **changes) -> Session:
@@ -125,9 +137,7 @@ class App:
             # Don't let a status event hide an approval we're still holding.
             if any(a.session_id == sid for a in self.state.approvals) and status == Status.WORKING:
                 status = Status.WAITING
-            if status != s.status:
-                s.status = status
-                s.since = time.time()
+            if self._set_status(s, status):
                 if status == Status.WAITING and self.cfg.alert_sound:
                     self._broadcast(msg("sound", name="alert"))
         for k, v in changes.items():
@@ -136,11 +146,27 @@ class App:
         self.mark_dirty()
         return s
 
+    def _set_status(self, s: Session, status: Status) -> bool:
+        """Change a session's status and keep its turn timer. Returns False if nothing changed."""
+        if status == s.status:
+            return False
+        now = time.time()
+        if status in IN_TURN and s.status not in IN_TURN:
+            s.turn_started = now  # a new turn begins
+        elif status not in IN_TURN and s.status in IN_TURN:
+            if s.turn_started is not None:
+                s.worked_s = now - s.turn_started
+            s.turn_started = None
+        s.status, s.since = status, now
+        return True
+
     def end_session(self, sid: str) -> None:
+        f = self.state.focus
+        if sid == f.sel_id:  # keep the highlight on the same row once the session is gone
+            f.sel, f.sel_id = self.state.selected_index(), None
         if self.state.sessions.pop(sid, None) is not None:
             for a in [a for a in self.state.approvals if a.session_id == sid]:
                 self._settle(a, None)
-            f = self.state.focus
             if f.detail_id == sid and f.screen == Screen.DETAIL:
                 f.screen = Screen.HOME
             self.mark_dirty()
@@ -162,8 +188,8 @@ class App:
             f.screen = Screen.APPROVAL
             f.approval_sel = 0
         s = self.state.sessions.get(a.session_id)
-        if s and s.status != Status.WAITING:
-            s.status, s.since = Status.WAITING, time.time()
+        if s:
+            self._set_status(s, Status.WAITING)
         if self.cfg.alert_sound:
             self._broadcast(msg("sound", name="alert"))
         self.mark_dirty()
@@ -181,7 +207,7 @@ class App:
         s = self.state.sessions.get(a.session_id)
         if s and not any(x.session_id == s.id for x in self.state.approvals):
             if choice in (Choice.APPROVE, Choice.APPROVE_SESSION, Choice.REJECT):
-                s.status, s.since = Status.WORKING, time.time()
+                self._set_status(s, Status.WORKING)
         self.mark_dirty()
 
     def withdraw_approval(self, a: Approval) -> None:
@@ -198,29 +224,52 @@ class App:
             getattr(self, f"_do_{action}")()
             self.mark_dirty()
 
+    def _move_sel(self, step: int) -> None:
+        rows = self.state.visible_sessions()
+        if not rows:
+            return
+        f = self.state.focus
+        old = self.state.selected_index(rows)
+        new = min(len(rows) - 1, max(0, old + step))
+        f.sel, f.sel_id = new, rows[new].id
+        if new != old and self.cfg.focus_follows_selection:
+            self._follow_selection(rows[new].id)
+
     def _do_sel_prev(self):
-        self.state.focus.sel = max(0, self.state.focus.sel - 1)
+        self._move_sel(-1)
 
     def _do_sel_next(self):
-        n = len(self.state.visible_sessions())
-        self.state.focus.sel = min(max(n - 1, 0), self.state.focus.sel + 1)
+        self._move_sel(1)
 
-    def _cycle_filter(self, step):
-        f = self.state.focus
-        f.filter = HOME_FILTERS[(HOME_FILTERS.index(f.filter) + step) % len(HOME_FILTERS)]
-        f.sel = 0
+    def _follow_selection(self, sid: str) -> None:
+        """Bring the selected session's window forward once the stick has rested on it."""
+        self._cancel_follow()
+        self._follow_task = asyncio.create_task(self._follow_after_delay(sid), name="follow")
 
-    def _do_filter_prev(self):
-        self._cycle_filter(-1)
+    def _cancel_follow(self) -> None:
+        if self._follow_task and not self._follow_task.done():
+            self._follow_task.cancel()
+        self._follow_task = None
 
-    def _do_filter_next(self):
-        self._cycle_filter(1)
+    async def _follow_after_delay(self, sid: str) -> None:
+        await asyncio.sleep(self.cfg.focus_follow_delay_s)
+        s = self.state.selected_session()
+        if self.state.focus.screen != Screen.HOME or s is None or s.id != sid:
+            return  # the selection moved on, or another screen took over
+        p = self.platforms.get(s.platform)
+        if p is None or not hasattr(p, "focus"):
+            return
+        try:
+            await p.focus(sid, quiet=True)
+        except Exception:  # a focus failure must never take the app down
+            log.exception("focus follows selection failed for %s", sid)
 
     def _do_open_detail(self):
         s = self.state.selected_session()
         if s:
             f = self.state.focus
             f.screen, f.detail_id, f.scroll = Screen.DETAIL, s.id, 0
+            f.sel_id = s.id  # going back lands on the same row
 
     def _do_go_home(self):
         self.state.focus.screen = Screen.HOME
@@ -230,20 +279,6 @@ class App:
 
     def _do_scroll_down(self):
         self.state.focus.scroll += 1
-
-    def _detail_step(self, step):
-        ids = [s.id for s in self.state.visible_sessions()] or list(self.state.sessions)
-        f = self.state.focus
-        if not ids:
-            return
-        i = ids.index(f.detail_id) if f.detail_id in ids else 0
-        f.detail_id, f.scroll = ids[(i + step) % len(ids)], 0
-
-    def _do_detail_prev(self):
-        self._detail_step(-1)
-
-    def _do_detail_next(self):
-        self._detail_step(1)
 
     def _do_option_prev(self):
         self.state.focus.approval_sel = (self.state.focus.approval_sel - 1) % len(APPROVAL_OPTIONS)
@@ -271,6 +306,7 @@ class App:
         if p is None or not hasattr(p, "focus"):
             self.toast("Can't open that one")
             return
+        self._cancel_follow()  # Send means "now"; don't focus a second time
         self.toast(f"Opening {s.name}")
         asyncio.create_task(p.focus(s.id))
 

@@ -29,10 +29,19 @@ async def test_sessions_render_and_stick_moves_selection(running):
 
     seq = await dev.send_input("down")
     await dev.wait_for(lambda d: d.view["sel"] == 1 and seq in d.acks)
-    await dev.send_input("click")
+    await dev.send_input("right")  # stick right opens the detail page
     await dev.wait_for(lambda d: d.view["screen"] == "detail")
     assert dev.view["name"] == "beta"
-    await dev.send_input("cancel")
+    await dev.send_input("left")  # stick left goes back, to the same row
+    await dev.wait_for(lambda d: d.view["screen"] == "home")
+    assert dev.view["sel"] == 1
+    await dev.send_input("right")
+    await dev.wait_for(lambda d: d.view["screen"] == "detail")
+    await dev.send_input("cancel")  # so does Cancel
+    await dev.wait_for(lambda d: d.view["screen"] == "home")
+    await dev.send_input("right")
+    await dev.wait_for(lambda d: d.view["screen"] == "detail")
+    await dev.send_input("green")  # and the green button
     await dev.wait_for(lambda d: d.view["screen"] == "home")
     await dev.close()
 
@@ -79,10 +88,13 @@ async def test_bad_json_does_not_kill_link(running):
     dev = FakeDevice(url)
     await dev.connect()
     await dev.ws.send("not json")
-    await dev.ws.send('{"v":1,"t":"input","seq":1,"in":"fly"}')
+    await dev.ws.send('{"v":1,"t":"input","seq":901,"in":"fly"}')
+    await dev.ws.send('{"v":1,"t":"input","seq":902,"in":"click"}')  # the stick has no click any more
+    app.upsert_session("claude_code", "s1", cwd="/a", status="done")
     seq = await dev.send_input("right")
     await dev.wait_for(lambda d: seq in d.acks)
-    await dev.wait_for(lambda d: d.view["filter"] == "waiting")
+    await dev.wait_for(lambda d: d.view["screen"] == "detail")
+    assert 901 not in dev.acks and 902 not in dev.acks  # bad inputs are dropped, not acked
     await dev.close()
 
 

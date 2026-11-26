@@ -94,7 +94,7 @@ Work is split three ways: **Cloud** (Claude in this chat), **Mac** (Claude Code 
 |---|---|---|---|---|---|
 | M0 | App restructure, protocol, fake device | Cloud | No | Tests pass | Done |
 | M1 | Claude Code status and approvals | Cloud + Mac | No | Real approval from the fake device | Done |
-| **M1b** | Reference controls in the app: right opens, left goes back, focus follows selection, detail page, IDLE / READY rows, green button, no stick click | Cloud | No | Fake device behaves like the demo video | **Next** |
+| **M1b** | Reference controls in the app: right opens, left goes back, focus follows selection, detail page, IDLE / READY rows, green button, no stick click | Cloud | No | Fake device behaves like the demo video | Done 2026-11-26 (66 tests; checked on the Mac Mini with real sessions) |
 | M2 | Voice through a copy of Wispr Faux: dock review, Send / Cancel | Cloud + Mac | No | Dictate into Claude Code from the fake device | Tabled until Nico restarts it |
 | M3 | Screens in the desktop simulator (LVGL, 480 × 320), styled like the reference | Cloud | No | Screens match the reference screenshots side by side | Can start with M1b |
 | M4 | Dock on the breadboard: display, touch, speaker, LED, USB and Wi-Fi links | Bench | Yes | Real sessions on the real screen | Waits for parts check |

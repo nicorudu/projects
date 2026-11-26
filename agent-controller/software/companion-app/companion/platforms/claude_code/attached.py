@@ -112,7 +112,7 @@ class ClaudeCode:
 
         if ev == "SessionStart":
             new = sid not in app.state.sessions
-            app.upsert_session(NAME, sid, cwd, status=Status.IDLE if new else None, term=p.get("_term") or None)
+            app.upsert_session(NAME, sid, cwd, status=Status.READY if new else None, term=p.get("_term") or None)
         elif ev == "UserPromptSubmit":
             app.upsert_session(NAME, sid, cwd, status=Status.WORKING, text="> " + (p.get("prompt") or "")[:300],
                                tool="")
@@ -173,7 +173,8 @@ class ClaudeCode:
             if a.id == request_id:
                 self.app._settle(a, choice)
 
-    async def focus(self, sid: str) -> bool:
+    async def focus(self, sid: str, quiet: bool = False) -> bool:
+        """Bring the session's terminal tab forward. `quiet` skips the toast when it can't be found."""
         s = self.app.state.sessions.get(sid)
         term = s.term if s else {}
         if sys.platform == "darwin":
@@ -183,6 +184,6 @@ class ClaudeCode:
         else:
             return False
         ok = await asyncio.to_thread(focus_terminal, term or {})
-        if not ok:
+        if not ok and not quiet:
             self.app.toast("Couldn't find that terminal")
         return ok

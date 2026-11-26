@@ -22,7 +22,22 @@ python -m companion                 # the app; devices connect to ws://<this com
 python ../../tools/fake_device.py   # in a second terminal: the fake dock + controller
 ```
 
-Fake device keys: arrow keys = stick, Enter = click, `c` Cancel, `v` Voice (press to hold, again to release), `s` Send, `q` quit.
+Fake device keys (the reference's controls, since M1b):
+
+| Key | Control | What it does |
+|---|---|---|
+| ↑ / ↓ | Stick | Select a session (its window comes forward after 0.6 s), scroll, or change the approval option |
+| → | Stick | Open the selected session's detail page |
+| ← | Stick | Back |
+| `s` | Send | Confirm an approval; bring the session's window forward now |
+| `c` | Cancel | Reject an approval; back |
+| `v` | Voice | Press to hold, again to release (M2) |
+| `g` | Green button | Home |
+| `q` | — | Quit |
+
+The stick has no click, so Enter does nothing. Only Send confirms an approval.
+
+Settings in `~/.agent-controller/config.toml`: `focus_follows_selection = false` stops windows coming forward as you move the selection; `focus_follow_delay_s` (0.6) and `idle_after_s` (600) set the two timings.
 
 ## Test
 

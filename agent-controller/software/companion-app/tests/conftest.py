@@ -15,7 +15,10 @@ from companion.transports.websocket import WebSocketTransport  # noqa: E402
 @pytest.fixture
 def cfg():
     return Config(ws_host="127.0.0.1", ws_port=0, hook_port=0, heartbeat_timeout_s=0.6,
-                  approval_timeout_s=3.0, alert_sound=True)
+                  approval_timeout_s=3.0, alert_sound=True,
+                  # Off by default so a test can never bring a real window forward; tests that
+                  # check it switch it on with a fake platform.
+                  focus_follows_selection=False, focus_follow_delay_s=0.05)
 
 
 @pytest.fixture

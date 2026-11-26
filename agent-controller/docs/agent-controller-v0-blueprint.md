@@ -238,13 +238,15 @@ Never use GPIO35, 36, 37 (the memory chip uses them). Avoid GPIO0, 3, 45, 46 (bo
 ```
 DISPLAY  ST7796S (SPI)     MOSI GPIO11   SCLK GPIO12   CS GPIO10
                            DC   GPIO9    RST  GPIO14   BL (dimming) GPIO8
-TOUCH    FT6336U (I2C)     SDA  GPIO1    SCL  GPIO2    INT GPIO4
+TOUCH    FT6336U (I2C)     SDA  GPIO1    SCL  GPIO2    INT GPIO4    RST GPIO5
 AMP      MAX98357A (I2S)   BCLK GPIO15   LRC  GPIO16   DIN GPIO17   SD → 3V3   VIN → 5V
 LED      WS2812B           DIN  GPIO21                               VDD → 5V
 CONTACTS 5 V out           + ← 5V pin    − ← GND
 USB      port marked "USB" GPIO19/20     (power + Link B data)
-FREE     GPIO5, 6, 7, 13, 18, 39, 40, 41, 42, 47
+FREE     GPIO6, 7, 13, 18, 39, 40, 41, 42, 47
 ```
+
+Display module [D2] notes (LCDWIKI MSP4031 page, checked 2026-11-26): VCC goes to 5 V (recommended; dimmer at 3.3 V). The touch reset pin (CTP_RST, active low) needs a pin, so GPIO5 was taken from the free list. SDO(MISO) and SD_CS stay unconnected. Pin-by-pin wiring: [`firmware/bench/dock_display/README.md`](../firmware/bench/dock_display/README.md).
 
 ### 5.2 Controller — Seeed XIAO ESP32S3 (all 11 pins used)
 

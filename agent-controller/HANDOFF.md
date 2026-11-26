@@ -26,7 +26,7 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11).
+- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -171,6 +171,10 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
     - Build and flash: `cd firmware/bench/dock_hello && arduino-cli compile -b <fqbn> --build-path <a folder outside the repo> . && arduino-cli upload -b <fqbn> -p <port> --input-dir <that folder> .`
     - Read serial at 115200 baud. Set the baud rate on the same open port that is read (`( exec < $PORT; stty 115200 raw -echo clocal; cat )`); a separate `stty -f` call doesn't stick on macOS.
     - **Before M5:** solder header pins onto the second ESP32-S3 board (X7). It arrived without pins.
+  6. **Display test (when the jumpers arrive, about 2026-11-28).** Follow [`firmware/bench/dock_display/README.md`](firmware/bench/dock_display/README.md):
+     - First the multimeter check there (touch pins must sit at about 3.3 V, not 5 V, with only power connected).
+     - Then wire the 12 wires, flash `dock_display`, and go through its pass table. Nico judges the picture by eye; serial reports touch.
+     - Four things are unconfirmed until it runs: color inversion, which way up the picture is, touch direction, backlight polarity. Each has a one-line setting at the top of the sketch.
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
@@ -210,6 +214,11 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — Display test written, not flashed (branch `agent-controller-m4-display-test`). PR #18 merged first.
+  - `firmware/bench/dock_display/`: ST7796S + FT6336U test with no libraries beyond the ESP32 core. It compiles for the dock board (357 kB). Steps: I2C scan and touch chip ID, backlight fade, red/green/blue fills with timing, a test card, a four-corner tap test, free drawing.
+  - Pins are blueprint §5.1. **One addition: touch reset (CTP_RST) on GPIO5**, taken from the free list; §5.1 is updated.
+  - Module facts from the LCDWIKI MSP4031 page: 14 pins; VCC 5 V recommended; SDO(MISO) and SD_CS left unconnected. The page gives no voltage for the touch pins, so the README has a multimeter check before the first full hookup.
+  - Waiting on the jumper wires (about 2026-11-28).
 - 2026-11-26 — M4 bench start done (Claude Code on the Mac Mini, §6 steps 1–5):
   - The dock board (D1) is on `/dev/cu.usbmodem5C850305191`, through its UART/COM port (WCH CH343 bridge, USB ID `1a86:55d3`).
   - Installed with Nico's OK: `arduino-cli` 1.6.0 (Homebrew) and the Espressif ESP32 core 4.0.0.

@@ -4,6 +4,12 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-26 — Display and touch test written
+- Wrote the bench test for the 4.0" screen (ST7796S) and its touch layer (FT6336U). → [sketch and wiring table](firmware/bench/dock_display/README.md)
+- It fades the backlight, fills the screen red, green and blue, shows a test card, then asks for a tap in each corner.
+- It compiles, but it is not flashed yet: the jumper wires arrive in two days.
+- One pin added to the plan: the touch reset line on GPIO5.
+
 ## 2026-11-26 — First firmware on the dock board (M4 bench start)
 - Plugged the dock board (ESP32-S3 DevKitC-1 N16R8) into the Mac Mini and flashed a hello sketch that reports what the chip really has. → [sketch](firmware/bench/dock_hello/dock_hello.ino)
 - **It passes:** 16 MB flash and 8 MB PSRAM, as ordered. A 4 MB PSRAM write/read check passed, and `esptool` read 16 MB from the flash chip itself.

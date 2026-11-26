@@ -26,7 +26,7 @@ Last updated: 2026-11-26 · by Claude (cloud session)
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
+- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -197,7 +197,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
-- 2026-11-26 — Nico sent a photo: most parts have arrived (soldering station, multimeter, heat gun, wire, M2 insert kit, heat-shrink, boards and modules in bags). PR #12 merged. Waiting on Nico to say what is still missing before BOM statuses change to "arrived".
+- 2026-11-26 — Nico sent a photo: most parts have arrived (soldering station, multimeter, heat gun, wire, M2 insert kit, heat-shrink, boards and modules in bags). PR #12 merged. Nico: everything ordered is here except a second XIAO (a spare he ordered; still on the way). BOM statuses set to arrived. The display and dock board are in hand, so M4 (dock on the breadboard) can start; first step is plugging the dock board into the Mac Mini.
 - 2026-11-19 — Nico asked for exact parts, not generic specs. The shopping list and BOM now name one exact product, quantity and must-match check per line (C9 Geekstory 73-value resistor kit, C10 Hilitchi 6 × 6 mm tactile kit, C11 10-pair JST-PH 2.0 pigtails, C12 500-pc ceramic capacitor kit, T8 Plugable USBC-VAMETER3, plus exact picks for the buy-only-if-needed items). Subtotal is about $70, up from $42, because a data-passing USB-C meter costs $30. Correction: foam tape (S8) is 1.6 mm thick and does not go under the battery; the guard sheet holds the battery. Thumbstick: ordered at the listed quantity (2).
 - 2026-11-19 — Nico confirmed the thumbstick and breadboards with jumpers are ordered, and pointed out his second ESP32-S3 board. Decision: one XIAO is enough; the spare board (X7) stands in for the controller on the breadboard. BOM, shopping list, blueprint §3 and §11 updated.
 - 2026-11-19 — Parts check against Nico's order screenshots (AliExpress + Amazon):

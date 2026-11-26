@@ -49,10 +49,12 @@ IN_TURN = (Status.WORKING, Status.WAITING)  # the agent is in the middle of a tu
 class Session:
     id: str
     platform: str
-    cwd: str = ""
+    cwd: str = ""  # where the session is working now; follows every `cd`
+    home: str = ""  # where it was started; this, not cwd, decides what it is called
+    home_known: bool = False  # True once the platform told us; until then home is the first cwd seen
     name: str = ""  # the project: repo name from the git remote, else the folder name
     title: str = ""  # the task: a short form of the first prompt; "" until there is one
-    repo: str = ""  # repo label for cwd (core/names.py), "" if none or not looked up yet
+    repo: str = ""  # repo label for home (core/names.py), "" if none or not looked up yet
     status: Status = Status.READY
     since: float = field(default_factory=time.time)  # when the status last changed
     turn_started: float | None = None  # when the current turn began; None between turns

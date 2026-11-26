@@ -11,6 +11,9 @@ event (seen on the Mac Mini, 2026-11-11). This script stays completely silent in
 - `--wait` is for PermissionRequest: it waits for the app's answer and prints it for
   Claude Code. App not running, or anything else wrong → prints nothing → no decision →
   Claude Code shows its normal prompt.
+- Every event carries `_project_dir`, the folder Claude Code was started in (Claude Code
+  sets CLAUDE_PROJECT_DIR for hook commands). The event's own `cwd` follows every `cd` the
+  session makes, so it can't be used to name the session.
 - SessionStart also carries `_term` (terminal app, TTY, app bundle id) so "Send" on the
   device can bring that exact tab to the front.
 """
@@ -72,6 +75,9 @@ def main(argv: list[str] | None = None, stdin=None, stdout=None) -> int:
     try:
         payload = json.loads(stdin.read() or "{}")
         payload["_ts"] = time.time()
+        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
+        if project_dir:
+            payload["_project_dir"] = project_dir
         if payload.get("hook_event_name") == "SessionStart":
             payload["_term"] = terminal_info()
         req = urllib.request.Request(url, data=json.dumps(payload).encode(),

@@ -138,16 +138,25 @@ class App:
                 self.mark_dirty()
 
     # ---- sessions (called by platform plug-ins) -------------------------------
-    def upsert_session(self, platform: str, sid: str, cwd: str | None = None, **changes) -> Session:
+    def upsert_session(self, platform: str, sid: str, cwd: str | None = None, home: str | None = None,
+                       **changes) -> Session:
+        """`cwd` is where the session is working now. `home` is where it was started, when the
+        platform knows; the session is named after it, so a `cd` never renames a row."""
         s = self.state.sessions.get(sid)
         if s is None:
             s = Session(id=sid, platform=platform)
             self.state.sessions[sid] = s
         if cwd and cwd != s.cwd:
             s.cwd = cwd
-            s.repo = self._repo_labels.get(cwd, "")
-            if cwd not in self._repo_labels:
-                self._look_up_repo(cwd)
+        if home:
+            new_home, s.home_known = home, True
+        else:  # not told: the first folder seen stands in, and later `cd`s don't change it
+            new_home = cwd if not s.home else None
+        if new_home and new_home != s.home:
+            s.home = new_home
+            s.repo = self._repo_labels.get(new_home, "")
+            if new_home not in self._repo_labels:
+                self._look_up_repo(new_home)
         s.name = self._session_name(s)
         status = changes.pop("status", None)
         if status is not None:
@@ -192,7 +201,7 @@ class App:
     @staticmethod
     def _project(s: Session) -> str:
         """Repo name from the git remote, then the folder name, then part of the id."""
-        return s.repo or (os.path.basename(s.cwd.rstrip("/\\")) if s.cwd else "") or s.id[:8]
+        return s.repo or (os.path.basename(s.home.rstrip("/\\")) if s.home else "") or s.id[:8]
 
     def _session_name(self, s: Session) -> str:
         base = self._project(s)
@@ -219,7 +228,7 @@ class App:
         if not label:
             return
         for s in self.state.sessions.values():
-            if s.cwd == cwd:
+            if s.home == cwd:
                 s.repo = label
         for s in self.state.sessions.values():
             s.name = self._session_name(s)

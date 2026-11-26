@@ -78,3 +78,33 @@ async def test_rows_use_the_repo_name_then_the_folder_and_the_title_when_there_i
     c = app.upsert_session("claude_code", "c123456", cwd=str(repo), status="done")  # same folder: asked once
     assert c.repo == "projects" and c.name == "projects ·c123"
     await app.stop()
+
+
+async def test_a_cd_does_not_rename_the_session(cfg, tmp_path):
+    """Seen on the Mac Mini: a row read "projects/agent-controller", then "projects" after a `cd`."""
+    repo = tmp_path / "Imported Home Projects"
+    make_repo(repo)
+    (repo / "agent-controller").mkdir()
+    app = App(cfg)
+    await app.start()
+
+    # The platform says where the session started: that names it, wherever it works.
+    a = app.upsert_session("claude_code", "a", cwd=str(repo / "agent-controller"), home=str(repo), status="working")
+    await wait_until(lambda: a.name == "projects")
+    app.upsert_session("claude_code", "a", cwd=str(repo), home=str(repo))
+    app.upsert_session("claude_code", "a", cwd=str(tmp_path), home=str(repo))
+    await asyncio.sleep(0.2)
+    assert a.name == "projects" and a.cwd == str(tmp_path) and a.home == str(repo)
+
+    # Not told where it started: the first folder seen names it, and a `cd` changes nothing.
+    b = app.upsert_session("claude_code", "b", cwd=str(repo / "agent-controller"), status="working")
+    await wait_until(lambda: b.name == "projects/agent-controller")
+    app.upsert_session("claude_code", "b", cwd=str(repo))
+    await asyncio.sleep(0.2)
+    assert b.name == "projects/agent-controller"
+
+    # If the start folder arrives later (hooks updated mid-session), it wins from then on.
+    app.upsert_session("claude_code", "b", cwd=str(repo), home=str(repo))
+    await wait_until(lambda: b.name.startswith("projects ·") or b.name == "projects")
+    assert b.home == str(repo) and b.home_known
+    await app.stop()

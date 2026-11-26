@@ -162,6 +162,7 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   - `PermissionRequest` input: `tool_name`, `tool_input`, `permission_suggestions`. Reply `{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}`, or `"deny"` plus `message`. Returning no decision falls back to the normal terminal prompt.
   - `Notification` has `notification_type` (`permission_prompt`, `idle_prompt`, …).
   - Common fields: `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `permission_mode`.
+  - **`cwd` follows every `cd` the session makes** (seen on the Mac Mini, 2026-11-26), so it can't name a session. Hook commands get the environment variable `CLAUDE_PROJECT_DIR` = the folder Claude Code was started in; it stays the same (checked the same day, Claude Code 2.1.332). `hooks/report.py` sends it as `_project_dir`.
   - Config lives in `~/.claude/settings.json` as `{"hooks":{"Event":[{"matcher":"…","hooks":[{"type":"http","url":"…"}]}]}}`.
 - **Ports.** `8765` = device WebSocket. `8766` = hook server, bound to 127.0.0.1 only.
 - **Workflow quirks in the cloud sessions.**
@@ -245,6 +246,11 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — Bug from Nico after the M3 merge: a row read `projects/agent-controller`, then changed to `projects` (branch `agent-controller-stable-project-name`).
+  - Cause, confirmed with a temporary log of the hook input: the hook's `cwd` is the session's current folder and moves with every `cd`; the app renamed the row each time. That session was started in the repo root and had been working inside `agent-controller/`.
+  - Fix: sessions are named after where they were **started**. `hooks/report.py` adds `_project_dir` (from `CLAUDE_PROJECT_DIR`) to every event; the app keeps it as the session's `home` and names from that. Without it (an older Claude Code), the first folder seen is used and later `cd`s change nothing. `cwd` is still tracked, but no longer names anything.
+  - 74 tests. No hook reinstall is needed (the installed command is unchanged); restart the app.
+  - Effect to expect: a session started in the repo root is `projects` from the start, even while it works in a subfolder.
 - 2026-11-26 — M3 look-over with Nico, in the simulator with real sessions:
   - Passed: the window and live sessions; every key (↑ ↓ → ← `s` `c` `g`); focus follows selection; a long reply scrolls, stops at the end and comes back on one ↑; the approval screen, with ←/→ doing nothing; `Approved` and `Rejected` toasts; the Disconnected banner within 2 s and reconnecting by itself.
   - Nico's finding: the row for a session in `~/projects` said "Imported Home Projects" (the folder the symlink points to), and the reference shows task titles.

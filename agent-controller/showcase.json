@@ -3,13 +3,44 @@
   "title": "AI Agent Controller",
   "tagline": "A desk dock and detachable controller for running AI coding agents: glance, flick, approve, speak.",
   "status": "build",
-  "status_text": "Building: rev 3 design (pivoting joystick block); approvals work from the fake device",
-  "updated": "2026-11-18",
-  "tags": "ESP32-S3, Python, Whisper, Claude Code, CadQuery, 3D printing",
+  "status_text": "Building: the dock screens run in a simulator; dock board flashed; display test next",
+  "updated": "2026-11-26",
+  "tags": "ESP32-S3, LVGL, Python, Whisper, Claude Code, CadQuery, 3D printing",
   "hero": "media/web/rev3-02-device-open.webp",
   "hero_alt": "Concept render of the agent controller: a small screen on a hinged lid, a ribbed base, three large keys and a joystick block that pivots",
   "repo": "https://github.com/nicorudu/projects/tree/main/agent-controller",
   "timeline": [
+    {
+      "date": "2026-11-26",
+      "title": "The dock's screens run in a simulator",
+      "summary": "The screens are built with LVGL: the agent list, a detail page, approvals, a voice screen, toasts and a Disconnected banner. They run in a window on the Mac, driven by the real companion app, and the same code already compiles for the dock board. Each row is named after its task, then its project folder.",
+      "images": [
+        {
+          "src": "media/web/sim-01-approval.webp",
+          "alt": "Simulator: an approval request with four choices"
+        },
+        {
+          "src": "media/web/sim-02-detail.webp",
+          "alt": "Simulator: the detail page for a finished session"
+        },
+        {
+          "src": "media/web/sim-03-detail-working.webp",
+          "alt": "Simulator: the detail page for a session that is still working"
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "title": "The app's controls match the reference",
+      "summary": "Stick right opens a session, stick left goes back, and only Send confirms an approval. Resting the stick on a session brings its window to the front. Checked on the Mac Mini with real Claude Code sessions.",
+      "images": []
+    },
+    {
+      "date": "2026-11-26",
+      "title": "Parts on the bench, first firmware on the dock board",
+      "summary": "Most of the parts arrived. The dock board (ESP32-S3) was flashed from the Mac Mini and reports 16 MB of flash and 8 MB of PSRAM, as ordered. The display and touch test is written and waits for jumper wires.",
+      "images": []
+    },
     {
       "date": "2026-11-18",
       "title": "Rev 3: the joystick block pivots",

@@ -6,7 +6,7 @@ Hardware and software builds by Nicolas Rueda. Portfolio: [nicorudu.com/lab](htt
 
 | Project | Type | Status | Description |
 |---|---|---|---|
-| [agent-controller](./agent-controller) | Hardware | In build: rev 3 design (pivoting joystick block); approvals work from the fake device | Desk dock + detachable controller for Claude Code and other AI agents (hardware + firmware + Python) |
+| [agent-controller](./agent-controller) | Hardware | In build: the dock screens run in a simulator; dock board flashed; display test next | Desk dock + detachable controller for Claude Code and other AI agents (hardware + firmware + Python) |
 | [mitzi](./mitzi) | Hardware | Planning: idea, research and Phase 0 done; phone prototype next | Glasses with a language tutor inside: they label your world, build your flashcards, and give you a conversation partner who sees what you see (first language: Japanese) |
 | [live-interpreter](./live-interpreter) | Software | Planning: formal plan written, build starts next | Real-time translated phone calls and conversations in a natural, matched voice (TypeScript + Python) |
 

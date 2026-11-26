@@ -26,14 +26,14 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **M1b is done in code (2026-11-26, branch `agent-controller-m1b`, 66 tests).** What changed:
+- **M1b is done and checked on the Mac Mini (2026-11-26, PR #20, 66 tests).** What changed:
   - Stick right opens the detail page; stick left, Cancel and the green button go back. No filters, no stick click.
   - Only Send confirms an approval. Protocol: input `click` removed, `green` added.
   - Focus follows selection: 0.6 s after the stick rests on a row, that session's window comes forward (`focus_follows_selection`, on by default).
   - The highlight stays on its session when rows reorder.
   - Status words READY and IDLE added (meanings are ours; see docs/decisions.md). The detail page has "Worked for 6m 24s" and the whole last message, scrollable.
   - Fake device keys: arrows, `s` Send, `c` Cancel, `v` Voice, `g` green. **Enter no longer does anything.**
-  - **Open: Nico's check on the Mac Mini** with real Claude Code sessions (§6, "M1b check").
+  - **Nico's check on the Mac Mini passed** with real Claude Code sessions (all five steps; §8). Focus-follow stays on.
 - **Next step: M3** (screens in the simulator), and the display test on the bench. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
@@ -103,7 +103,7 @@ Full table with pass conditions: [plan §5](docs/plan.md).
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, fake device | No | **done** (2026-11-11) |
 | M1 | Claude Code hooks: live status + approvals from the fake device | No | **done** (2026-11-11), tested on the Mac Mini |
-| M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **done in code** (2026-11-26); Mac Mini check open |
+| M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **done** (2026-11-26), checked on the Mac Mini |
 | M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
 | M3 | Screens in the desktop simulator, styled like the reference | No | can start with M1b |
 | M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | **started** (2026-11-26): board check passed; display next |
@@ -183,7 +183,7 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
      - First the multimeter check there (touch pins must sit at about 3.3 V, not 5 V, with only power connected).
      - Then wire the 12 wires, flash `dock_display`, and go through its pass table. Nico judges the picture by eye; serial reports touch.
      - Four things are unconfirmed until it runs: color inversion, which way up the picture is, touch direction, backlight polarity. Each has a one-line setting at the top of the sketch.
-- **M1b check on the Mac Mini (about 5 minutes).** No hook reinstall is needed.
+- **M1b check on the Mac Mini (about 5 minutes).** **Done 2026-11-26, all passed** (§8); the steps stay here for re-runs. No hook reinstall is needed.
   1. Three windows as in the Mac Mini test below: A `python -m companion`, B `python ../../tools/fake_device.py`, and two or more Claude Code sessions in other tabs.
   2. In B, press ↓ and wait. **After about half a second that session's tab should come to the front.** Flick ↓ ↓ quickly: only the last one should come forward.
   3. Press → to open the detail page, ← to go back. After a finished turn the page should say "Worked for …".
@@ -228,6 +228,15 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — M1b check on the Mac Mini with real Claude Code sessions (Nico, with Claude Code walking through it). **All passed:**
+  - Two sessions appeared and went WORKING → DONE.
+  - Focus follows selection: the right Terminal tab came forward each time; with two quick flicks only the last session came forward.
+  - Detail page: → opened it, with the "Worked for …" line and the reply; ←, `c` and `g` each went back; Enter did nothing.
+  - Approvals: Enter, ← and → did nothing; `s` approved; `c` rejected; ↓ then `s` approved for the session and C stayed on `manual mode on`.
+  - A new session showed READY first, then WORKING and DONE.
+  - Not tested: IDLE after 10 minutes (covered by a unit test only), and the `focus_follows_selection = false` setting.
+  - Nico's choice: focus-follow stays on.
+  - Test files `~/agent-controller-test-20.txt` and `-22.txt` can be deleted.
 - 2026-11-26 — M1b done in code (Claude Code on the Mac Mini, branch `agent-controller-m1b`):
   - `core/intents.py` rewritten to blueprint §7.1; a test checks every screen and input against the table.
   - Protocol input `click` removed, `green` added. Filters removed from Home.

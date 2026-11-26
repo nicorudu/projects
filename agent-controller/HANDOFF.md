@@ -2,7 +2,7 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-19 · by Claude (cloud session)
+Last updated: 2026-11-26 · by Claude (cloud session)
 
 ---
 
@@ -26,7 +26,7 @@ Last updated: 2026-11-19 · by Claude (cloud session)
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). M4 starts when Nico confirms which parts have arrived.
+- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -158,6 +158,12 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   - Thumbstick: ordered at the quantity the 2026-11-18 list gave (2 × Adafruit #5628), per Nico on 2026-11-19.
   - On arrival, check: the chargers have six pads (protected kind); the screwdriver set has an H1.5 bit; the battery plug fits the C11 socket; measure both ESP32-S3 boards.
 - **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
+- **M4 bench start (Claude Code on the Mac Mini, from 2026-11-26).** Nico moves the hands-on work to Claude Code on the Mac Mini so it can run the commands itself. One step at a time; stop after each and tell Nico what happened.
+  1. Pull `main` (PR #17 has the arrivals). Firmware uses the Arduino framework (blueprint §8); nothing is written yet (`firmware/README.md`).
+  2. Nico plugs the dock board (D1, ESP32-S3 DevKitC-1 N16R8) into the Mac Mini through the port marked UART or COM. Find the new port with `ls /dev/cu.*`.
+  3. Install `arduino-cli` (Homebrew) and the Espressif ESP32 core. Ask Nico before installing anything.
+  4. Flash a hello sketch that prints the chip, flash size and PSRAM size. Pass: 16 MB flash and 8 MB PSRAM reported. Never use GPIO35–37 (PSRAM).
+  5. Log the result in §8 and BUILDLOG, commit on a branch, and open a PR. Next is the display (bench order in blueprint §11).
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
@@ -197,6 +203,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — Nico sent a photo: most parts have arrived (soldering station, multimeter, heat gun, wire, M2 insert kit, heat-shrink, boards and modules in bags). PR #12 merged. Nico: everything ordered is here except a second XIAO (a spare he ordered; still on the way). BOM statuses set to arrived. The five items from the exact-parts list (C9 resistors, C10 tactile buttons, C11 JST-PH plugs, C12 capacitors, T8 USB-C meter) are ordered and also still on the way; they are only needed for the controller (M5). The display and dock board are in hand, so M4 (dock on the breadboard) can start; first step is plugging the dock board into the Mac Mini.
 - 2026-11-19 — Nico asked for exact parts, not generic specs. The shopping list and BOM now name one exact product, quantity and must-match check per line (C9 Geekstory 73-value resistor kit, C10 Hilitchi 6 × 6 mm tactile kit, C11 10-pair JST-PH 2.0 pigtails, C12 500-pc ceramic capacitor kit, T8 Plugable USBC-VAMETER3, plus exact picks for the buy-only-if-needed items). Subtotal is about $70, up from $42, because a data-passing USB-C meter costs $30. Correction: foam tape (S8) is 1.6 mm thick and does not go under the battery; the guard sheet holds the battery. Thumbstick: ordered at the listed quantity (2).
 - 2026-11-19 — Nico confirmed the thumbstick and breadboards with jumpers are ordered, and pointed out his second ESP32-S3 board. Decision: one XIAO is enough; the spare board (X7) stands in for the controller on the breadboard. BOM, shopping list, blueprint §3 and §11 updated.
 - 2026-11-19 — Parts check against Nico's order screenshots (AliExpress + Amazon):

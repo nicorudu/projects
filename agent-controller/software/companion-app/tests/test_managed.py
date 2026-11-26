@@ -26,7 +26,9 @@ for m in [
 @pytest.mark.skipif(os.name == "nt", reason="uses a shebang script")
 async def test_managed_task_updates_session(tmp_path, cfg):
     script = tmp_path / "claude"
-    script.write_text(FAKE_CLAUDE.format(python=sys.executable))
+    # The real interpreter, not the venv's link to it: a "#!" line can't hold a path with spaces,
+    # and the repo (so the venv) may sit in one, e.g. "/Volumes/Macintosh External HD/...".
+    script.write_text(FAKE_CLAUDE.format(python=os.path.realpath(sys.executable)))
     script.chmod(script.stat().st_mode | stat.S_IEXEC)
     app = App(cfg)
     sid = await run_task(app, "list files", claude_bin=str(script))

@@ -39,8 +39,10 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
   - Screens: Agents, Detail, Approval, Voice (layout only), Connecting, plus a toast and a Disconnected banner.
   - The same library compiles for the dock board (`firmware/bench/dock_ui`, 665 kB). **Not run on the real display yet.**
   - **Toolchain decision (Nico): arduino-cli for the boards, a Makefile for the simulator.** PlatformIO is dropped.
-  - New protocol message from screen devices: `layout` (how far the detail page scrolls). 67 tests.
-  - **Open: Nico's look-over in the simulator** (§6, "M3 look-over"), including whether the look is close enough to the reference.
+  - New protocol message from screen devices: `layout` (how far the detail page scrolls). 72 tests.
+  - **Row titles (Nico, during the look-over):** a row shows the session's task title, which is a short form of its first prompt. With no task yet it shows the project: the repo name from the git remote (`projects`, or `projects/mitzi` inside a subfolder), then the folder name. The small line shows the project and the tool. Views carry `title` beside `name`.
+  - **To-do for M8:** use Claude Code's own session title if it ever appears in a documented hook field. It isn't one today, and the app only uses documented fields.
+  - **Nico's look-over in the simulator: steps 1–5a passed on 2026-11-26** (window, keyboard, scrolling to the end, approvals and toasts, disconnect and reconnect). One change asked for and made: row titles (below). Open: his look at the new titles.
   - Known limits: fonts are ASCII only (accents dropped, emoji shown as `?`); Voice has no engine until M2; the READY color is still a proposal.
 - **Next step:** Nico's M3 look-over, then the display test on the bench when the jumpers arrive (about 2026-11-28), then `dock_ui` on the real display. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
@@ -243,6 +245,12 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — M3 look-over with Nico, in the simulator with real sessions:
+  - Passed: the window and live sessions; every key (↑ ↓ → ← `s` `c` `g`); focus follows selection; a long reply scrolls, stops at the end and comes back on one ↑; the approval screen, with ←/→ doing nothing; `Approved` and `Rejected` toasts; the Disconnected banner within 2 s and reconnecting by itself.
+  - Nico's finding: the row for a session in `~/projects` said "Imported Home Projects" (the folder the symlink points to), and the reference shows task titles.
+  - Fix, in the same PR: `core/names.py` (`short_title`, `repo_label`); the first prompt becomes the session's title (slash commands are skipped; later prompts don't rename it); the project name comes from the git remote, looked up once per folder in a worker thread; `title` added to rows and the detail view; AgentUI and the fake device show it. 72 tests. Snapshots regenerated.
+  - Not possible today: Claude Code's own session title (not in the documented hook fields). Logged as an M8 to-do.
+  - Test files `~/agent-controller-test-30.txt` and `-31.txt` may exist; they can be deleted.
 - 2026-11-26 — M3 built (Claude Code on the Mac Mini, branch `agent-controller-m3-screens`):
   - Nico chose arduino-cli + Makefile over PlatformIO, and approved installing LVGL 9.6.0, ArduinoJson 7.4.3 (arduino-cli libraries) and SDL2 (Homebrew, as `sdl2-compat`).
   - `firmware/lib/AgentUI`: the screens, with no hardware code. It keeps the last view as JSON and updates objects in place.

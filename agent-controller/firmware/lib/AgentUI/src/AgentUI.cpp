@@ -174,8 +174,15 @@ void update_home() {
       w.outline = outline;
       lv_obj_set_style_border_color(w.box, col(outline), 0);
     }
-    set_text(w.title, clean_text(row["name"] | "", false));
-    set_text(w.tool, clean_text(row["tool"] | "", false));
+    // Large text: the task title. Small text: the project (when the title is a task) and the tool.
+    const char *name = row["name"] | "";
+    const char *title = row["title"] | name;
+    std::string small = strcmp(title, name) != 0 ? clean_text(name, false) : std::string();
+    const std::string tool = clean_text(row["tool"] | "", false);
+    if (!small.empty() && !tool.empty()) small += "  \xE2\x80\xA2  ";
+    small += tool;
+    set_text(w.title, clean_text(title, false));
+    set_text(w.tool, small);
     set_text(w.age, age(now - (row["since"] | now)));
   }
 
@@ -238,13 +245,16 @@ void update_detail() {
     set_text(detail.status, upper(status));
     lv_obj_align(detail.status, LV_ALIGN_TOP_RIGHT, -14, 14);
   }
-  set_text(detail.name, clean_text(g_view["name"] | "", false));
+  const char *name = g_view["name"] | "";
+  const char *title = g_view["title"] | name;
+  set_text(detail.name, clean_text(title, false));
 
   const int64_t now = now_s();
   std::string line;
   if (!g_view["turn_start"].isNull()) line = "Working for " + duration(now - g_view["turn_start"].as<int64_t>());
   else if (!g_view["worked_s"].isNull()) line = "Worked for " + duration(g_view["worked_s"].as<int64_t>());
   else line = age(now - (g_view["since"] | now)) + " ago";
+  if (strcmp(title, name) != 0) line += "  \xE2\x80\xA2  " + clean_text(name, false);  // which project
   const std::string tool = clean_text(g_view["tool"] | "", false);
   if (!tool.empty()) line += "  \xE2\x80\xA2  " + tool;
   set_text(detail.worked, line);

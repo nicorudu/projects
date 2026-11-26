@@ -15,6 +15,7 @@ It has no hardware code. The host creates the LVGL display, then passes in every
 ## Things to know
 - **Needs LVGL 9.6 or newer** and ArduinoJson 7.
 - **Screens update in place.** A change redraws only the labels that changed, which matters on a display fed over SPI.
+- **Row text:** the large line is the view's `title` (the task); the small line is `name` (the project) and the tool.
 - **Detail scrolling:** the library tells the Mac how far the page can scroll (`layout` message), so the stick stops at the end.
 - **Fonts hold ASCII only.** Accented letters are shown without their accent, smart quotes and dashes become plain ones, and emoji become `?`. A custom font with accents is a later job (M8).
 - **Voice** is laid out but nothing drives it until M2.

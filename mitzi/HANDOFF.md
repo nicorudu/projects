@@ -2,15 +2,15 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching computers). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-24 · by Claude (cloud session)
+Last updated: 2026-11-25 · by Claude (cloud session)
 
 ---
 
 ## 1. Where we are right now
-- **Done:** idea chosen from a wide brainstorm, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log, brainstorm log. Project folder is on `main` (kickoff PR #13 merged by Nico, 2026-11-24). The speaking-only update is on branch `mitzi-speaking-only`, waiting for Nico to merge.
+- **Done:** idea chosen from a wide brainstorm, prior work checked, five-phase plan, Phase 0 write-up (brief, success measures, 10 risks with tests, label ladder, Suki's profile, topic packs), Suki test prompt, decision log, brainstorm log. Project folder is on `main` (kickoff PR #13 merged by Nico, 2026-11-24). The speaking-only update (PR #14) is merged. Suki sessions 1 and 2 are done.
 - **No code and no hardware yet.**
 - **We are in Phase 0.** What's left is Nico's side (section 6): a week of talking with Suki in an AI voice app and planning the first real hello.
-- **Next step for Claude: the Phase 1 spec** (`docs/phase1-spec.md`): the phone prototype's screens, data model, adapters, model choices (cloud and self-hosted) with sources, the listening test, milestones and tests. Write it once Nico has about 4 Suki sessions of notes, so the spec uses what he learned.
+- **Next step for Claude: the Phase 1 spec** (`docs/phase1-spec.md`): the phone prototype's screens, data model, adapters, model choices (cloud and self-hosted) with sources, the listening test, milestones and tests. Write it once Nico has about 4 Suki sessions of notes, so the spec uses what he learned. After session 4, also prepare the check sheet for the native-speaker session (section 6).
 - **Then:** start the hardware research notes (`docs/hardware-research.md`): displays, optics, cameras and audio parts that can be bought in single units.
 
 ## 2. Phases
@@ -67,6 +67,7 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 - **Listening test candidates:** a copy of the Wispr Faux engine (Whisper large-v3 turbo) with cleanup off; Qwen3-ASR (already researched for Live Interpreter); other current open speech models. Things to test: beginner Japanese with mistakes, and Japanese mixed with English in one sentence.
 - **Kimi K3 in 8 GB (checked 2026-11-24):** real, via kimi-k3-in-c, but about 33 seconds per token and 1.56 TB on disk. Ruled out for live conversation. Self-hosted candidates are small open models that fit in 16 GB; first to test is Kimi-Linear 48B through a streaming engine (reported about 9 tokens per second in 8 GB; measure on the Mac mini). Bar: first words within a second or two, then faster than talking pace. Sources in [research §4](docs/research.md).
 - **Suki session 1 (2026-11-24):** full sentences in ten minutes from one object, so objects can lead to sentences. Problems: 13 new items (too many), and she reads a transcript, so her pronunciation feedback can't be trusted. **Requirement for Phase 1: pronunciation feedback from the audio itself** (a model that hears sound, or a scoring step on the recording); the listening test must also record how each recognizer spells beginner Japanese. Findings in [suki-log](docs/suki-log.md); current prompt is [suki-v1](prompts/suki-v1.md).
+- **Suki session 2 (2026-11-25):** prompt v1 held (review first, short list of new items, polite version at the end). All four review words came back after a day. First grammar by contrast: *kaku* / *kakanai*. Problems: the transcript turns his Japanese into English-looking fragments, and she confirmed words whose only difference is length (*iie* vs. *ie*), which text can't show. Prompt v1.1 (three lines) is in [suki-v1](prompts/suki-v1.md). For the listening test: compare recognizers on exactly these fragments.
 - **Why not upgrade Wispr Faux for this:** a bigger model costs memory and time per sentence; conversation needs speed; and dictation cleanup is the opposite of what a tutor needs.
 - **Suki test in the Claude app:** voice mode holds a full spoken conversation and is available on all plans; non-English voice is in beta; the voice language is set under Settings > General > Voice > Language ([help article](https://support.claude.com/en/articles/11101966-use-voice-mode), checked 2026-11-24). Any AI app with a spoken conversation mode works too.
 - **Workflow quirks in cloud sessions** (same repo as the other projects):
@@ -75,8 +76,8 @@ Checked 2026-11-24. Sources are in [research.md](docs/research.md).
 
 ## 6. What Nico needs to do
 1. ~~Merge the kickoff PR (#13).~~ **Done 2026-11-24.**
-2. **Merge the speaking-only PR** (branch `mitzi-speaking-only`).
-3. **Talk with Suki 10 minutes a day for 7 days.** Session 1 is done (2026-11-24). The v1 update message from [prompts/suki-v1.md](prompts/suki-v1.md) is already pasted into the same Suki chat; session 2 is planned for 2026-11-25. Keep using that chat so she remembers. Try the voice language on English one day and Japanese another. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
+2. ~~Merge the speaking-only PR (#14).~~ **Done.** Merge the session 2 PR (branch `mitzi-suki-session-2`).
+3. **Talk with Suki 10 minutes a day for 7 days.** Sessions 1 and 2 are done (2026-11-24, 2026-11-25). Before session 3, paste the v1.1 message from the end of [prompts/suki-v1.md](prompts/suki-v1.md) into the same Suki chat. Keep using that chat so she remembers. Try the voice language on Japanese for one session and write down which setting was used each time. After each session, note: did she understand you, was the pace right, one thing that worked, one thing that annoyed you.
 4. **Record a "day zero" video** before any more Japanese is learned.
 5. **Native-speaker check:** book one short session with a native Japanese tutor to spot-check Suki's Japanese (30 phrases and one transcript with personal details removed). Claude prepares the check sheet after Suki session 4. **Ask the family** what style of speech feels right and whether practice calls can be recorded for private use.
 6. **Plan the first hello** for week 2–3 (the second week of December 2026): a greeting and a short self-introduction.
@@ -94,6 +95,7 @@ No kana study (standing rule 15).
 - When Read mode gets built (planned for Phase 4; earlier if a Japan trip comes first).
 
 ## 8. Step log (newest first)
+- **2026-11-25:** Suki session 2 reviewed. Prompt v1 held; recall of all four review words after a day; first verb contrast. The transcript mangles his Japanese and she confirmed length-only differences. Prompt v1.1 written. PR #14 merged.
 - **2026-11-24:** The native-speaker spot-check (risk 3) goes to a paid native tutor in one short session. Claude prepares the check sheet after Suki session 4.
 - **2026-11-24:** Nico decided Mitzi teaches speaking only: no kana study (standing rule 15). The ladder is now English and romaji → romaji only → say it → use it; kana and kanji are optional switches, off by default. Read mode added for later: the glasses read Japanese text for the wearer. "Kana under way" removed from the Phase 0 gate. New test for risk 5: 20 words read from romaji labels, scored from the audio.
 - **2026-11-24:** Nico merged kickoff PR #13 and pasted the Suki v1 update message; session 2 planned for 2026-11-25. Phase 1 spec to be written after about 4 Suki sessions.

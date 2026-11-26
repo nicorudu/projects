@@ -246,6 +246,7 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — Test fix from Nico (branch `agent-controller-test-managed-spaces`): `test_managed` writes a stand-in `claude` script whose `#!` line was the venv's Python. With the repo on "/Volumes/Macintosh External HD/…", that path has spaces, a `#!` line can't hold one, and the test failed with "No such file or directory". It now uses the real interpreter's path. Checked: fails without the change, passes with it; the test is skipped on Windows, so nothing changes there. The suite had been passing all day only because this change was sitting uncommitted in the working tree.
 - 2026-11-26 — Bug from Nico after the M3 merge: a row read `projects/agent-controller`, then changed to `projects` (branch `agent-controller-stable-project-name`).
   - Cause, confirmed with a temporary log of the hook input: the hook's `cwd` is the session's current folder and moves with every `cd`; the app renamed the row each time. That session was started in the repo root and had been working inside `agent-controller/`.
   - Fix: sessions are named after where they were **started**. `hooks/report.py` adds `_project_dir` (from `CLAUDE_PROJECT_DIR`) to every event; the app keeps it as the session's `home` and names from that. Without it (an older Claude Code), the first folder seen is used and later `cd`s change nothing. `cwd` is still tracked, but no longer names anything.

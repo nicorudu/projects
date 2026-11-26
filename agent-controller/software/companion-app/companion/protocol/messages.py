@@ -7,6 +7,7 @@ Device -> Mac
   ping    {ts}
   input   {seq, ts, in: one of INPUTS}            (acked by the Mac with "ack")
   audio_end {stream_id}                           (M2)
+  layout  {screen: "detail", id, max_scroll}      how far the screen showing can scroll, in steps
 
 Mac -> Device
   welcome {proto, mac_ms, view}                   full current screen
@@ -35,7 +36,7 @@ INPUTS = frozenset(
     {"up", "down", "left", "right", "cancel", "send", "voice_down", "voice_up", "green"}
 )
 DEVICE_TYPES = frozenset({"dock", "controller", "fake"})
-DEVICE_TO_MAC = frozenset({"hello", "ping", "input", "audio_end"})
+DEVICE_TO_MAC = frozenset({"hello", "ping", "input", "audio_end", "layout"})
 MAC_TO_DEVICE = frozenset({"welcome", "pong", "ack", "view", "patch", "led", "sound", "toast"})
 LED_MODES = frozenset({"idle", "working", "waiting", "done", "error", "recording"})
 
@@ -79,6 +80,9 @@ def validate_from_device(m: dict) -> dict:
             raise ProtocolError(f"unknown input {m.get('in')!r}")
         if not isinstance(m.get("seq"), int):
             raise ProtocolError("input needs an integer seq")
+    elif t == "layout":
+        if not isinstance(m.get("max_scroll"), int) or isinstance(m.get("max_scroll"), bool) or m["max_scroll"] < 0:
+            raise ProtocolError("layout needs max_scroll, a whole number of steps")
     return m
 
 

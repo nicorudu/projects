@@ -18,6 +18,7 @@ import json
 import logging
 import sys
 
+from ...core.names import short_title
 from ...core.state import Approval, Choice, Status
 from ..base import Cap
 
@@ -114,8 +115,10 @@ class ClaudeCode:
             new = sid not in app.state.sessions
             app.upsert_session(NAME, sid, cwd, status=Status.READY if new else None, term=p.get("_term") or None)
         elif ev == "UserPromptSubmit":
-            app.upsert_session(NAME, sid, cwd, status=Status.WORKING, text="> " + (p.get("prompt") or "")[:300],
-                               tool="")
+            s = app.upsert_session(NAME, sid, cwd, status=Status.WORKING, text="> " + (p.get("prompt") or "")[:300],
+                                   tool="")
+            if not s.title:  # the first prompt names the task
+                s.title = short_title(p.get("prompt"))
         elif ev == "PreToolUse":
             tool = p.get("tool_name", "")
             app.upsert_session(NAME, sid, cwd, status=Status.WORKING,

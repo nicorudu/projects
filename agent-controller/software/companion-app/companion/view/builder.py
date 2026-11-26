@@ -14,7 +14,9 @@ MAX_DETAIL_TEXT = 2000  # the detail page scrolls, so it gets the whole last mes
 
 
 def _row(s) -> dict:
-    return {"id": s.id, "name": s.name, "status": s.status.value, "tool": s.tool[:60], "since": int(s.since)}
+    # title: what the row says in large text (the task, or the project when no task is known).
+    return {"id": s.id, "name": s.name, "title": s.title or s.name, "status": s.status.value,
+            "tool": s.tool[:60], "since": int(s.since)}
 
 
 def build(state: State) -> dict:
@@ -44,6 +46,7 @@ def build(state: State) -> dict:
             "screen": "detail",
             "id": s.id,
             "name": s.name,
+            "title": s.title or s.name,
             "status": s.status.value,
             "since": int(s.since),
             # "Working for …" counts up from turn_start; "Worked for …" shows worked_s. One is None.

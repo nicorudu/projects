@@ -50,7 +50,9 @@ class Session:
     id: str
     platform: str
     cwd: str = ""
-    name: str = ""
+    name: str = ""  # the project: repo name from the git remote, else the folder name
+    title: str = ""  # the task: a short form of the first prompt; "" until there is one
+    repo: str = ""  # repo label for cwd (core/names.py), "" if none or not looked up yet
     status: Status = Status.READY
     since: float = field(default_factory=time.time)  # when the status last changed
     turn_started: float | None = None  # when the current turn began; None between turns
@@ -80,6 +82,7 @@ class Focus:
     sel_id: str | None = None  # the selected session; the highlight stays on it when rows reorder
     detail_id: str | None = None
     scroll: int = 0
+    scroll_max: int | None = None  # the device's limit for the detail page showing; None = not told yet
     approval_sel: int = 0
     return_to: Screen = Screen.HOME  # where to go after the approval queue empties
 

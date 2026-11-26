@@ -177,12 +177,13 @@ def render(dev: FakeDevice) -> str:
         for i, r in enumerate(v["rows"]):
             mark = REV if i == v["sel"] else ""
             c = COLORS.get(r["status"], "")
-            lines.append(f"{mark} {c}●{RESET}{mark} {c}{r['status'].upper():<8}{RESET}{mark} {r['name'][:22]:<22} "
+            lines.append(f"{mark} {c}●{RESET}{mark} {c}{r['status'].upper():<8}{RESET}{mark} "
+                         f"{(r.get('title') or r['name'])[:30]:<30} "
                          f"{_ago(r['since']):>4}  {r['tool'][:24]} {RESET}")
     elif screen == "detail":
         c = COLORS.get(v["status"], "")
         shown, top, total = detail_window(v["text"], v["scroll"])
-        lines += [f"{c}●{RESET} {BOLD}{v['name']}{RESET}  {c}{v['status'].upper()}{RESET}",
+        lines += [f"{c}●{RESET} {BOLD}{v.get('title') or v['name']}{RESET}  {c}{v['status'].upper()}{RESET}",
                   worked_line(v) or f"{DIM}({_ago(v['since'])} ago){RESET}",
                   f"{DIM}{v['cwd']}{RESET}"]
         if v["tool"]:

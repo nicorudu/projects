@@ -15,7 +15,7 @@ from ..config import Config
 from ..devices.link import DeviceLink
 from ..protocol.messages import ProtocolError, msg, validate_from_device
 from ..view import builder
-from . import intents
+from . import intents, names
 from .state import APPROVAL_OPTIONS, IN_TURN, Approval, Choice, Screen, Session, State, Status
 
 log = logging.getLogger(__name__)
@@ -37,6 +37,8 @@ class App:
         self._dirty = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
         self._follow_task: asyncio.Task | None = None  # pending "focus follows selection"
+        self._repo_labels: dict[str, str] = {}  # folder -> repo label, so git runs once per folder
+        self._repo_lookups: dict[str, asyncio.Task] = {}
 
     # ---- lifecycle -----------------------------------------------------------
     async def start(self) -> None:
@@ -52,6 +54,7 @@ class App:
             self._settle(a, None)
         if self._follow_task:
             self._tasks.append(self._follow_task)
+        self._tasks += self._repo_lookups.values()
         for t in self._tasks:
             t.cancel()
         await asyncio.gather(*self._tasks, return_exceptions=True)
@@ -102,7 +105,19 @@ class App:
             link.send(msg("ack", seq=m["seq"]))
             if not link.is_duplicate(m["seq"]):
                 self.handle_input(m["in"])
+        elif t == "layout":
+            self._on_layout(m)
         # "hello" after the handshake and "audio_end" are ignored until M2.
+
+    def _on_layout(self, m: dict) -> None:
+        """A screen device says how far the detail page it is showing can scroll."""
+        f = self.state.focus
+        if m.get("screen") != "detail" or f.screen != Screen.DETAIL or m.get("id") != f.detail_id:
+            return  # about a page we've already left
+        f.scroll_max = m["max_scroll"]
+        if f.scroll > f.scroll_max:
+            f.scroll = f.scroll_max
+            self.mark_dirty()
 
     async def _watchdog(self) -> None:
         while True:
@@ -130,6 +145,9 @@ class App:
             self.state.sessions[sid] = s
         if cwd and cwd != s.cwd:
             s.cwd = cwd
+            s.repo = self._repo_labels.get(cwd, "")
+            if cwd not in self._repo_labels:
+                self._look_up_repo(cwd)
         s.name = self._session_name(s)
         status = changes.pop("status", None)
         if status is not None:
@@ -171,12 +189,41 @@ class App:
                 f.screen = Screen.HOME
             self.mark_dirty()
 
+    @staticmethod
+    def _project(s: Session) -> str:
+        """Repo name from the git remote, then the folder name, then part of the id."""
+        return s.repo or (os.path.basename(s.cwd.rstrip("/\\")) if s.cwd else "") or s.id[:8]
+
     def _session_name(self, s: Session) -> str:
-        base = os.path.basename(s.cwd.rstrip("/\\")) if s.cwd else ""
-        base = base or s.id[:8]
-        clash = any(o.id != s.id and o.cwd and os.path.basename(o.cwd.rstrip("/\\")) == base
-                    for o in self.state.sessions.values())
+        base = self._project(s)
+        clash = any(o.id != s.id and self._project(o) == base for o in self.state.sessions.values())
         return f"{base} ·{s.id[:4]}" if clash else base
+
+    def _look_up_repo(self, cwd: str) -> None:
+        """Ask git for the folder's repo name without holding up the event loop."""
+        if cwd in self._repo_lookups:
+            return
+        try:
+            self._repo_lookups[cwd] = asyncio.get_running_loop().create_task(self._repo_lookup(cwd))
+        except RuntimeError:
+            pass  # no loop (a plain unit test): the folder name is used
+
+    async def _repo_lookup(self, cwd: str) -> None:
+        try:
+            label = await asyncio.to_thread(names.repo_label, cwd)
+        except Exception:  # naming must never take the app down
+            log.exception("repo lookup failed for %s", cwd)
+            label = ""
+        self._repo_labels[cwd] = label
+        self._repo_lookups.pop(cwd, None)
+        if not label:
+            return
+        for s in self.state.sessions.values():
+            if s.cwd == cwd:
+                s.repo = label
+        for s in self.state.sessions.values():
+            s.name = self._session_name(s)
+        self.mark_dirty()
 
     # ---- approvals -------------------------------------------------------------
     def add_approval(self, a: Approval) -> None:
@@ -268,7 +315,7 @@ class App:
         s = self.state.selected_session()
         if s:
             f = self.state.focus
-            f.screen, f.detail_id, f.scroll = Screen.DETAIL, s.id, 0
+            f.screen, f.detail_id, f.scroll, f.scroll_max = Screen.DETAIL, s.id, 0, None
             f.sel_id = s.id  # going back lands on the same row
 
     def _do_go_home(self):
@@ -278,7 +325,9 @@ class App:
         self.state.focus.scroll = max(0, self.state.focus.scroll - 1)
 
     def _do_scroll_down(self):
-        self.state.focus.scroll += 1
+        f = self.state.focus
+        if f.scroll_max is None or f.scroll < f.scroll_max:  # stop at the end once the device said where it is
+            f.scroll += 1
 
     def _do_option_prev(self):
         self.state.focus.approval_sel = (self.state.focus.approval_sel - 1) % len(APPROVAL_OPTIONS)

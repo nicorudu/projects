@@ -95,6 +95,24 @@ async def test_status_events_drive_the_home_screen(stack):
     await dev.close()
 
 
+async def test_the_first_prompt_becomes_the_task_title(stack):
+    app, ws_url, hook_url = await stack()
+    dev = await device(ws_url)
+    base = {"session_id": SID, "cwd": "/Users/nico/projects/alpha", "hook_event_name": "UserPromptSubmit"}
+    await post(hook_url, {**base, "prompt": "/model"})  # a slash command is not a task
+    await dev.wait_for(lambda d: d.view["rows"] and d.view["rows"][0]["title"] == "alpha")
+    await post(hook_url, {**base, "prompt": "fix the login bug\n\nit fails behind the proxy"})
+    await dev.wait_for(lambda d: d.view["rows"][0]["title"] == "fix the login bug")
+    assert dev.view["rows"][0]["name"] == "alpha"
+    await post(hook_url, {**base, "prompt": "now run the tests"})  # later prompts don't rename it
+    await asyncio.sleep(0.1)
+    assert dev.view["rows"][0]["title"] == "fix the login bug"
+    await dev.send_input("right")
+    await dev.wait_for(lambda d: d.view["screen"] == "detail")
+    assert dev.view["title"] == "fix the login bug" and dev.view["name"] == "alpha"
+    await dev.close()
+
+
 # ---- approvals ------------------------------------------------------------------------
 async def answer(stack_make, *keys, **cfg_changes):
     """Post a PermissionRequest, press keys on the fake device once the Approval screen is up."""

@@ -96,7 +96,7 @@ Work is split three ways: **Cloud** (Claude in this chat), **Mac** (Claude Code 
 | M1 | Claude Code status and approvals | Cloud + Mac | No | Real approval from the fake device | Done |
 | **M1b** | Reference controls in the app: right opens, left goes back, focus follows selection, detail page, IDLE / READY rows, green button, no stick click | Cloud | No | Fake device behaves like the demo video | Done 2026-11-26 (66 tests; checked on the Mac Mini with real sessions) |
 | M2 | Voice through a copy of Wispr Faux: dock review, Send / Cancel | Cloud + Mac | No | Dictate into Claude Code from the fake device | Tabled until Nico restarts it |
-| M3 | Screens in the desktop simulator (LVGL, 480 × 320), styled like the reference | Cloud | No | Screens match the reference screenshots side by side | Can start with M1b |
+| M3 | Screens in the desktop simulator (LVGL, 480 × 320), styled like the reference | Cloud | No | Screens match the reference screenshots side by side | Done 2026-11-26: all screens run in the simulator and compile for the dock; looked over by Nico |
 | M4 | Dock on the breadboard: display, touch, speaker, LED, USB and Wi-Fi links | Bench | Yes | Real sessions on the real screen | Waits for parts check |
 | M5 | Controller on the breadboard: keys, stick, button, LED, mics, battery, ESP-NOW | Bench | Yes | Every input reaches the Mac through the dock | After M4 |
 | M6 | USB vs Wi-Fi speed test and battery test | Bench | Yes | Numbers recorded; default link chosen | After M5 |

@@ -4,12 +4,24 @@
   "tagline": "Glasses with a language tutor inside: they label your world, build your flashcards, and give you a friend to talk to who sees what you see.",
   "status": "planning",
   "status_text": "Planning: idea, research and Phase 0 done; phone prototype next",
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "tags": "AR glasses, Language learning, Japanese, Computer vision, Voice AI, Spaced repetition (FSRS), 3D printing",
   "hero": "",
   "hero_alt": "",
   "repo": "https://github.com/nicorudu/projects/tree/main/mitzi",
   "timeline": [
+    {
+      "date": "2026-11-25",
+      "title": "Second session with Suki: yesterday's words came back",
+      "summary": "The new tutor prompt worked: review first, then a short list of new words. All four review words came back after one day, three of them with help or a small slip. The next problem showed up too: Suki reads a transcript, so she can't judge sounds that differ only in length. She now says those words slowly and moves on.",
+      "images": []
+    },
+    {
+      "date": "2026-11-24",
+      "title": "First session with Suki, and a speaking-only path",
+      "summary": "Ten minutes as a total beginner, in full sentences from the first object. It was too much too fast: 13 new items, and the longest sentence didn't stick. The tutor prompt now reviews first and adds at most 5 new items. One decision came out of it: these are glasses for speaking, so written Japanese is optional, and a Read mode for signs and menus comes later.",
+      "images": []
+    },
     {
       "date": "2026-11-24",
       "title": "Why I'm building glasses that teach me Japanese",

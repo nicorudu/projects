@@ -113,6 +113,32 @@ async def test_the_first_prompt_becomes_the_task_title(stack):
     await dev.close()
 
 
+async def test_report_script_sends_the_start_folder_and_it_names_the_session(stack, monkeypatch):
+    app, ws_url, hook_url = await stack()
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", "/Users/nico/projects/alpha")
+    for cwd in ("/Users/nico/projects/alpha/src", "/tmp"):  # the session wanders; the row keeps its name
+        payload = {"session_id": SID, "cwd": cwd, "hook_event_name": "PostToolUse", "tool_name": "Bash",
+                   "tool_input": {"command": f"cd {cwd}"}}
+        assert await asyncio.to_thread(report.main, ["--url", hook_url], io.StringIO(json.dumps(payload))) == 0
+        s = app.state.sessions[SID]
+        assert s.home == "/Users/nico/projects/alpha" and s.cwd == cwd and s.name == "alpha"
+
+    monkeypatch.delenv("CLAUDE_PROJECT_DIR")  # an older Claude Code without it: nothing breaks
+    payload = {"session_id": "other", "cwd": "/Users/nico/projects/beta", "hook_event_name": "PostToolUse"}
+    assert await asyncio.to_thread(report.main, ["--url", hook_url], io.StringIO(json.dumps(payload))) == 0
+    assert app.state.sessions["other"].name == "beta" and not app.state.sessions["other"].home_known
+
+
+def test_only_editing_tools_say_where_the_session_works():
+    from companion.platforms.claude_code.attached import edited_file
+    assert edited_file("Edit", {"file_path": "/r/mitzi/a.md", "old_string": "x"}) == "/r/mitzi/a.md"
+    assert edited_file("Write", {"file_path": "/r/mitzi/a.md"}) == "/r/mitzi/a.md"
+    assert edited_file("NotebookEdit", {"notebook_path": "/r/nb.ipynb"}) == "/r/nb.ipynb"
+    assert edited_file("Read", {"file_path": "/r/mitzi/a.md"}) is None
+    assert edited_file("Bash", {"command": "ls"}) is None
+    assert edited_file("Edit", None) is None and edited_file("Edit", {"file_path": 3}) is None
+
+
 # ---- approvals ------------------------------------------------------------------------
 async def answer(stack_make, *keys, **cfg_changes):
     """Post a PermissionRequest, press keys on the fake device once the Approval screen is up."""

@@ -68,6 +68,17 @@ def decision_output(choice: Choice | None, suggestions: list | None) -> dict:
     return {"hookSpecificOutput": {"hookEventName": "PermissionRequest", "decision": decision}}
 
 
+EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+
+
+def edited_file(tool: str, tool_input) -> str | None:
+    """The file an editing tool is about to change. Reading a file doesn't count as working there."""
+    if tool not in EDIT_TOOLS or not isinstance(tool_input, dict):
+        return None
+    path = tool_input.get("file_path") or tool_input.get("notebook_path")
+    return path if isinstance(path, str) and path else None
+
+
 class ClaudeCode:
     name = NAME
     caps = {Cap.STATUS, Cap.APPROVE, Cap.FOCUS}
@@ -99,6 +110,7 @@ class ClaudeCode:
         if not ev or not sid:
             return {}
         cwd = p.get("cwd")
+        home = p.get("_project_dir") or None  # where Claude Code was started (hooks/report.py)
         app = self.app
 
         if ev == "PermissionRequest":
@@ -113,29 +125,30 @@ class ClaudeCode:
 
         if ev == "SessionStart":
             new = sid not in app.state.sessions
-            app.upsert_session(NAME, sid, cwd, status=Status.READY if new else None, term=p.get("_term") or None)
+            app.upsert_session(NAME, sid, cwd, home, status=Status.READY if new else None, term=p.get("_term") or None)
         elif ev == "UserPromptSubmit":
-            s = app.upsert_session(NAME, sid, cwd, status=Status.WORKING, text="> " + (p.get("prompt") or "")[:300],
+            s = app.upsert_session(NAME, sid, cwd, home, status=Status.WORKING, text="> " + (p.get("prompt") or "")[:300],
                                    tool="")
             if not s.title:  # the first prompt names the task
                 s.title = short_title(p.get("prompt"))
         elif ev == "PreToolUse":
             tool = p.get("tool_name", "")
-            app.upsert_session(NAME, sid, cwd, status=Status.WORKING,
+            app.upsert_session(NAME, sid, cwd, home, touched=edited_file(tool, p.get("tool_input")),
+                               status=Status.WORKING,
                                tool=f"{tool}: {summarize(tool, p.get('tool_input'))}"[:200])
         elif ev in ("PostToolUse", "PostToolUseFailure"):
-            app.upsert_session(NAME, sid, cwd, status=Status.WORKING)
+            app.upsert_session(NAME, sid, cwd, home, status=Status.WORKING)
         elif ev == "Notification":
             kind = p.get("notification_type")
             if kind in ("permission_prompt", "agent_needs_input", "elicitation_dialog", "elicitation_url_dialog"):
-                app.upsert_session(NAME, sid, cwd, status=Status.WAITING, text=p.get("message") or None)
+                app.upsert_session(NAME, sid, cwd, home, status=Status.WAITING, text=p.get("message") or None)
             else:
-                app.upsert_session(NAME, sid, cwd)
+                app.upsert_session(NAME, sid, cwd, home)
         elif ev == "Stop":
-            app.upsert_session(NAME, sid, cwd, status=Status.DONE, tool="",
+            app.upsert_session(NAME, sid, cwd, home, status=Status.DONE, tool="",
                                text=(p.get("last_assistant_message") or "")[:2000] or None)
         elif ev == "StopFailure":
-            app.upsert_session(NAME, sid, cwd, status=Status.ERROR,
+            app.upsert_session(NAME, sid, cwd, home, status=Status.ERROR,
                                text=(p.get("last_assistant_message") or p.get("error") or "")[:500] or None)
         elif ev == "SessionEnd":
             app.end_session(sid)
@@ -145,7 +158,7 @@ class ClaudeCode:
     async def _permission(self, p: dict) -> dict:
         app = self.app
         sid = p["session_id"]
-        app.upsert_session(NAME, sid, p.get("cwd"))
+        app.upsert_session(NAME, sid, p.get("cwd"), p.get("_project_dir") or None)
         if not app.has_input_device:
             return {}  # nobody to ask: straight to Claude Code's prompt
         tool = p.get("tool_name", "")

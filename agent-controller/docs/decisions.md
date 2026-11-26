@@ -4,6 +4,7 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-26 | In a repo, a session's project name is the top-level folder it is working in, and it sticks until the session works in another one (Nico) | One repo holds several projects; the name should say which, and must not flip on every `cd` | The repo name for every session; the current folder's name |
 | 2026-11-26 | A row shows the task title (short form of the first prompt); with none, the repo name from the git remote, then the folder name (Nico) | The reference shows task titles; a folder name can be misleading (`~/projects` is a link to "Imported Home Projects") | Folder name only; Claude Code's own session title (not in the documented hook fields) |
 | 2026-11-26 | Firmware is built with arduino-cli; the simulator with a Makefile; the screens are one Arduino-format library (`firmware/lib/AgentUI`) both compile (Nico's choice) | The bench work already uses arduino-cli with ESP32 core 4.0.0, and one library guarantees the simulator shows what the dock draws | PlatformIO for everything |
 | 2026-11-26 | Screen devices report how far the detail page can scroll (`layout` message) | Only the device knows how the text wraps; without it the stick keeps counting past the end | Wrap the text in the app |

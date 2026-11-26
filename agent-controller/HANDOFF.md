@@ -40,7 +40,7 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
   - The same library compiles for the dock board (`firmware/bench/dock_ui`, 665 kB). **Not run on the real display yet.**
   - **Toolchain decision (Nico): arduino-cli for the boards, a Makefile for the simulator.** PlatformIO is dropped.
   - New protocol message from screen devices: `layout` (how far the detail page scrolls). 72 tests.
-  - **Row titles (Nico, during the look-over):** a row shows the session's task title, which is a short form of its first prompt. With no task yet it shows the project: the repo name from the git remote (`projects`, or `projects/mitzi` inside a subfolder), then the folder name. The small line shows the project and the tool. Views carry `title` beside `name`.
+  - **Row titles (Nico, during the look-over):** a row shows the session's task title, which is a short form of its first prompt. With no task yet it shows the project: the repo's top-level folder the session is working in (`agent-controller`), then the repo name from the git remote (`projects`), then the name of the folder it started in. A plain `cd` never renames a row (PR #22). The small line shows the project and the tool. Views carry `title` beside `name`.
   - **To-do for M8:** use Claude Code's own session title if it ever appears in a documented hook field. It isn't one today, and the app only uses documented fields.
   - **Nico's look-over in the simulator: steps 1–5a passed on 2026-11-26** (window, keyboard, scrolling to the end, approvals and toasts, disconnect and reconnect). One change asked for and made: row titles (below), which Nico confirmed look right. M3 is done.
   - Known limits: fonts are ASCII only (accents dropped, emoji shown as `?`); Voice has no engine until M2; the READY color is still a proposal.
@@ -162,6 +162,7 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   - `PermissionRequest` input: `tool_name`, `tool_input`, `permission_suggestions`. Reply `{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}`, or `"deny"` plus `message`. Returning no decision falls back to the normal terminal prompt.
   - `Notification` has `notification_type` (`permission_prompt`, `idle_prompt`, …).
   - Common fields: `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `permission_mode`.
+  - **`cwd` follows every `cd` the session makes** (seen on the Mac Mini, 2026-11-26), so it can't name a session. Hook commands get the environment variable `CLAUDE_PROJECT_DIR` = the folder Claude Code was started in; it stays the same (checked the same day, Claude Code 2.1.332). `hooks/report.py` sends it as `_project_dir`.
   - Config lives in `~/.claude/settings.json` as `{"hooks":{"Event":[{"matcher":"…","hooks":[{"type":"http","url":"…"}]}]}}`.
 - **Ports.** `8765` = device WebSocket. `8766` = hook server, bound to 127.0.0.1 only.
 - **Workflow quirks in the cloud sessions.**
@@ -245,6 +246,16 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — Bug from Nico after the M3 merge: a row read `projects/agent-controller`, then changed to `projects` (branch `agent-controller-stable-project-name`).
+  - Cause, confirmed with a temporary log of the hook input: the hook's `cwd` is the session's current folder and moves with every `cd`; the app renamed the row each time. That session was started in the repo root and had been working inside `agent-controller/`.
+  - Fix: sessions are named after where they were **started**. `hooks/report.py` adds `_project_dir` (from `CLAUDE_PROJECT_DIR`) to every event; the app keeps it as the session's `home` and names from that. Without it (an older Claude Code), the first folder seen is used and later `cd`s change nothing. `cwd` is still tracked, but no longer names anything.
+  - 74 tests. No hook reinstall is needed (the installed command is unchanged); restart the app.
+  - Nico then asked for the project's own name: this session, started at the repo's top but working in `agent-controller/`, should read `agent-controller`. Added to the same PR:
+    - In a git repo, the row is named after the repo's **top-level folder the session works in** (`agent-controller`, `mitzi`). "Works in" = the folder commands run in, or the folder of a file an editing tool (Edit, Write, MultiEdit, NotebookEdit) changes. Reading a file doesn't count.
+    - The name **sticks**: going back to the repo's top, into a hidden folder, or outside the repo changes nothing. It changes only when the session works in a different top-level folder.
+    - A session that has only worked at the repo's top reads the repo name (`projects`). Outside a repo, the name of the folder it started in.
+    - `core/names.py`: `repo_info`, `project_folder` (replacing `repo_label`). 76 tests.
+    - Checked by Nico in the simulator the same day: the row read `agent-controller` and kept it.
 - 2026-11-26 — M3 look-over with Nico, in the simulator with real sessions:
   - Passed: the window and live sessions; every key (↑ ↓ → ← `s` `c` `g`); focus follows selection; a long reply scrolls, stops at the end and comes back on one ↑; the approval screen, with ←/→ doing nothing; `Approved` and `Rejected` toasts; the Disconnected banner within 2 s and reconnecting by itself.
   - Nico's finding: the row for a session in `~/projects` said "Imported Home Projects" (the folder the symlink points to), and the reference shows task titles.

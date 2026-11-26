@@ -16,16 +16,16 @@
       "summary": "The screens are built with LVGL: the agent list, a detail page, approvals, a voice screen, toasts and a Disconnected banner. They run in a window on the Mac, driven by the real companion app, and the same code already compiles for the dock board. Each row is named after its task, then its project folder.",
       "images": [
         {
-          "src": "media/web/sim-01-approval.webp",
+          "src": "media/web/sim-01-agents.webp",
+          "alt": "Simulator: the agent list, one row per session with its status"
+        },
+        {
+          "src": "media/web/sim-02-approval.webp",
           "alt": "Simulator: an approval request with four choices"
         },
         {
-          "src": "media/web/sim-02-detail.webp",
+          "src": "media/web/sim-03-detail.webp",
           "alt": "Simulator: the detail page for a finished session"
-        },
-        {
-          "src": "media/web/sim-03-detail-working.webp",
-          "alt": "Simulator: the detail page for a session that is still working"
         }
       ]
     },

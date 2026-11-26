@@ -255,6 +255,7 @@ The full list is in blueprint §13. The main ones:
     - The name **sticks**: going back to the repo's top, into a hidden folder, or outside the repo changes nothing. It changes only when the session works in a different top-level folder.
     - A session that has only worked at the repo's top reads the repo name (`projects`). Outside a repo, the name of the folder it started in.
     - `core/names.py`: `repo_info`, `project_folder` (replacing `repo_label`). 76 tests.
+    - Checked by Nico in the simulator the same day: the row read `agent-controller` and kept it.
 - 2026-11-26 — M3 look-over with Nico, in the simulator with real sessions:
   - Passed: the window and live sessions; every key (↑ ↓ → ← `s` `c` `g`); focus follows selection; a long reply scrolls, stops at the end and comes back on one ↑; the approval screen, with ←/→ doing nothing; `Approved` and `Rejected` toasts; the Disconnected banner within 2 s and reconnecting by itself.
   - Nico's finding: the row for a session in `~/projects` said "Imported Home Projects" (the folder the symlink points to), and the reference shows task titles.

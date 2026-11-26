@@ -158,6 +158,12 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   - Thumbstick: ordered at the quantity the 2026-11-18 list gave (2 × Adafruit #5628), per Nico on 2026-11-19.
   - On arrival, check: the chargers have six pads (protected kind); the screwdriver set has an H1.5 bit; the battery plug fits the C11 socket; measure both ESP32-S3 boards.
 - **Website:** give your website chat this: "Add the AI Agent Controller to the Lab section. Use `agent-controller/showcase.json` in github.com/nicorudu/projects for the title, tagline, status text, images and timeline. Status text: Building: rev 3 design (pivoting joystick block); approvals work from the fake device. Credit SlashVibe as the inspiration."
+- **M4 bench start (Claude Code on the Mac Mini, from 2026-11-26).** Nico moves the hands-on work to Claude Code on the Mac Mini so it can run the commands itself. One step at a time; stop after each and tell Nico what happened.
+  1. Pull `main` (PR #17 has the arrivals). Firmware uses the Arduino framework (blueprint §8); nothing is written yet (`firmware/README.md`).
+  2. Nico plugs the dock board (D1, ESP32-S3 DevKitC-1 N16R8) into the Mac Mini through the port marked UART or COM. Find the new port with `ls /dev/cu.*`.
+  3. Install `arduino-cli` (Homebrew) and the Espressif ESP32 core. Ask Nico before installing anything.
+  4. Flash a hello sketch that prints the chip, flash size and PSRAM size. Pass: 16 MB flash and 8 MB PSRAM reported. Never use GPIO35–37 (PSRAM).
+  5. Log the result in §8 and BUILDLOG, commit on a branch, and open a PR. Next is the display (bench order in blueprint §11).
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.

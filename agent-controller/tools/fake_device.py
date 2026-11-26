@@ -8,12 +8,14 @@ app can't tell the difference.
     python tools/fake_device.py --url ws://192.168.1.20:8765
 
 Keys
-    arrow keys          stick (one press = one flick)
-    Enter or space      stick click
+    arrow keys          stick (one press = one flick): up/down select, right opens, left goes back
     c                   Cancel key
+    s                   Send key (confirms an approval; brings a session's window forward)
     v                   Voice key (press once = hold down, again = release)
-    s                   Send key
+    g                   green button (home)
     q                   quit
+
+The stick has no click, so Enter and space do nothing.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ import argparse
 import asyncio
 import os
 import sys
+import textwrap
 import time
 from pathlib import Path
 
@@ -122,13 +125,42 @@ class FakeDevice:
 
 # ---- terminal UI ---------------------------------------------------------------------
 COLORS = {"working": "\033[34m", "waiting": "\033[33m", "done": "\033[32m", "error": "\033[31m",
-          "idle": "\033[90m", "recording": "\033[97m"}
+          "ready": "\033[36m", "idle": "\033[90m", "recording": "\033[97m"}
+DETAIL_COLS, DETAIL_LINES = 62, 10  # the detail page's text window
 RESET, BOLD, DIM, REV = "\033[0m", "\033[1m", "\033[2m", "\033[7m"
 
 
 def _ago(since: int) -> str:
     d = max(0, int(time.time()) - since)
     return f"{d}s" if d < 60 else f"{d // 60}m" if d < 3600 else f"{d // 3600}h"
+
+
+def _dur(seconds: int) -> str:
+    s = max(0, int(seconds))
+    if s < 60:
+        return f"{s}s"
+    if s < 3600:
+        return f"{s // 60}m {s % 60}s"
+    return f"{s // 3600}h {s % 3600 // 60}m"
+
+
+def worked_line(v: dict, now: float | None = None) -> str:
+    """The detail page's time line, like the reference's "Worked for 6m 24s"."""
+    now = time.time() if now is None else now
+    if v.get("turn_start") is not None:
+        return f"Working for {_dur(now - v['turn_start'])}"
+    if v.get("worked_s") is not None:
+        return f"Worked for {_dur(v['worked_s'])}"
+    return ""
+
+
+def detail_window(text: str, scroll: int) -> tuple[list[str], int, int]:
+    """Wrapped lines to show, the first line's number, and the total. Scroll stops at the end."""
+    lines: list[str] = []
+    for para in text.splitlines() or [""]:
+        lines += textwrap.wrap(para, DETAIL_COLS) or [""]
+    top = min(max(scroll, 0), max(len(lines) - DETAIL_LINES, 0))
+    return lines[top:top + DETAIL_LINES], top, len(lines)
 
 
 def render(dev: FakeDevice) -> str:
@@ -139,19 +171,25 @@ def render(dev: FakeDevice) -> str:
     screen = v.get("screen")
     hdr = v.get("header", {})
     if screen == "home":
-        lines.append(f"HOME  filter: {v['filter']}   waiting {hdr.get('waiting', 0)} · "
-                     f"working {hdr.get('working', 0)}")
+        lines.append(f"AGENTS   waiting {hdr.get('waiting', 0)} · working {hdr.get('working', 0)}")
         if not v["rows"]:
             lines.append(f"{DIM}  no sessions yet — start Claude Code in a terminal{RESET}")
         for i, r in enumerate(v["rows"]):
             mark = REV if i == v["sel"] else ""
             c = COLORS.get(r["status"], "")
-            lines.append(f"{mark} {c}●{RESET}{mark} {r['name'][:22]:<22} {r['status']:<8} "
+            lines.append(f"{mark} {c}●{RESET}{mark} {c}{r['status'].upper():<8}{RESET}{mark} {r['name'][:22]:<22} "
                          f"{_ago(r['since']):>4}  {r['tool'][:24]} {RESET}")
     elif screen == "detail":
         c = COLORS.get(v["status"], "")
-        lines += [f"DETAIL  {BOLD}{v['name']}{RESET}  {c}{v['status']}{RESET}  ({_ago(v['since'])})",
-                  f"{DIM}{v['cwd']}{RESET}", f"tool: {v['tool']}", "", v["text"]]
+        shown, top, total = detail_window(v["text"], v["scroll"])
+        lines += [f"{c}●{RESET} {BOLD}{v['name']}{RESET}  {c}{v['status'].upper()}{RESET}",
+                  worked_line(v) or f"{DIM}({_ago(v['since'])} ago){RESET}",
+                  f"{DIM}{v['cwd']}{RESET}"]
+        if v["tool"]:
+            lines.append(f"tool: {v['tool']}")
+        lines += ["", *shown]
+        if total > DETAIL_LINES:
+            lines.append(f"{DIM}lines {top + 1}-{top + len(shown)} of {total}  (stick up/down scrolls){RESET}")
     elif screen == "approval":
         lines += [f"{COLORS['waiting']}{BOLD}APPROVAL{RESET}  {v['session']} wants to use "
                   f"{BOLD}{v['tool']}{RESET}   ({v['queue']} waiting)", "", f"  {v['summary']}", ""]
@@ -161,14 +199,14 @@ def render(dev: FakeDevice) -> str:
         lines.append(f"VOICE  {v.get('state')}")
     else:
         lines.append(str(v))
-    lines += ["─" * 64, f"{DIM}stick: arrows · click: Enter · c Cancel · v Voice · s Send · q quit{RESET}"]
+    lines += ["─" * 64, f"{DIM}stick: arrows (→ open, ← back) · c Cancel · s Send · v Voice · g green · q quit{RESET}"]
     if dev.toasts:
         lines.append(f"{BOLD}» {dev.toasts[-1]}{RESET}")
     return "\033[2J\033[H" + "\n".join(lines)
 
 
 KEYMAP = {"\x1b[A": "up", "\x1b[B": "down", "\x1b[C": "right", "\x1b[D": "left",
-          "\r": "click", "\n": "click", " ": "click", "c": "cancel", "s": "send"}
+          "c": "cancel", "s": "send", "g": "green"}
 
 
 async def _keys():

@@ -6,10 +6,11 @@ a `patch` with just the changed fields otherwise.
 
 from __future__ import annotations
 
-from ..core.state import APPROVAL_OPTIONS, Screen, State, Status
+from ..core.state import APPROVAL_OPTIONS, IN_TURN, Screen, State, Status
 from ..protocol.messages import msg
 
 MAX_TEXT = 400
+MAX_DETAIL_TEXT = 2000  # the detail page scrolls, so it gets the whole last message
 
 
 def _row(s) -> dict:
@@ -45,9 +46,12 @@ def build(state: State) -> dict:
             "name": s.name,
             "status": s.status.value,
             "since": int(s.since),
+            # "Working for …" counts up from turn_start; "Worked for …" shows worked_s. One is None.
+            "turn_start": int(s.turn_started) if s.turn_started and s.status in IN_TURN else None,
+            "worked_s": int(s.worked_s) if s.worked_s is not None and s.status not in IN_TURN else None,
             "cwd": s.cwd,
             "tool": s.tool,
-            "text": s.text[:MAX_TEXT],
+            "text": s.text[:MAX_DETAIL_TEXT],
             "scroll": f.scroll,
             "header": header,
         }
@@ -58,8 +62,7 @@ def build(state: State) -> dict:
     rows = state.visible_sessions()
     return {
         "screen": "home",
-        "filter": f.filter,
-        "sel": min(f.sel, max(len(rows) - 1, 0)),
+        "sel": state.selected_index(rows),
         "rows": [_row(s) for s in rows],
         "header": header,
     }
@@ -101,4 +104,4 @@ def led_mode(state: State) -> str:
         return "working"
     if Status.DONE in statuses:
         return "done"
-    return "idle"
+    return "idle"  # only READY and IDLE sessions, or none

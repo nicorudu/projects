@@ -32,6 +32,11 @@ class Config:
     status_hook_timeout_s: int = 2
     # Play the alert sound when a session starts waiting.
     alert_sound: bool = True
+    # Agents screen: selecting a session brings its window to the front after a short pause.
+    focus_follows_selection: bool = True
+    focus_follow_delay_s: float = 0.6
+    # A finished or never-used session is shown as IDLE after this long without activity.
+    idle_after_s: float = 600.0
 
     @property
     def hook_url(self) -> str:

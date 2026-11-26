@@ -18,6 +18,8 @@ Mac -> Device
   sound   {name: "alert"}
   toast   {text, ms}
 
+Inputs: up, down, left, right (stick flicks), cancel, send, voice_down, voice_up (keys) and
+green (the button on the joystick block). The stick has no click.
 Flick detection happens on the controller, so the Mac only ever sees directions.
 """
 
@@ -30,7 +32,7 @@ from dataclasses import dataclass
 VERSION = 1
 
 INPUTS = frozenset(
-    {"up", "down", "left", "right", "click", "cancel", "voice_down", "voice_up", "send"}
+    {"up", "down", "left", "right", "cancel", "send", "voice_down", "voice_up", "green"}
 )
 DEVICE_TYPES = frozenset({"dock", "controller", "fake"})
 DEVICE_TO_MAC = frozenset({"hello", "ping", "input", "audio_end"})

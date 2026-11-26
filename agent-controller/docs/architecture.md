@@ -124,7 +124,7 @@ The full message list lives in `firmware/lib/protocol/messages.h` and `companion
 
 ## 6. Screens and controls
 
-> **Rev 3 (2026-11-18).** This table matches [blueprint rev 3](agent-controller-v0-blueprint.md) §7, which follows the reference product's demo videos. The code still implements the older map (stick click, filters on Home) until milestone **M1b** changes `core/intents.py`.
+> **Rev 3 (2026-11-18).** This table matches [blueprint rev 3](agent-controller-v0-blueprint.md) §7, which follows the reference product's demo videos. The code implements it since milestone **M1b** (2026-11-26): `core/intents.py` holds the table, and a test checks every screen and input against it.
 
 | Screen | Shows | Stick ↑/↓ | Stick → | Stick ← | Cancel | Send | Voice (hold) | Green button |
 |---|---|---|---|---|---|---|---|---|
@@ -134,7 +134,11 @@ The full message list lives in `firmware/lib/protocol/messages.h` and `companion
 | **Voice review** | Live transcript, then cleaned text and its destination | Scroll text | Change destination | Change destination | Discard | Deliver | Hold again to edit by voice | — |
 | **Toast** (overlay) | "Sent", "Approved", "Disconnected" | — | — | — | — | — | — | — |
 
-- **No stick click.** The reference's stick has two axes only, so nothing depends on a click.
+- **No stick click.** The reference's stick has two axes only, so nothing depends on a click. The protocol has no `click` input; the green button is the input `green`.
+- **Selection belongs to a session, not a row number.** When rows reorder (a session starts waiting and jumps to the top), the highlight moves with its session.
+- **Focus follows selection:** 0.6 s after the stick rests on a row, that session's window comes forward. Flicking past rows focuses nothing. Settings: `focus_follows_selection`, `focus_follow_delay_s`.
+- **Status words:** WORKING, WAITING, DONE, ERROR, READY (open at its prompt, nothing asked yet) and IDLE (a DONE or READY session with no activity for `idle_after_s`, 10 minutes by default). What READY and IDLE mean in the reference is not documented; these meanings are ours.
+- **Detail page:** the view carries `turn_start` (while a turn runs: "Working for …") or `worked_s` (after it: "Worked for 6m 24s"), plus the last message (up to 2,000 characters) and a `scroll` line offset.
 - **Only Send confirms an approval.** A stray flick can never approve anything.
 - **Flick detection:** a direction counts when the stick passes 60% of its travel and returns below 30% (hysteresis), so one flick is one step. Holding past 60% for 400 ms auto-repeats.
 - **Directions are remapped on the controller** for its position (block swung out, docked in line, or handheld), so the app always receives what the user meant.

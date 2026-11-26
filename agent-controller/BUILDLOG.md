@@ -4,6 +4,13 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-26 — M1b: the app's controls match the reference
+- Stick right opens a session, stick left goes back, and only Send confirms an approval. The stick click and the Home filters are gone. → [controls table](docs/agent-controller-v0-blueprint.md)
+- Resting the stick on a session brings its window to the front after about half a second.
+- The list shows READY and IDLE sessions, and the detail page shows "Worked for 6m 24s" with the whole last message.
+- The fake device follows the new key map, so it can be tried today with real Claude Code sessions.
+- 66 tests pass.
+
 ## 2026-11-26 — Display and touch test written
 - Wrote the bench test for the 4.0" screen (ST7796S) and its touch layer (FT6336U). → [sketch and wiring table](firmware/bench/dock_display/README.md)
 - It fades the backlight, fills the screen red, green and blue, shows a test card, then asks for a tap in each corner.

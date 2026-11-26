@@ -4,6 +4,9 @@ One line per decision: what, why, and what it replaced. Newest first.
 
 | Date | Decision | Why | Replaces |
 |---|---|---|---|
+| 2026-11-26 | READY = a session open at its prompt with nothing asked yet; IDLE = DONE or READY with no activity for 10 minutes | The reference shows both words without explaining them; this keeps the list honest about what is fresh | Drop READY and keep only IDLE |
+| 2026-11-26 | The Home selection follows its session, not a row number | With focus-follows-selection on, the highlight must not slide onto another session when rows reorder | Row-number selection |
+| 2026-11-26 | Protocol input `click` removed, `green` added (M1b) | The reference's stick has no click; only Send confirms an approval | Keep `click` as an alias |
 | 2026-11-19 | One XIAO, not two: the spare ESP32-S3 dev board stands in for the controller on the breadboard, and the XIAO goes into the build bare | Nico already has a second ESP32-S3 board on order; same chip, same firmware, different pin table | Two XIAO boards (one with headers, one bare) |
 | 2026-11-18 | A fixed-tilt screen (rev 3b) is mocked up as an option; the folding lid stays the plan until Nico chooses | It removes the hinge, the flexing wires and the pin bending, but it can't close and departs from the reference | — |
 | 2026-11-18 | The lid is 13 mm thick, and the display's pins are bent flat (Nico's choice) | The pins are about 8 mm tall and a 10 mm lid had 1.3 mm behind the display; bending avoids desoldering 14 pins | 10 mm lid with the header removed |

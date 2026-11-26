@@ -14,7 +14,8 @@ class Status(str, Enum):
     WAITING = "waiting"
     DONE = "done"
     ERROR = "error"
-    IDLE = "idle"
+    READY = "ready"  # open at its prompt, nothing asked yet
+    IDLE = "idle"  # nothing has happened for a while (Config.idle_after_s)
 
 
 class Screen(str, Enum):
@@ -38,7 +39,10 @@ APPROVAL_OPTIONS: list[tuple[Choice, str]] = [
     (Choice.ASK_TERMINAL, "Ask in terminal"),
 ]
 
-HOME_FILTERS = ["all", "waiting", "done"]
+# Waiting first, then errors, then working, then the rest.
+STATUS_ORDER = {Status.WAITING: 0, Status.ERROR: 1, Status.WORKING: 2, Status.DONE: 3, Status.READY: 4,
+                Status.IDLE: 5}
+IN_TURN = (Status.WORKING, Status.WAITING)  # the agent is in the middle of a turn
 
 
 @dataclass
@@ -47,8 +51,10 @@ class Session:
     platform: str
     cwd: str = ""
     name: str = ""
-    status: Status = Status.IDLE
+    status: Status = Status.READY
     since: float = field(default_factory=time.time)  # when the status last changed
+    turn_started: float | None = None  # when the current turn began; None between turns
+    worked_s: float | None = None  # how long the last finished turn took
     tool: str = ""  # current or last tool, summarized
     text: str = ""  # last prompt / last reply, shortened
     term: dict = field(default_factory=dict)  # terminal app + tab, for focus
@@ -70,8 +76,8 @@ class Approval:
 @dataclass
 class Focus:
     screen: Screen = Screen.HOME
-    sel: int = 0  # selected row on Home
-    filter: str = "all"
+    sel: int = 0  # selected row on Home, used when sel_id is unknown or gone
+    sel_id: str | None = None  # the selected session; the highlight stays on it when rows reorder
     detail_id: str | None = None
     scroll: int = 0
     approval_sel: int = 0
@@ -86,18 +92,18 @@ class State:
     voice: str = "idle"  # idle -> recording -> transcribing -> review -> sending (M2)
 
     def visible_sessions(self) -> list[Session]:
-        rows = list(self.sessions.values())
-        f = self.focus.filter
-        if f == "waiting":
-            rows = [s for s in rows if s.status == Status.WAITING]
-        elif f == "done":
-            rows = [s for s in rows if s.status in (Status.DONE, Status.IDLE)]
-        # Waiting first, then working, then the rest; newest change first inside each group.
-        order = {Status.WAITING: 0, Status.ERROR: 1, Status.WORKING: 2, Status.DONE: 3, Status.IDLE: 4}
-        return sorted(rows, key=lambda s: (order[s.status], -s.since))
+        # Grouped by status (STATUS_ORDER); newest change first inside each group.
+        return sorted(self.sessions.values(), key=lambda s: (STATUS_ORDER[s.status], -s.since))
+
+    def selected_index(self, rows: list[Session] | None = None) -> int:
+        rows = self.visible_sessions() if rows is None else rows
+        for i, s in enumerate(rows):
+            if s.id == self.focus.sel_id:
+                return i
+        return min(self.focus.sel, max(len(rows) - 1, 0))
 
     def selected_session(self) -> Session | None:
         rows = self.visible_sessions()
         if not rows:
             return None
-        return rows[min(self.focus.sel, len(rows) - 1)]
+        return rows[self.selected_index(rows)]

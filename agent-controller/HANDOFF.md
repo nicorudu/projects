@@ -21,12 +21,20 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
   - **Shopping list (current): [hardware/bom/shopping-list-2026-11-19.md](hardware/bom/shopping-list-2026-11-19.md).** It is checked against Nico's order screenshots. Still to buy: resistor kit (C9), tactile buttons (C10), JST-PH pigtails (C11), capacitor kit (C12), USB-C power meter (T8). **The list now names one exact product and quantity per line** (Nico orders exactly what is written; never give him a generic spec). Nico confirmed in chat that the thumbstick and breadboards with jumpers are ordered. **One XIAO is enough:** the spare ESP32-S3 board (X7) stands in for the controller on the breadboard. Nothing is confirmed as arrived yet.
   - Layout drawing: `hardware/renders/2026-11-18-rev3-layout/rev3-layout.png`.
   - **Concept model (3D):** `hardware/cad/rev3-pivot/concept.py` → renders in `hardware/renders/2026-11-18-rev3-concept/` (finished look, x-ray, exploded). Its overlap check passes. Part placement and the tight spots are in blueprint §4.7. The lid is 13 mm thick (decided), so the device is about 35 mm tall closed.
-  - **The code has not changed.** It still uses the older key map until milestone M1b.
+  - **The app's controls match rev 3 since M1b (2026-11-26).** See the M1b line below.
 - **PR #9 is merged** (2026-11-18): rev 3, the shopping list and the M2 plan from PR #7 are all on `main`.
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
+- **M1b is done in code (2026-11-26, branch `agent-controller-m1b`, 66 tests).** What changed:
+  - Stick right opens the detail page; stick left, Cancel and the green button go back. No filters, no stick click.
+  - Only Send confirms an approval. Protocol: input `click` removed, `green` added.
+  - Focus follows selection: 0.6 s after the stick rests on a row, that session's window comes forward (`focus_follows_selection`, on by default).
+  - The highlight stays on its session when rows reorder.
+  - Status words READY and IDLE added (meanings are ours; see docs/decisions.md). The detail page has "Worked for 6m 24s" and the whole last message, scrollable.
+  - Fake device keys: arrows, `s` Send, `c` Cancel, `v` Voice, `g` green. **Enter no longer does anything.**
+  - **Open: Nico's check on the Mac Mini** with real Claude Code sessions (§6, "M1b check").
+- **Next step: M3** (screens in the simulator), and the display test on the bench. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -35,7 +43,7 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
     - Status on the fake device (working / waiting / done, LED).
     - Approve: C's own menu closed by itself; C showed "Allowed by PermissionRequest hook".
     - Reject (`c`): "Denied by PermissionRequest hook"; Claude didn't retry.
-    - Ask in terminal (↑ Enter): B said "Answer in the terminal", C's menu answered normally, the row went to done.
+    - Ask in terminal (↑ Enter; ↑ `s` since M1b): B said "Answer in the terminal", C's menu answered normally, the row went to done.
     - Send (`s`): C became the active window, with no macOS permission prompt.
     - A curl straight to the hook server.
   - **Three issues found — fixed by the cloud session on branch `agent-controller-hook-fixes` (54 tests, verified live in the cloud against real Claude Code):**
@@ -95,7 +103,7 @@ Full table with pass conditions: [plan §5](docs/plan.md).
 |---|---|---|---|
 | M0 | Package restructure, protocol v1, WebSocket transport, fake device | No | **done** (2026-11-11) |
 | M1 | Claude Code hooks: live status + approvals from the fake device | No | **done** (2026-11-11), tested on the Mac Mini |
-| M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **next** |
+| M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **done in code** (2026-11-26); Mac Mini check open |
 | M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
 | M3 | Screens in the desktop simulator, styled like the reference | No | can start with M1b |
 | M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | **started** (2026-11-26): board check passed; display next |
@@ -175,6 +183,12 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
      - First the multimeter check there (touch pins must sit at about 3.3 V, not 5 V, with only power connected).
      - Then wire the 12 wires, flash `dock_display`, and go through its pass table. Nico judges the picture by eye; serial reports touch.
      - Four things are unconfirmed until it runs: color inversion, which way up the picture is, touch direction, backlight polarity. Each has a one-line setting at the top of the sketch.
+- **M1b check on the Mac Mini (about 5 minutes).** No hook reinstall is needed.
+  1. Three windows as in the Mac Mini test below: A `python -m companion`, B `python ../../tools/fake_device.py`, and two or more Claude Code sessions in other tabs.
+  2. In B, press ↓ and wait. **After about half a second that session's tab should come to the front.** Flick ↓ ↓ quickly: only the last one should come forward.
+  3. Press → to open the detail page, ← to go back. After a finished turn the page should say "Worked for …".
+  4. Ask a session to run something that needs permission. In B, **`s` approves** (Enter does nothing now), `c` rejects, ↓ then `s` approves for the session.
+  5. If windows jumping forward gets in the way, put `focus_follows_selection = false` in `~/.agent-controller/config.toml`.
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
@@ -191,7 +205,7 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
      - A: `python -m companion`
      - B: `python ../../tools/fake_device.py`
      - C: start `claude` in any project folder.
-  5. In C, ask Claude to run something that needs permission, e.g. "run `ls -la ~` with Bash". **B shows the Approval screen.** Press Enter to approve and check that C continues. Then try: `c` (reject), ↓ + Enter (approve for session), ↑ + Enter (ask in terminal).
+  5. In C, ask Claude to run something that needs permission, e.g. "run `ls -la ~` with Bash". **B shows the Approval screen.** Press `s` (Send) to approve and check that C continues. Then try: `c` (reject), ↓ + `s` (approve for session), ↑ + `s` (ask in terminal). (Before M1b this was Enter; the stick click is gone.)
   6. On B's Home screen, select the session and press `s`. **C's terminal tab should come to the front.** macOS may ask once to let Terminal/Python control Terminal or iTerm; allow it.
   7. Quit A (Ctrl-C) and ask Claude in C to run another command. **Report back:** does Claude Code show any "hook error" lines, and does its normal permission prompt still appear?
   8. Report anything that looked wrong. `python -m companion uninstall-hooks` removes everything if needed.
@@ -200,7 +214,7 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   2. `python -m companion install-hooks`, then `python -m companion doctor`. Expect 10 hooks.
   3. **Restart** the Claude Code session in window C, then start A (`python -m companion`) and B (fake device). C must be in `manual mode` (Shift+Tab).
   4. **Answer in C:** ask C to `touch ~/agent-controller-test-9.txt`, then answer in **C's** menu. B should drop the question within a second and show "Answered in the terminal".
-  5. **Approve for session from B** (↓ Enter) on `touch ~/agent-controller-test-10.txt`. C's bottom line must still say `manual mode on`.
+  5. **Approve for session from B** (↓ then `s`; Enter before M1b) on `touch ~/agent-controller-test-10.txt`. C's bottom line must still say `manual mode on`.
   6. **App off:** Ctrl-C in A, then ask C to `touch ~/agent-controller-test-11.txt`. There should be **no** "hook error" lines, and C's normal menu appears.
 
 ## 7. Open questions
@@ -214,6 +228,16 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — M1b done in code (Claude Code on the Mac Mini, branch `agent-controller-m1b`):
+  - `core/intents.py` rewritten to blueprint §7.1; a test checks every screen and input against the table.
+  - Protocol input `click` removed, `green` added. Filters removed from Home.
+  - Focus follows selection with a 0.6 s pause (debounced; quiet if the window can't be found). Send focuses at once.
+  - Selection is stored as a session id, so the highlight follows its session.
+  - `Status.READY` added; new sessions start READY. DONE and READY sessions turn IDLE after `idle_after_s` (600 s).
+  - Turn timer on each session (`turn_started`, `worked_s`) for the detail page's "Worked for …" line. Detail text limit raised from 400 to 2,000 characters.
+  - Fake device: new key map, status words in capitals, detail page with the time line and a scrolling text window.
+  - Tests: 66 pass (was 54), three runs in a row. Focus-follow is off in the test config so tests can't move real windows; its tests use a fake platform.
+  - Not done here: Voice review's scroll and destination controls (M2), and the detail page's scroll limit on the real screen (M3 decides the line length).
 - 2026-11-26 — Display test written, not flashed (branch `agent-controller-m4-display-test`). PR #18 merged first.
   - `firmware/bench/dock_display/`: ST7796S + FT6336U test with no libraries beyond the ESP32 core. It compiles for the dock board (357 kB). Steps: I2C scan and touch chip ID, backlight fade, red/green/blue fills with timing, a test card, a four-corner tap test, free drawing.
   - Pins are blueprint §5.1. **One addition: touch reset (CTP_RST) on GPIO5**, taken from the free list; §5.1 is updated.

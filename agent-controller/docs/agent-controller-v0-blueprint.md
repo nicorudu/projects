@@ -348,7 +348,8 @@ Styled after the reference's screenshots. The exact colors and sizes are our cho
 | Header, 36 px | Left: `API $…`. Right: `5h …%  7d …%`. Hidden until we have real numbers. |
 | Session row, 62 px, 4 visible | Status dot, the status word in capitals, then the task title in white |
 | Selected row | 2 px outline in the row's status color, 8 px corners |
-| Status colors | WORKING blue `#4DA3FF` · WAITING amber `#F5C542` · DONE green `#3DDC84` · ERROR red `#FF5A5F` · IDLE grey `#8A9099` |
+| Status colors | WORKING blue `#4DA3FF` · WAITING amber `#F5C542` · DONE green `#3DDC84` · ERROR red `#FF5A5F` · READY teal `#4FD1C5` (proposed; confirm in M3) · IDLE grey `#8A9099` |
+| Status meanings | READY: open at its prompt, nothing asked yet. IDLE: DONE or READY with no activity for 10 minutes. The reference shows both words but doesn't explain them; these meanings are ours. |
 | Detail page | Title bar with the dot; a line like "Worked for 6m 24s"; the last message; a scrollbar |
 | Approval | The tool and what it wants, then the options as a list |
 | Voice | A glowing bar along the top while recording; the live text in a bubble at the bottom |

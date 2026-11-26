@@ -4,6 +4,14 @@ Newest first. Each entry covers what changed, why, and links to its renders and 
 
 ---
 
+## 2026-11-26 — First firmware on the dock board (M4 bench start)
+- Plugged the dock board (ESP32-S3 DevKitC-1 N16R8) into the Mac Mini and flashed a hello sketch that reports what the chip really has. → [sketch](firmware/bench/dock_hello/dock_hello.ino)
+- **It passes:** 16 MB flash and 8 MB PSRAM, as ordered. A 4 MB PSRAM write/read check passed, and `esptool` read 16 MB from the flash chip itself.
+- Chip: ESP32-S3 rev 2, 2 cores, 240 MHz.
+- Toolchain on the Mac Mini: `arduino-cli` 1.6.0 with the Espressif ESP32 core 4.0.0. Board settings: Flash Size = 16 MB, PSRAM = OPI PSRAM.
+- The dock board came with its pins soldered. The second ESP32-S3 board (the controller stand-in) came without pins; its headers need soldering before the controller work (M5).
+- Next: the display.
+
 ## 2026-11-18 — Option: a fixed-tilt screen (rev 3b)
 - Mocked up a version where the screen never folds: it sits in a rigid wedge at 60°. Same base, same controller, same footprint. → [comparison](docs/option-fixed-tilt.md), [renders](hardware/renders/2026-11-18-rev3b-fixed-tilt/)
 - It removes the hinge, the wires that flex across it, the lid magnets and the pin bending. It gives up closing flat.

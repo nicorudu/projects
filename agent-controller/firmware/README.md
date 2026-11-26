@@ -1,6 +1,11 @@
 # Firmware
 
-Not started. Planned layout (details in [blueprint §8](../docs/agent-controller-v0-blueprint.md#8-firmware-layout-arduino-framework-two-targets)):
+Started 2026-11-26 with one bench sketch:
+
+- `bench/dock_hello/`: prints the chip, flash size and PSRAM size. Passes on the dock board (16 MB flash, 8 MB PSRAM).
+- Build: `arduino-cli compile -b esp32:esp32:esp32s3:FlashSize=16M,PSRAM=opi` (ESP32S3 Dev Module, Flash Size = 16 MB, PSRAM = OPI PSRAM). Needs `arduino-cli` and the Espressif `esp32:esp32` core.
+
+The rest is not written yet. Planned layout (details in [blueprint §8](../docs/agent-controller-v0-blueprint.md#8-firmware-layout-arduino-framework-two-targets)):
 
 ```
 firmware/

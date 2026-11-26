@@ -1,5 +1,5 @@
 id,subsystem,part,spec,qty,unit_cost_usd,supplier,order_ref,status,notes
-D1,dock,ESP32-S3 dev board,"ESP32-S3-DevKitC-1 N16R8 (16 MB flash, 8 MB octal PSRAM), dual USB-C, pins soldered (""KIT C"")",1,9.91,AliExpress (MT Technology),,arrived,"Arrived 2026-11-26 (Nico). Order seen 2026-11-19. ""KIT C"" comes with a GPIO expansion board, useful on the bench. GPIO35-37 are used by PSRAM, never wire to them"
+D1,dock,ESP32-S3 dev board,"ESP32-S3-DevKitC-1 N16R8 (16 MB flash, 8 MB octal PSRAM), dual USB-C, pins soldered (""KIT C"")",1,9.91,AliExpress (MT Technology),,arrived,"Arrived 2026-11-26 (Nico), pins soldered. Checked on the bench 2026-11-26: 16 MB flash and 8 MB PSRAM confirmed. Order seen 2026-11-19. ""KIT C"" comes with a GPIO expansion board, useful on the bench. GPIO35-37 are used by PSRAM, never wire to them"
 D2,dock,Display,"4.0in ST7796S 320x480 SPI TFT + FT6336U capacitive touch (LCDWIKI MSP4031 type), module 108 x 60.9 mm",1,21.39,AliExpress (Elitefinds),,arrived,Arrived 2026-11-26 (Nico). Order seen 2026-11-19. MSP4031 with capacitive touch
 D3,dock,I2S amplifier,MAX98357A breakout,1,4.05,AliExpress (KPQ Choice),,arrived,Arrived 2026-11-26 (Nico). Order seen 2026-11-19. VIN from 5 V. The listing photo shows its pins already soldered
 D4,dock,Speaker,"40 mm round, 4 ohm, 2 W, 5 mm thick (lot of 5)",1,3.52,AliExpress,,arrived,Arrived 2026-11-26 (Nico). Order seen 2026-11-19. Delivery window Nov 18-25
@@ -48,4 +48,4 @@ X3,unused,Hinges,Mini metal hinges 10 mm (25 pcs),1,1.88,AliExpress,,spare,No cl
 X4,unused,Speaker,40 mm 8 ohm 1 W,1,1.09,AliExpress,,cancelled,Replaced by D4
 X5,unused,2.4 GHz radio,NRF24L01,2,,AliExpress,,spare if ordered,Replaced by ESP-NOW
 X6,unused,Regulator,Pololu S7V8F3 3.3 V buck-boost,1,9.95,Pololu,,spare if ordered,XIAO regulates its own power
-X7,unused,Second ESP32-S3 board,"ESP32-S3 N16R8 dev board, dual USB-C (Top Tech)",1,5.19,AliExpress (Top Tech),,arrived,"Arrived 2026-11-26 (Nico). Order seen 2026-11-19. Stands in for the XIAO on the breadboard (same chip, different pin numbers), and is a spare dock board. It may differ in size from D1; measure both"
+X7,unused,Second ESP32-S3 board,"ESP32-S3 N16R8 dev board, dual USB-C (Top Tech)",1,5.19,AliExpress (Top Tech),,arrived,"Arrived 2026-11-26 (Nico) WITHOUT pins: solder its headers before M5. Order seen 2026-11-19. Stands in for the XIAO on the breadboard (same chip, different pin numbers), and is a spare dock board. It may differ in size from D1; measure both"

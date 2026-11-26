@@ -42,9 +42,9 @@ Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
   - New protocol message from screen devices: `layout` (how far the detail page scrolls). 72 tests.
   - **Row titles (Nico, during the look-over):** a row shows the session's task title, which is a short form of its first prompt. With no task yet it shows the project: the repo name from the git remote (`projects`, or `projects/mitzi` inside a subfolder), then the folder name. The small line shows the project and the tool. Views carry `title` beside `name`.
   - **To-do for M8:** use Claude Code's own session title if it ever appears in a documented hook field. It isn't one today, and the app only uses documented fields.
-  - **Nico's look-over in the simulator: steps 1–5a passed on 2026-11-26** (window, keyboard, scrolling to the end, approvals and toasts, disconnect and reconnect). One change asked for and made: row titles (below). Open: his look at the new titles.
+  - **Nico's look-over in the simulator: steps 1–5a passed on 2026-11-26** (window, keyboard, scrolling to the end, approvals and toasts, disconnect and reconnect). One change asked for and made: row titles (below), which Nico confirmed look right. M3 is done.
   - Known limits: fonts are ASCII only (accents dropped, emoji shown as `?`); Voice has no engine until M2; the READY color is still a proposal.
-- **Next step:** Nico's M3 look-over, then the display test on the bench when the jumpers arrive (about 2026-11-28), then `dock_ui` on the real display. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
+- **Next step:** the display test on the bench when the jumpers arrive (about 2026-11-28), then `dock_ui` on the real display. **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11). The display test is written and compiles (`firmware/bench/dock_display/`, wiring table in its README) but is **not flashed**: the jumper wires arrive about 2026-11-28.
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -115,7 +115,7 @@ Full table with pass conditions: [plan §5](docs/plan.md).
 | M1 | Claude Code hooks: live status + approvals from the fake device | No | **done** (2026-11-11), tested on the Mac Mini |
 | M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **done** (2026-11-26), checked on the Mac Mini |
 | M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
-| M3 | Screens in the desktop simulator, styled like the reference | No | **built** (2026-11-26); Nico's look-over open |
+| M3 | Screens in the desktop simulator, styled like the reference | No | **done** (2026-11-26), looked over in the simulator |
 | M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | **started** (2026-11-26): board check passed; display next |
 | M5 | Controller on the breadboard: keys, stick, AUX input, mics, ESP-NOW | Yes | after M4 |
 | M6 | USB vs Wi-Fi speed test, battery test | Yes | after M5 |
@@ -250,7 +250,7 @@ The full list is in blueprint §13. The main ones:
   - Nico's finding: the row for a session in `~/projects` said "Imported Home Projects" (the folder the symlink points to), and the reference shows task titles.
   - Fix, in the same PR: `core/names.py` (`short_title`, `repo_label`); the first prompt becomes the session's title (slash commands are skipped; later prompts don't rename it); the project name comes from the git remote, looked up once per folder in a worker thread; `title` added to rows and the detail view; AgentUI and the fake device show it. 72 tests. Snapshots regenerated.
   - Not possible today: Claude Code's own session title (not in the documented hook fields). Logged as an M8 to-do.
-  - Test files `~/agent-controller-test-30.txt` and `-31.txt` may exist; they can be deleted.
+  - Nico confirmed the new titles look right. The test file was deleted.
 - 2026-11-26 — M3 built (Claude Code on the Mac Mini, branch `agent-controller-m3-screens`):
   - Nico chose arduino-cli + Makefile over PlatformIO, and approved installing LVGL 9.6.0, ArduinoJson 7.4.3 (arduino-cli libraries) and SDL2 (Homebrew, as `sdl2-compat`).
   - `firmware/lib/AgentUI`: the screens, with no hardware code. It keeps the last view as JSON and updates objects in place.

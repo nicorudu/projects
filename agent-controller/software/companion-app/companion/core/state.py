@@ -52,9 +52,12 @@ class Session:
     cwd: str = ""  # where the session is working now; follows every `cd`
     home: str = ""  # where it was started; this, not cwd, decides what it is called
     home_known: bool = False  # True once the platform told us; until then home is the first cwd seen
-    name: str = ""  # the project: repo name from the git remote, else the folder name
+    name: str = ""  # the project: see core/names.py
     title: str = ""  # the task: a short form of the first prompt; "" until there is one
-    repo: str = ""  # repo label for home (core/names.py), "" if none or not looked up yet
+    repo: str = ""  # repo name from home's git remote, "" if none or not looked up yet
+    repo_top: str = ""  # that repo's top folder
+    project: str = ""  # the repo's top-level folder the session last worked in; it sticks
+    last_dir: str = ""  # the folder it last worked in (its cwd, or the folder of a file it edited)
     status: Status = Status.READY
     since: float = field(default_factory=time.time)  # when the status last changed
     turn_started: float | None = None  # when the current turn began; None between turns

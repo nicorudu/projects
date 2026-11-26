@@ -129,6 +129,16 @@ async def test_report_script_sends_the_start_folder_and_it_names_the_session(sta
     assert app.state.sessions["other"].name == "beta" and not app.state.sessions["other"].home_known
 
 
+def test_only_editing_tools_say_where_the_session_works():
+    from companion.platforms.claude_code.attached import edited_file
+    assert edited_file("Edit", {"file_path": "/r/mitzi/a.md", "old_string": "x"}) == "/r/mitzi/a.md"
+    assert edited_file("Write", {"file_path": "/r/mitzi/a.md"}) == "/r/mitzi/a.md"
+    assert edited_file("NotebookEdit", {"notebook_path": "/r/nb.ipynb"}) == "/r/nb.ipynb"
+    assert edited_file("Read", {"file_path": "/r/mitzi/a.md"}) is None
+    assert edited_file("Bash", {"command": "ls"}) is None
+    assert edited_file("Edit", None) is None and edited_file("Edit", {"file_path": 3}) is None
+
+
 # ---- approvals ------------------------------------------------------------------------
 async def answer(stack_make, *keys, **cfg_changes):
     """Post a PermissionRequest, press keys on the fake device once the Approval screen is up."""

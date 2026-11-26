@@ -1,7 +1,9 @@
 """What to call a session on screen.
 
 A row shows the session's task title when there is one (a short form of its first prompt).
-Otherwise it shows the project: the repo name from the git remote, then the folder name.
+Otherwise it shows the project. In a git repo that is the top-level folder the session is
+working in ("agent-controller"), or the repo name from the git remote when it has only
+worked at the top ("projects"). Outside a repo it is the name of the folder it started in.
 """
 
 from __future__ import annotations
@@ -39,18 +41,27 @@ def _git(cwd: str, *args: str) -> str:
     return r.stdout.strip() if r.returncode == 0 else ""
 
 
-def repo_label(cwd: str | None) -> str:
-    """The project name for a folder, from its git remote. "" if it has none.
+def repo_info(folder: str | None) -> tuple[str, str]:
+    """(repo name from the git remote, the repo's top folder) for a folder, or ("", "").
 
-    At the repo's top folder this is the repo name ("projects"). Further in, the folder is
-    added ("projects/mitzi"), so two sessions in one repo can be told apart.
-    Runs git, so call it from a worker thread.
+    "projects" for anything inside a clone of github.com/nicorudu/projects, whatever the
+    clone's folder is called. Runs git, so call it from a worker thread.
     """
-    if not cwd or not os.path.isdir(cwd):
+    if not folder or not os.path.isdir(folder):
+        return "", ""
+    top = _git(folder, "rev-parse", "--show-toplevel")
+    repo = repo_from_url(_git(folder, "config", "--get", "remote.origin.url")) if top else ""
+    return (repo, os.path.realpath(top)) if repo else ("", "")
+
+
+def project_folder(repo_top: str, directory: str | None) -> str:
+    """The repo's top-level folder that `directory` is in: "agent-controller" for
+    <repo>/agent-controller/software. "" at the repo's top, outside it, or in a hidden folder.
+    """
+    if not repo_top or not directory:
         return ""
-    top = _git(cwd, "rev-parse", "--show-toplevel")
-    repo = repo_from_url(_git(cwd, "config", "--get", "remote.origin.url")) if top else ""
-    if not repo:
+    rel = os.path.relpath(os.path.realpath(directory), repo_top)
+    first = rel.split(os.sep)[0]
+    if first in (".", "..") or first.startswith(".") or os.path.isabs(rel):
         return ""
-    rel = os.path.relpath(os.path.realpath(cwd), os.path.realpath(top))
-    return repo if rel == "." else f"{repo}/{os.path.basename(rel)}"
+    return first

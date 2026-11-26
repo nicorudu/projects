@@ -68,6 +68,17 @@ def decision_output(choice: Choice | None, suggestions: list | None) -> dict:
     return {"hookSpecificOutput": {"hookEventName": "PermissionRequest", "decision": decision}}
 
 
+EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+
+
+def edited_file(tool: str, tool_input) -> str | None:
+    """The file an editing tool is about to change. Reading a file doesn't count as working there."""
+    if tool not in EDIT_TOOLS or not isinstance(tool_input, dict):
+        return None
+    path = tool_input.get("file_path") or tool_input.get("notebook_path")
+    return path if isinstance(path, str) and path else None
+
+
 class ClaudeCode:
     name = NAME
     caps = {Cap.STATUS, Cap.APPROVE, Cap.FOCUS}
@@ -122,7 +133,8 @@ class ClaudeCode:
                 s.title = short_title(p.get("prompt"))
         elif ev == "PreToolUse":
             tool = p.get("tool_name", "")
-            app.upsert_session(NAME, sid, cwd, home, status=Status.WORKING,
+            app.upsert_session(NAME, sid, cwd, home, touched=edited_file(tool, p.get("tool_input")),
+                               status=Status.WORKING,
                                tool=f"{tool}: {summarize(tool, p.get('tool_input'))}"[:200])
         elif ev in ("PostToolUse", "PostToolUseFailure"):
             app.upsert_session(NAME, sid, cwd, home, status=Status.WORKING)

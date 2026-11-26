@@ -37,7 +37,7 @@ class App:
         self._dirty = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
         self._follow_task: asyncio.Task | None = None  # pending "focus follows selection"
-        self._repo_labels: dict[str, str] = {}  # folder -> repo label, so git runs once per folder
+        self._repo_labels: dict[str, tuple[str, str]] = {}  # folder -> (repo name, top), so git runs once
         self._repo_lookups: dict[str, asyncio.Task] = {}
 
     # ---- lifecycle -----------------------------------------------------------
@@ -139,24 +139,32 @@ class App:
 
     # ---- sessions (called by platform plug-ins) -------------------------------
     def upsert_session(self, platform: str, sid: str, cwd: str | None = None, home: str | None = None,
-                       **changes) -> Session:
+                       touched: str | None = None, **changes) -> Session:
         """`cwd` is where the session is working now. `home` is where it was started, when the
-        platform knows; the session is named after it, so a `cd` never renames a row."""
+        platform knows. `touched` is a file it is editing. The name comes from `home`'s repo and
+        the top-level folder being worked in (core/names.py); a plain `cd` to the repo's top
+        never renames a row."""
         s = self.state.sessions.get(sid)
         if s is None:
             s = Session(id=sid, platform=platform)
             self.state.sessions[sid] = s
-        if cwd and cwd != s.cwd:
+        moved = bool(cwd) and cwd != s.cwd
+        if moved:
             s.cwd = cwd
         if home:
             new_home, s.home_known = home, True
         else:  # not told: the first folder seen stands in, and later `cd`s don't change it
             new_home = cwd if not s.home else None
         if new_home and new_home != s.home:
-            s.home = new_home
-            s.repo = self._repo_labels.get(new_home, "")
+            s.home, s.project = new_home, ""
+            s.repo, s.repo_top = self._repo_labels.get(new_home, ("", ""))
             if new_home not in self._repo_labels:
                 self._look_up_repo(new_home)
+            self._note_work_folder(s, s.last_dir or s.cwd or new_home)
+        if touched:  # the folder of a file being edited says more than the cwd
+            self._note_work_folder(s, os.path.dirname(os.path.join(s.cwd, touched)))
+        elif moved:
+            self._note_work_folder(s, cwd)
         s.name = self._session_name(s)
         status = changes.pop("status", None)
         if status is not None:
@@ -199,9 +207,18 @@ class App:
             self.mark_dirty()
 
     @staticmethod
+    def _note_work_folder(s: Session, directory: str) -> None:
+        """Remember where the session works. Inside one of the repo's top-level folders, that
+        folder becomes the project and stays so until the session works in another one."""
+        s.last_dir = directory
+        sub = names.project_folder(s.repo_top, directory)
+        if sub:
+            s.project = sub
+
+    @staticmethod
     def _project(s: Session) -> str:
-        """Repo name from the git remote, then the folder name, then part of the id."""
-        return s.repo or (os.path.basename(s.home.rstrip("/\\")) if s.home else "") or s.id[:8]
+        """The repo's folder being worked in, then the repo name, then the start folder's name."""
+        return s.project or s.repo or (os.path.basename(s.home.rstrip("/\\")) if s.home else "") or s.id[:8]
 
     def _session_name(self, s: Session) -> str:
         base = self._project(s)
@@ -219,17 +236,21 @@ class App:
 
     async def _repo_lookup(self, cwd: str) -> None:
         try:
-            label = await asyncio.to_thread(names.repo_label, cwd)
+            info = await asyncio.to_thread(names.repo_info, cwd)
         except Exception:  # naming must never take the app down
             log.exception("repo lookup failed for %s", cwd)
-            label = ""
-        self._repo_labels[cwd] = label
+            info = ("", "")
+        self._repo_labels[cwd] = info
         self._repo_lookups.pop(cwd, None)
-        if not label:
+        if not info[0]:
             return
         for s in self.state.sessions.values():
             if s.home == cwd:
-                s.repo = label
+                s.repo, s.repo_top = info
+                latest = s.last_dir
+                self._note_work_folder(s, s.home)  # started inside a project folder
+                if latest:
+                    self._note_work_folder(s, latest)  # and where it has worked since
         for s in self.state.sessions.values():
             s.name = self._session_name(s)
         self.mark_dirty()

@@ -2,7 +2,7 @@
 
 **Read this first when picking the project back up** (new chat, after a context reset, or switching to the Mac Mini). It holds the current state, the next step, and the rules. It is updated and pushed after every step.
 
-Last updated: 2026-11-26 · by Claude (cloud session)
+Last updated: 2026-11-26 · by Claude (Claude Code on the Mac Mini)
 
 ---
 
@@ -26,7 +26,7 @@ Last updated: 2026-11-26 · by Claude (cloud session)
 - **PR #10 is merged** (concept models, renders, fixed-tilt option).
 - **Website:** checked 2026-11-18. nicorudu.com doesn't list this project yet. Nico's website chat adds it; the text to hand over is in §6.
 - **Open choice: folding lid or fixed tilt.** Nico asked for a mock-up of a screen that is always tilted. It is done as rev 3b: [docs/option-fixed-tilt.md](docs/option-fixed-tilt.md), model in `hardware/cad/rev3b-fixed-tilt/`, renders in `hardware/renders/2026-11-18-rev3b-fixed-tilt/`. The folding lid stays the plan until he chooses.
-- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b.
+- **Next step: M1b** (cloud, no parts): make the app's controls match the reference. Then M3 (screens in the simulator). **Parts arrived 2026-11-26** (all but a spare XIAO), so M4 (dock on the breadboard) starts now, alongside M1b. **M4 bench start is done (2026-11-26):** the dock board is a real N16R8 (16 MB flash, 8 MB PSRAM) and the Mac Mini can build and flash it. **Next on the bench: the display** (blueprint §11).
 - **Waiting on Nico:** the four decisions in plan §8. The first is which parts were ordered and which have arrived.
 - **Done:** M0 and M1, merged to `main` (PR #3). 45 tests pass, on the Mac Mini too (Python 3.14.7, after a test-race fix on branch `agent-controller-mac-mini-test`).
   - M1 was **verified live** twice: real Claude Code 2.1.322 in the cloud workspace (hook → fake device Approve → the command ran), then the full §6 test on the Mac Mini.
@@ -98,7 +98,7 @@ Full table with pass conditions: [plan §5](docs/plan.md).
 | M1b | Reference controls in the app (right opens, left back, focus follows selection, green button, no stick click) | No | **next** |
 | M2 | Voice: a copy of Wispr Faux as the engine, dock review + Send/Cancel | No (Mac Mini) | planned, tabled (see §1) |
 | M3 | Screens in the desktop simulator, styled like the reference | No | can start with M1b |
-| M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | waits for the parts check |
+| M4 | Dock on the breadboard: display, touch, speaker, USB + Wi-Fi links | Yes | **started** (2026-11-26): board check passed; display next |
 | M5 | Controller on the breadboard: keys, stick, AUX input, mics, ESP-NOW | Yes | after M4 |
 | M6 | USB vs Wi-Fi speed test, battery test | Yes | after M5 |
 | M7a | Measure every part with calipers | Yes | with M4 |
@@ -164,6 +164,13 @@ Full detail: [plan](docs/plan.md) (goal, milestones, parts checks, risks) · [bl
   3. Install `arduino-cli` (Homebrew) and the Espressif ESP32 core. Ask Nico before installing anything.
   4. Flash a hello sketch that prints the chip, flash size and PSRAM size. Pass: 16 MB flash and 8 MB PSRAM reported. Never use GPIO35–37 (PSRAM).
   5. Log the result in §8 and BUILDLOG, commit on a branch, and open a PR. Next is the display (bench order in blueprint §11).
+  - **Done 2026-11-26, all five steps (result in §8).** Facts for the next bench session:
+    - Port: `/dev/cu.usbmodem5C850305191` (the board's UART/COM port, a WCH CH343 bridge). The board shows as "Unknown" in `arduino-cli board list`; that is normal.
+    - Tools on the Mac Mini: `arduino-cli` 1.6.0 (Homebrew), Espressif core `esp32:esp32` 4.0.0.
+    - Board settings: ESP32S3 Dev Module, Flash Size = 16 MB, PSRAM = OPI PSRAM → `esp32:esp32:esp32s3:FlashSize=16M,PSRAM=opi`.
+    - Build and flash: `cd firmware/bench/dock_hello && arduino-cli compile -b <fqbn> --build-path <a folder outside the repo> . && arduino-cli upload -b <fqbn> -p <port> --input-dir <that folder> .`
+    - Read serial at 115200 baud. Set the baud rate on the same open port that is read (`( exec < $PORT; stty 115200 raw -echo clocal; cat )`); a separate `stty -f` call doesn't stick on macOS.
+    - **Before M5:** solder header pins onto the second ESP32-S3 board (X7). It arrived without pins.
 - **When parts arrive,** say which ones. M4 (dock on the breadboard) starts once the display and the dock board are both in hand.
 - **Repo is public** (checked 2026-11-18), so the website can link to it and load its images.
 - **Mac Mini test (M1), about 15 minutes.** **Done 2026-11-11** (results in §1); the steps stay here for re-runs. Steps 3 and 8 (`install-hooks` / `uninstall-hooks`) must be run by Nico — auto mode blocks Claude from editing its own settings. Shortcut: open Claude Code in the repo on the Mac Mini and say "follow HANDOFF.md §6 Mac Mini test with me". It can run steps 1–3 itself.
@@ -203,6 +210,14 @@ The full list is in blueprint §13. The main ones:
 - How to get Cursor's "waiting for approval" status.
 
 ## 8. Step log (newest first)
+- 2026-11-26 — M4 bench start done (Claude Code on the Mac Mini, §6 steps 1–5):
+  - The dock board (D1) is on `/dev/cu.usbmodem5C850305191`, through its UART/COM port (WCH CH343 bridge, USB ID `1a86:55d3`).
+  - Installed with Nico's OK: `arduino-cli` 1.6.0 (Homebrew) and the Espressif ESP32 core 4.0.0.
+  - Flashed `firmware/bench/dock_hello/` with Nico's settings (Flash Size = 16 MB, PSRAM = OPI PSRAM). **Pass:** ESP32-S3 rev 2, 2 cores, 240 MHz; flash 16,777,216 bytes (16 MB); PSRAM 8,388,608 bytes (8 MB), found; a 4 MB PSRAM write/read check passed. MAC `7c:4f:ad:bc:aa:6c`.
+  - Flash size double-checked on the chip itself with `esptool flash-id`: 16 MB detected (manufacturer `c8`, device `4018`, quad SPI, 3.3 V). The sketch's own flash figure can just repeat the build setting.
+  - The board still runs the hello sketch; it prints the report every 3 s and touches no GPIO.
+  - **Pins (from Nico):** the dock board (D1) arrived with its pins soldered. The second ESP32-S3 board (X7) arrived **without** pins, so its headers need soldering before M5.
+  - Next: the display (blueprint §11).
 - 2026-11-26 — Nico sent a photo: most parts have arrived (soldering station, multimeter, heat gun, wire, M2 insert kit, heat-shrink, boards and modules in bags). PR #12 merged. Nico: everything ordered is here except a second XIAO (a spare he ordered; still on the way). BOM statuses set to arrived. The five items from the exact-parts list (C9 resistors, C10 tactile buttons, C11 JST-PH plugs, C12 capacitors, T8 USB-C meter) are ordered and also still on the way; they are only needed for the controller (M5). The display and dock board are in hand, so M4 (dock on the breadboard) can start; first step is plugging the dock board into the Mac Mini.
 - 2026-11-19 — Nico asked for exact parts, not generic specs. The shopping list and BOM now name one exact product, quantity and must-match check per line (C9 Geekstory 73-value resistor kit, C10 Hilitchi 6 × 6 mm tactile kit, C11 10-pair JST-PH 2.0 pigtails, C12 500-pc ceramic capacitor kit, T8 Plugable USBC-VAMETER3, plus exact picks for the buy-only-if-needed items). Subtotal is about $70, up from $42, because a data-passing USB-C meter costs $30. Correction: foam tape (S8) is 1.6 mm thick and does not go under the battery; the guard sheet holds the battery. Thumbstick: ordered at the listed quantity (2).
 - 2026-11-19 — Nico confirmed the thumbstick and breadboards with jumpers are ordered, and pointed out his second ESP32-S3 board. Decision: one XIAO is enough; the spare board (X7) stands in for the controller on the breadboard. BOM, shopping list, blueprint §3 and §11 updated.
